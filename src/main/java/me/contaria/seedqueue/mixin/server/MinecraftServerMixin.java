@@ -7,6 +7,7 @@ import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,6 +37,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
 
     @Shadow
     public abstract boolean isOnThread();
+
+    @Shadow public abstract PlayerManager getPlayerManager();
 
     @ModifyExpressionValue(
             method = "startServerThread",
