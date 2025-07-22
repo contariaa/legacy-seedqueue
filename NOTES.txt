@@ -1,0 +1,47 @@
+Vanilla Parity Concerns
+
+/command
+
+- AbstractCommand#commandProvider
+
+/server
+
+- MinecraftServer#getServer
+ - 127 usages...
+- ServerNetworkIo.DEFAULT_CHANNEL, EPOLL_CHANNEL and LOCAL_CHANNEL
+ - not sure if this being static is problematic, probably not
+
+/world/gen/feature
+- BigTreeFeature
+- FlowerPatchFeature
+ - BiomeDecorator#generate uses #setFlowers
+
+/world/chunk
+
+- RegionIo.FORMATS
+
+/world/biome
+
+- Biome#field_4661 and Biome#field_7203 dont seem to do anything?
+- SavannaBiome.ShatteredSavannaBiome, TaigaBiome and ExtremeHillsBiome#method_6420
+ - change topBlock and baseBlock based on some parameters
+- Biome#field_4631
+ - see BigTreeFeature issues
+- BiomeDecorator (and EndBiomeDecorator)
+ - see Feature issues
+ - lots of concerns
+ - HugeMushroomFeature instance depends on one random call and then stays??
+- MesaBiome
+
+Checked Directories
+
+- command, server, world
+ - see concerns above
+- structures
+ - seems fine, structures are instantiated and stored in the Generators, which are per-world
+- advancement, enchantment, inventory, recipe, scoreboard, stat
+ - seems fine
+
+Need to be checked
+
+- block, entity, item, network, util
