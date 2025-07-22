@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "seedqueue",
+  "version": "${version}",
+  "name": "SeedQueue",
+  "description": "Generates worlds in the background for faster resetting.",
+  "authors": [
+    {
+      "name": "contaria",
+      "contact": {
+        "homepage": "https://github.com/contariaa/"
+      }
+    }
+  ],
+  "contributors": [
+    "tildejustin",
+    "Crystal",
+    "tesselslate",
+    "sathya",
+    "nealxm",
+    "DuncanRuns",
+    "DesktopFolder",
+    "luvvlyjude"
+  ],
+  "contact": {
+    "sources": "https://github.com/contariaa/seedqueue",
+    "issues": "https://github.com/contariaa/seedqueue/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/seedqueue/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.contaria.seedqueue.SeedQueue"
+    ]
+  },
+  "mixins": [
+    "seedqueue.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "1.8.9"
+  },
+  "breaks": {
+  }
+}
