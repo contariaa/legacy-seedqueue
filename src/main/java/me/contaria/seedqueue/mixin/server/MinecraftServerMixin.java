@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements SQMinecraftServer {
@@ -38,7 +37,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     @Shadow
     public abstract boolean isOnThread();
 
-    @Shadow public abstract PlayerManager getPlayerManager();
+    @Shadow
+    public abstract PlayerManager getPlayerManager();
 
     @ModifyExpressionValue(
             method = "startServerThread",
@@ -94,7 +94,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
 
     @Override
     public Optional<SeedQueueEntry> seedQueue$getEntry() {
-        return Optional.of(this.seedQueueEntry).map(CompletableFuture::join);
+        return Optional.ofNullable(this.seedQueueEntry).map(CompletableFuture::join);
     }
 
     @Override
@@ -175,20 +175,5 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             this.notify();
             this.paused = false;
         }
-    }
-
-    @Override
-    public void seedQueue$setExecutor(Executor executor) {
-
-    }
-
-    @Override
-    public void seedQueue$resetExecutor() {
-
-    }
-
-    @Override
-    public int seedQueue$incrementAndGetEntityID() {
-        return 0;
     }
 }

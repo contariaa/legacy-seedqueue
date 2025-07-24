@@ -24,9 +24,6 @@ public abstract class TitleScreenMixin extends Screen {
     )
     private void addSeedQueueButton(CallbackInfo ci) {
         if (SeedQueue.isActive()) {
-            while (!SeedQueue.playEntry()) {
-                SeedQueue.ping();
-            }
             return;
         }
         this.buttons.add(new ButtonWidget(420, this.width / 2 - 124, this.height / 4 + 48, 20, 20, "SQ") {

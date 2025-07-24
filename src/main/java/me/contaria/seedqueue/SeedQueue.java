@@ -1,11 +1,16 @@
 package me.contaria.seedqueue;
 
+import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
+import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.interfaces.SQMinecraftClient;
+import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -319,7 +324,35 @@ public class SeedQueue implements ClientModInitializer {
     private static void clear() {
         LOGGER.info("Clearing SeedQueue...");
 
-        // TODO
+        Screen screen = MinecraftClient.getInstance().currentScreen;
+        MinecraftClient.getInstance().setScreen(new Screen() {
+            @Override
+            public void render(int mouseX, int mouseY, float tickDelta) {
+                this.renderDirtBackground(0);
+                this.drawCenteredString(this.textRenderer, I18n.translate("seedqueue.menu.clearing"), this.width / 2, this.height / 2 - 50, 16777215);
+            }
+        });
+        ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
+
+        synchronized (LOCK) {
+            if (currentEntry != null && !currentEntry.isLoaded()) {
+                currentEntry.discard();
+            }
+            currentEntry = null;
+        }
+
+        SEED_QUEUE.forEach(SeedQueueEntry::discard);
+
+        while (!SEED_QUEUE.isEmpty()) {
+            ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
+            SEED_QUEUE.removeIf(entry -> !entry.getServer().getThread().isAlive());
+        }
+
+        SeedQueueWallScreen.clearWorldRenderers();
+        SeedQueuePreviewFrameBuffer.clearFramebufferPool();
+        System.gc();
+
+        MinecraftClient.getInstance().setScreen(screen);
     }
 
     /**
@@ -340,7 +373,7 @@ public class SeedQueue implements ClientModInitializer {
      * @return True if currently on the Wall Screen.
      */
     public static boolean isOnWall() {
-        return false;
+        return MinecraftClient.getInstance().currentScreen instanceof SeedQueueWallScreen;
     }
 
     /**

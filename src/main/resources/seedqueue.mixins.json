@@ -4,14 +4,27 @@
   "package": "me.contaria.seedqueue.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "accessor.DebugHudAccessor",
+    "accessor.MinecraftClientAccessor",
     "accessor.MinecraftServerAccessor",
+    "accessor.WorldRendererAccessor",
+    "client.GameRendererMixin",
     "client.MinecraftClientMixin",
     "client.TitleScreenMixin",
     "server.IntegratedServerMixin",
     "server.MinecraftServerMixin",
+    "server.parity.get_server.CommandManagerMixin",
+    "server.parity.get_server.MinecraftServerMixin",
     "server.synchronization.BiomeMixin",
     "server.synchronization.IntArrayCacheMixin",
-    "server.synchronization.ScheduledTickMixin"
+    "server.synchronization.ScheduledTickMixin",
+    "speedrunapi.resourceloader.DefaultResourcePackMixin",
+    "worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
+    "worldpreview.accessor.GameRendererAccessor",
+    "worldpreview.client.MinecraftClientMixin",
+    "worldpreview.server.MinecraftServerMixin",
+    "worldpreview.server.ServerChunkProviderMixin",
+    "worldpreview.server.ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
