@@ -1,4 +1,4 @@
-package me.contaria.seedqueue.mixin.client;
+package me.contaria.seedqueue.mixin.client.render;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.contaria.seedqueue.SeedQueue;

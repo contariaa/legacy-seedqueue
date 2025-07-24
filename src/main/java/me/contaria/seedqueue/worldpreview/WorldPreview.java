@@ -22,7 +22,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.LevelInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,8 +70,8 @@ public class WorldPreview {
         ClientWorld world = new ClientWorld(
                 networkHandler,
                 new LevelInfo(serverWorld.getLevelProperties()),
-                LevelInfo.GameMode.SURVIVAL.getId(),
-                Difficulty.NORMAL,
+                serverWorld.dimension.getType(),
+                serverWorld.getGlobalDifficulty(),
                 MinecraftClient.getInstance().profiler
         );
         ClientPlayerEntity player = interactionManager.createPlayer(
@@ -149,7 +148,7 @@ public class WorldPreview {
         player.capeZ = player.prevCapeZ = player.z;
 
         // TODO: add player to world, crashes because MinecraftClient#player is being accessed
-        //world.addEntity(player.getEntityId(), player);
+        world.addEntity(player.getEntityId(), player);
 
         // set player chunk coordinates,
         // usually these get set when adding the entity to a chunk,

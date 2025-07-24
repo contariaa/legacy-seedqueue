@@ -43,8 +43,6 @@ public class SeedQueueConfig {
     public int benchmarkResets = 1000;
     public boolean useWatchdog = false;
 
-    public boolean alwaysRedrawPreview = false;
-
     public final SeedQueueMultiKeyBinding[] keyBindings = new SeedQueueMultiKeyBinding[]{
             SeedQueueKeyBindings.play,
             SeedQueueKeyBindings.focusReset,

@@ -106,7 +106,7 @@ public class SeedQueuePreview extends DrawableHelper {
     private void renderPreview() {
         SeedQueuePreviewFrameBuffer frameBuffer = this.seedQueueEntry.getFrameBuffer();
         if (this.previewProperties != null) {
-            if (this.shouldRedrawPreview() && (frameBuffer.updateRenderData(this.worldRenderer)) || SeedQueue.config.alwaysRedrawPreview) {
+            if (this.shouldRedrawPreview() && (frameBuffer.updateRenderData(this.worldRenderer))) {
                 this.redrawPreview(frameBuffer);
             } else {
                 this.buildChunks();
