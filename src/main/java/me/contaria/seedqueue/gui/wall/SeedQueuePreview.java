@@ -161,16 +161,17 @@ public class SeedQueuePreview extends DrawableHelper {
         }
     }
 
-    private boolean canDrawOnlyChunkmapIfLocked() {
-        return SeedQueue.config.freezeLockedPreviews || (this.wall.layout.locked != null && this.wall.layout.locked.size() == 0);
-    }
-
     private boolean shouldRedrawPreview() {
         return this.lastPreviewFrame == 0 || this.wall.frame - this.lastPreviewFrame >= SeedQueue.config.wallFPS / SeedQueue.config.previewFPS;
     }
 
     private boolean isPreviewReady() {
-        return this.seedQueueEntry.hasFrameBuffer() || (this.worldRenderer != null /* && ((WorldRendererAccessor) this.worldRenderer).seedQueue$getCompletedChunkCount() > 0 */);
+        return this.seedQueueEntry.hasFrameBuffer() || (this.worldRenderer != null && this.getCompletedChunkCount() > 0);
+    }
+
+    private int getCompletedChunkCount() {
+        String string = this.worldRenderer.getChunksDebugString();
+        return Integer.parseInt(string.substring("C: ".length(), string.indexOf('/')));
     }
 
     public boolean isRenderingReady() {

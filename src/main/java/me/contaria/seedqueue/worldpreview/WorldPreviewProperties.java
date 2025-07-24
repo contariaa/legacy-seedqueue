@@ -1,6 +1,7 @@
 package me.contaria.seedqueue.worldpreview;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.contaria.seedqueue.mixin.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -55,10 +56,6 @@ public class WorldPreviewProperties extends DrawableHelper {
         return this.initialized;
     }
 
-    public void uninitialize() {
-        this.initialized = false;
-    }
-
     /**
      * Sets {@link WorldPreview} properties to the values stored in this {@link WorldPreviewProperties}.
      *
@@ -72,7 +69,6 @@ public class WorldPreviewProperties extends DrawableHelper {
         ClientWorld mcWorld = client.world;
         Entity mcCameraEntity = client.getCameraEntity();
         ClientPlayerInteractionManager mcInteractionManager = client.interactionManager;
-        //Camera mcCamera = ((GameRendererAccessor) client.gameRenderer).worldpreview$getCamera();
 
         try {
             WorldPreview.renderingPreview = true;
@@ -82,7 +78,6 @@ public class WorldPreviewProperties extends DrawableHelper {
             client.world = this.world;
             client.setCameraEntity(this.player);
             client.interactionManager = this.interactionManager;
-            //((GameRendererAccessor) client.gameRenderer).worldpreview$setCamera(this.camera);
 
             consumer.accept(this);
         } finally {
@@ -93,7 +88,6 @@ public class WorldPreviewProperties extends DrawableHelper {
             client.world = mcWorld;
             client.setCameraEntity(mcCameraEntity);
             client.interactionManager = mcInteractionManager;
-            //((GameRendererAccessor) client.gameRenderer).worldpreview$setCamera(mcCamera);
         }
     }
 
@@ -137,39 +131,34 @@ public class WorldPreviewProperties extends DrawableHelper {
 
         profiler.swap("tick_new_entities");
         for (Entity entity : this.world.entities) {
-            /*
-            if (!((EntityAccessor) entity).worldpreview$isFirstUpdate() || entity.vehicle != null && ((EntityAccessor) entity.getVehicle()).worldpreview$isFirstUpdate()) {
+            if (!((EntityAccessor) entity).worldpreview$isFirstUpdate() || entity.vehicle != null && ((EntityAccessor) entity.vehicle).worldpreview$isFirstUpdate()) {
                 continue;
             }
             this.tickEntity(entity);
-            for (Entity passenger : entity.getPassengersDeep()) {
+            for (Entity passenger : this.getPassengersDeep(entity)) {
                 this.tickEntity(passenger);
             }
-
-             */
         }
     }
 
+    private List<Entity> getPassengersDeep(Entity entity) {
+        List<Entity> passengers = new ArrayList<>();
+        while (entity.rider != null) {
+            passengers.add(entity.rider);
+            entity = entity.rider;
+        }
+        return passengers;
+    }
+
     private void tickEntity(Entity entity) {
-        /*
         Profiler profiler = MinecraftClient.getInstance().profiler;
-        profiler.push(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString());
-
-         */
-
-        /*
+        profiler.push(entity.getClass().getSimpleName());
         if (entity.vehicle != null) {
-            entity.vehicle.updatePassengerPosition(entity);
-            entity.calculateDimensions();
+            entity.vehicle.updatePassengerPosition();
             entity.updatePositionAndAngles(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
         }
-
-         */
         entity.baseTick();
-/*
         profiler.pop();
-
- */
     }
 
     public void renderWorld() {

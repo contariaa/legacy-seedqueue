@@ -1,4 +1,4 @@
-package me.contaria.seedqueue.fastreset;
+package me.contaria.seedqueue.fastreset.interfaces;
 
 public interface FRMinecraftServer {
     void fastReset$fastReset();

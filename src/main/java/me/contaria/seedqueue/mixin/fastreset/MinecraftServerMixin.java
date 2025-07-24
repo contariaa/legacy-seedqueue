@@ -1,7 +1,7 @@
 package me.contaria.seedqueue.mixin.fastreset;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import me.contaria.seedqueue.fastreset.FRMinecraftServer;
+import me.contaria.seedqueue.fastreset.interfaces.FRMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,6 +1,5 @@
 package me.contaria.seedqueue.mixin.worldpreview.server;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
@@ -19,6 +18,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.*;
 
@@ -36,20 +36,15 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
     @Unique
     private final Set<Integer> sentEntities = new HashSet<>();
 
-    @ModifyExpressionValue(
+    @ModifyVariable(
             method = "getOrGenerateChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/ChunkProvider;getChunk(II)Lnet/minecraft/world/chunk/Chunk;"
+                    target = "Lnet/minecraft/world/chunk/Chunk;decorateChunk(Lnet/minecraft/world/chunk/ChunkProvider;Lnet/minecraft/world/chunk/ChunkProvider;II)V",
+                    shift = At.Shift.AFTER
             )
     )
     private Chunk sendDataAfterChunkGeneration(Chunk chunk) {
-        // it's possible to optimize this by only sending the data for the new chunk
-        // however that needs more careful thought and since this now only gets called 529 times
-        // per world it isn't hugely impactful
-        // stuff to consider:
-        // - check all chunks on frustum update / initial sendData
-        // - entities spawning in neighbouring chunks
         this.worldpreview$sendData();
         return chunk;
     }
@@ -74,8 +69,9 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
 
     @Unique
     private List<Packet<?>> processNeighborChunks(ChunkPos pos) {
-        List<Packet<?>> packets = new ArrayList<>();
+        // TODO: fix neighbors not getting light updates
         /*
+        List<Packet<?>> packets = new ArrayList<>();
         for (int x = -1; x <= 1; x++) {
             for (int z = -1; z <= 1; z++) {
                 if (x == 0 && z == 0) {
@@ -95,9 +91,10 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
                 }
             }
         }
+        return packets;
 
          */
-        return packets;
+        return Collections.emptyList();
     }
 
     @Unique
@@ -135,6 +132,8 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
         }
 
         List<Packet<?>> entityPackets = new ArrayList<>();
+
+        // TODO: send entities to preview
 /*
         // ensure vehicles are processed before their passengers
         Entity vehicle = entity.vehicle;

@@ -2,7 +2,7 @@ package me.contaria.seedqueue;
 
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.debug.SeedQueueProfiler;
-import me.contaria.seedqueue.fastreset.FRMinecraftServer;
+import me.contaria.seedqueue.fastreset.interfaces.FRMinecraftServer;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;

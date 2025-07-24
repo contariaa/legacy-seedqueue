@@ -11,6 +11,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.ClientPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.*;
@@ -90,40 +91,18 @@ public class WorldPreview {
         player.headYaw = player.yaw = 0.0F;
 
         LevelInfo.GameMode gameMode = LevelInfo.GameMode.NOT_SET;
-/*
+
         // This part is not actually relevant for previewing new worlds,
         // I just personally like the idea of worldpreview principally being able to work on old worlds as well
         // same with sending world info and scoreboard data
         NbtCompound playerData = serverWorld.getServer().getPlayerManager().getUserData();
         if (playerData != null) {
-            player.fromTag(playerData);
-
-            // see ServerPlayerEntity#readCustomDataFromTag
-            if (playerData.contains("playerGameType", 99)) {
-                gameMode = GameMode.byId(playerData.getInt("playerGameType"));
-            }
-
-            // see LivingEntity#readCustomDataFromTag, only gets read on server worlds
-            if (playerData.contains("Attributes", 9)) {
-                EntityAttributes.fromTag(player.getAttributes(), playerData.getList("Attributes", 10));
-            }
-
-            // see PlayerManager#onPlayerConnect
-            if (playerData.contains("RootVehicle", 10)) {
-                CompoundTag vehicleData = playerData.getCompound("RootVehicle");
-                UUID uUID = vehicleData.containsUuid("Attach") ? vehicleData.getUuid("Attach") : null;
-                EntityType.loadEntityWithPassengers(vehicleData.getCompound("Entity"), serverWorld, entity -> {
-                    entity.world = world;
-                    world.addEntity(entity.getEntityId(), entity);
-                    if (entity.getUuid().equals(uUID)) {
-                        player.startRiding(entity, true);
-                    }
-                    return entity;
-                });
+            player.fromNbt(playerData);
+            // see ServerPlayerEntity#readCustomDataFromNbt
+            if (!MinecraftServer.getServer().shouldForceGameMode() && playerData.contains("playerGameType", 99)) {
+                gameMode = LevelInfo.GameMode.byId(playerData.getInt("playerGameType"));
             }
         }
-
- */
 
         Queue<Packet<?>> packetQueue = new LinkedBlockingQueue<>();
         packetQueue.add(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, fakePlayer));
@@ -163,14 +142,13 @@ public class WorldPreview {
         }
         player.getDataTracker().setProperty(10, (byte) playerModelPartsBitMask);
 
-        /*
+
         // set cape to player position
-        player.field_7524 = player.field_7500 = player.getX();
-        player.field_7502 = player.field_7521 = player.getY();
-        player.field_7522 = player.field_7499 = player.getZ();
+        player.capeX = player.prevCapeX = player.x;
+        player.capeY = player.prevCapeY = player.y;
+        player.capeZ = player.prevCapeZ = player.z;
 
-         */
-
+        // TODO: add player to world, crashes because MinecraftClient#player is being accessed
         //world.addEntity(player.getEntityId(), player);
 
         // set player chunk coordinates,
@@ -179,19 +157,8 @@ public class WorldPreview {
         player.chunkX = MathHelper.floor(player.x / 16.0);
         player.chunkY = MathHelper.clamp(MathHelper.floor(player.y / 16.0), 0, 16);
         player.chunkZ = MathHelper.floor(player.z / 16.0);
-/*
-        world.getChunkManager().setChunkMapCenter(player.chunkX, player.chunkZ);
-
- */
 
         ((ClientPlayNetworkHandlerAccessor) player.networkHandler).worldpreview$setWorld(world);
-/*
-        // camera has to be updated early for chunk/entity data culling to work
-        // we pass the fake player, so we know the call comes from here in CameraMixin#modifyCameraY
-        int perspective = MinecraftClient.getInstance().options.perspective;
-        camera.update(world, fakePlayer, perspective > 0, perspective == 2, 1.0f);
-
- */
 
         set(world, player, interactionManager, null, packetQueue);
     }

@@ -22,8 +22,10 @@
     "server.synchronization.ScheduledTickMixin",
     "speedrunapi.resourceloader.DefaultResourcePackMixin",
     "worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
+    "worldpreview.accessor.EntityAccessor",
     "worldpreview.accessor.GameRendererAccessor",
     "worldpreview.client.MinecraftClientMixin",
+    "worldpreview.client.WorldRendererMixin",
     "worldpreview.server.MinecraftServerMixin",
     "worldpreview.server.ServerChunkProviderMixin",
     "worldpreview.server.ServerPlayerEntityMixin"
