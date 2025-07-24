@@ -51,7 +51,7 @@ public abstract class MinecraftClientMixin implements SQMinecraftClient {
     public abstract Session getSession();
 
     @Override
-    public void seedqueue$play(SeedQueueEntry entry) {
+    public void seedQueue$play(SeedQueueEntry entry) {
         this.server = entry.getServer();
         //this.server.getThread().setPriority(Thread.NORM_PRIORITY);
         this.isIntegratedServerRunning = true;
@@ -175,6 +175,29 @@ public abstract class MinecraftClientMixin implements SQMinecraftClient {
         }
         while (!SeedQueue.playEntry()) {
             SeedQueue.ping();
+        }
+    }
+
+    @Inject(
+            method = "stop",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/MinecraftClient;connect(Lnet/minecraft/client/world/ClientWorld;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void shutdownQueue(CallbackInfo ci) {
+        SeedQueue.stop();
+    }
+
+    @Inject(
+            method = "printCrashReport",
+            at = @At("HEAD")
+    )
+    private static void shutdownQueueOnCrash(CallbackInfo ci) {
+        // don't try to stop SeedQueue if Minecraft crashes before the client is initialized
+        if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().isOnThread()) {
+            SeedQueue.stop();
         }
     }
 }

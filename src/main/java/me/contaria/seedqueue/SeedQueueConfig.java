@@ -13,15 +13,15 @@ import net.minecraft.client.MinecraftClient;
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class SeedQueueConfig {
-    public int maxCapacity = 8;
+    public int maxCapacity = 9;
     public int maxConcurrently = 1;
-    public int maxConcurrently_onWall = 4;
+    public int maxConcurrently_onWall = 9;
     public int maxWorldGenerationPercentage = 100;
     public boolean resumeOnFilledQueue = false;
 
     public boolean useWall = true;
-    public int rows = 2;
-    public int columns = 2;
+    public int rows = 3;
+    public int columns = 3;
     public final WindowSize simulatedWindowSize = new WindowSize();
     public int resetCooldown = 150;
     public boolean waitForPreviewSetup = true;
@@ -43,7 +43,7 @@ public class SeedQueueConfig {
     public int benchmarkResets = 1000;
     public boolean useWatchdog = false;
 
-    public boolean alwaysRedrawPreview = true;
+    public boolean alwaysRedrawPreview = false;
 
     public final SeedQueueMultiKeyBinding[] keyBindings = new SeedQueueMultiKeyBinding[]{
             SeedQueueKeyBindings.play,

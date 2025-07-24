@@ -4,6 +4,7 @@ import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.interfaces.SQMinecraftClient;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
+import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
@@ -88,7 +89,7 @@ public class SeedQueue implements ClientModInitializer {
         // standardsettings can cause the current screen to be re-initialized,
         // so we open an intermission screen to avoid atum reset logic being called twice
         MinecraftClient.getInstance().setScreen(new ProgressScreen());
-        ((SQMinecraftClient) MinecraftClient.getInstance()).seedqueue$play(currentEntry);
+        ((SQMinecraftClient) MinecraftClient.getInstance()).seedQueue$play(currentEntry);
         currentEntry = null;
     }
 
@@ -345,7 +346,7 @@ public class SeedQueue implements ClientModInitializer {
 
         while (!SEED_QUEUE.isEmpty()) {
             ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
-            SEED_QUEUE.removeIf(entry -> !entry.getServer().getThread().isAlive());
+            SEED_QUEUE.removeIf(entry -> !((MinecraftServerAccessor) entry.getServer()).seedQueue$getServerThread().isAlive());
         }
 
         SeedQueueWallScreen.clearWorldRenderers();

@@ -18,6 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.world.ClientWorld;
@@ -25,6 +26,7 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -37,8 +39,6 @@ public class SeedQueueWallScreen extends Screen {
     private static final Identifier WALL_OVERLAY = new Identifier("seedqueue", "textures/gui/wall/overlay.png");
     private static final Identifier INSTANCE_BACKGROUND = new Identifier("seedqueue", "textures/gui/wall/instance_background.png");
     private static final Identifier INSTANCE_OVERLAY = new Identifier("seedqueue", "textures/gui/wall/instance_overlay.png");
-
-    private static boolean renderingPreview;
 
     private final MinecraftClient client;
     @Nullable
@@ -517,14 +517,11 @@ public class SeedQueueWallScreen extends Screen {
             return;
         }
 
-        /*
         if (code == 1 && Screen.hasShiftDown()) {
-            Atum.stopRunning();
-            this.client.openScreen(new TitleScreen());
-            return true;
+            SeedQueue.stop();
+            this.client.setScreen(new TitleScreen());
+            return;
         }
-        
-         */
 
         if (SeedQueueKeyBindings.startBenchmark.matchesKey(code)) {
             this.startBenchmark();
@@ -976,14 +973,12 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private static void startRenderingPreview() {
-        renderingPreview = true;
+        MinecraftClient.getInstance().width = SeedQueue.config.simulatedWindowSize.width();
+        MinecraftClient.getInstance().height = SeedQueue.config.simulatedWindowSize.height();
     }
 
     private static void stopRenderingPreview() {
-        renderingPreview = false;
-    }
-
-    public static boolean shouldModifyWindowSize() {
-        return renderingPreview;
+        MinecraftClient.getInstance().width = Display.getWidth();
+        MinecraftClient.getInstance().height = Display.getHeight();
     }
 }

@@ -306,7 +306,6 @@ public class SeedQueueEntry {
     }
 
     public int getProgressPercentage() {
-        // TODO
-        return 0;
+        return this.server.progress;
     }
 }
