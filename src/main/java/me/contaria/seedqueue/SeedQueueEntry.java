@@ -2,6 +2,7 @@ package me.contaria.seedqueue;
 
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.debug.SeedQueueProfiler;
+import me.contaria.seedqueue.fastreset.FRMinecraftServer;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
@@ -13,9 +14,13 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Stores the {@link MinecraftServer} and any other resources related to a seed in the queue.
+ */
 public class SeedQueueEntry {
     private final IntegratedServer server;
 
+    // will be created lazily when using wall, see MinecraftClientMixin
     private final SaveHandler saveHandler;
     private final LevelProperties levelProperties;
     private final LevelInfo levelInfo;
@@ -30,6 +35,10 @@ public class SeedQueueEntry {
     private volatile boolean discarded;
     private volatile boolean maxWorldGenerationReached;
 
+    /**
+     * Stores the position (index) of the queue entry in the wall screen's main group.
+     * A value of -1 indicates that this entry is not in the main group.
+     */
     public int mainPosition = -1;
 
     public SeedQueueEntry(IntegratedServer server, SaveHandler saveHandler, LevelProperties levelProperties, LevelInfo levelInfo) {
@@ -55,6 +64,52 @@ public class SeedQueueEntry {
 
     public LevelInfo getLevelInfo() {
         return this.levelInfo;
+    }
+
+    public @Nullable WorldPreviewProperties getPreviewProperties() {
+        return this.previewProperties;
+    }
+
+    public synchronized void setPreviewProperties(@Nullable WorldPreviewProperties previewProperties) {
+        this.previewProperties = previewProperties;
+    }
+
+    public SeedQueuePreviewFrameBuffer getFrameBuffer() {
+        if (!MinecraftClient.getInstance().isOnThread()) {
+            throw new IllegalStateException("Tried to get WorldPreviewFrameBuffer off-thread!");
+        }
+        if (this.frameBuffer == null) {
+            SeedQueueProfiler.push("create_framebuffer");
+            this.frameBuffer = new SeedQueuePreviewFrameBuffer();
+            SeedQueueProfiler.pop();
+        }
+        return this.frameBuffer;
+    }
+
+    public boolean hasFrameBuffer() {
+        return this.frameBuffer != null;
+    }
+
+    /**
+     * Deletes and removes this entry's framebuffer.
+     *
+     * @see SeedQueuePreviewFrameBuffer#discard
+     */
+    public void discardFrameBuffer() {
+        if (!MinecraftClient.getInstance().isOnThread()) {
+            throw new RuntimeException("Tried to discard WorldPreviewFrameBuffer off-thread!");
+        }
+        if (this.frameBuffer != null) {
+            this.frameBuffer.discard();
+            this.frameBuffer = null;
+        }
+    }
+
+    /**
+     * @return True if this entry has either {@link WorldPreviewProperties} or a {@link SeedQueuePreviewFrameBuffer}.
+     */
+    public boolean hasWorldPreview() {
+        return this.previewProperties != null || this.frameBuffer != null;
     }
 
     /**
@@ -206,7 +261,13 @@ public class SeedQueueEntry {
             }
 
             this.loaded = true;
+
+            SeedQueueProfiler.push("discard_framebuffer");
+            this.discardFrameBuffer();
+
+            SeedQueueProfiler.swap("unpause");
             this.unpause();
+            SeedQueueProfiler.pop();
         }
     }
 
@@ -231,59 +292,21 @@ public class SeedQueueEntry {
 
             this.discarded = true;
 
+            SeedQueueProfiler.push("discard_framebuffer");
+            this.discardFrameBuffer();
+
+            SeedQueueProfiler.swap("stop_server");
+            ((FRMinecraftServer) this.server).fastReset$fastReset();
             ((MinecraftServerAccessor) this.server).seedQueue$setRunning(false);
+
+            SeedQueueProfiler.swap("unpause");
             this.unpause();
+            SeedQueueProfiler.pop();
         }
     }
 
     public int getProgressPercentage() {
         // TODO
         return 0;
-    }
-
-    public void setPreviewProperties(WorldPreviewProperties properties) {
-        this.previewProperties = properties;
-    }
-
-    public WorldPreviewProperties getPreviewProperties() {
-        return this.previewProperties;
-    }
-
-    public SeedQueuePreviewFrameBuffer getFrameBuffer() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
-            throw new IllegalStateException("Tried to get WorldPreviewFrameBuffer off-thread!");
-        }
-        if (this.frameBuffer == null) {
-            SeedQueueProfiler.push("create_framebuffer");
-            this.frameBuffer = new SeedQueuePreviewFrameBuffer();
-            SeedQueueProfiler.pop();
-        }
-        return this.frameBuffer;
-    }
-
-    public boolean hasFrameBuffer() {
-        return this.frameBuffer != null;
-    }
-
-    /**
-     * Deletes and removes this entry's framebuffer.
-     *
-     * @see SeedQueuePreviewFrameBuffer#discard
-     */
-    public void discardFrameBuffer() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
-            throw new RuntimeException("Tried to discard WorldPreviewFrameBuffer off-thread!");
-        }
-        if (this.frameBuffer != null) {
-            this.frameBuffer.discard();
-            this.frameBuffer = null;
-        }
-    }
-
-    /**
-     * @return True if this entry has either {@link WorldPreviewProperties} or a {@link SeedQueuePreviewFrameBuffer}.
-     */
-    public boolean hasWorldPreview() {
-        return this.previewProperties != null || this.frameBuffer != null;
     }
 }

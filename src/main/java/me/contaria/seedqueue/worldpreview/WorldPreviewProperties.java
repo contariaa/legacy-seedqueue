@@ -187,7 +187,7 @@ public class WorldPreviewProperties extends DrawableHelper {
         profiler.push("light_map");
         ((GameRendererAccessor) client.gameRenderer).worldpreview$tickLightmap();
         profiler.swap("render_world");
-        client.gameRenderer.renderWorld(1.0F, Long.MAX_VALUE);
+        client.gameRenderer.renderWorld(1.0F, System.nanoTime());
         profiler.swap("entity_outlines");
         profiler.pop();
 
@@ -241,7 +241,7 @@ public class WorldPreviewProperties extends DrawableHelper {
         profiler.swap("terrain_setup");
         client.worldRenderer.setupTerrain(entity, 1.0f, cameraView, this.frameCount++, client.player.isSpectator());
         profiler.swap("updatechunks");
-        client.worldRenderer.updateChunks(System.nanoTime() + 10000L);
+        client.worldRenderer.updateChunks(System.nanoTime());
 
         profiler.pop();
 
