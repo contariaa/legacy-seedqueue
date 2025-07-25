@@ -1,4 +1,4 @@
-package me.contaria.seedqueue.mixin.server.synchronization;
+package me.contaria.seedqueue.mixin.server.synchronization.biome;
 
 import net.minecraft.util.collection.IntArrayCache;
 import org.objectweb.asm.Opcodes;

@@ -10,6 +10,10 @@ Vanilla Parity Concerns
  - 127 usages...
 - ServerNetworkIo.DEFAULT_CHANNEL, EPOLL_CHANNEL and LOCAL_CHANNEL
  - not sure if this being static is problematic, probably not
+  - indeed not an issue, its just open to lan stuff
+
+/structures
+- StrongholdPieces.TOTAL_WEIGHT needs to be not static
 
 /world/gen/feature
 - BigTreeFeature
@@ -22,7 +26,6 @@ Vanilla Parity Concerns
 
 /world/biome
 
-- Biome#field_4661 and Biome#field_7203 dont seem to do anything?
 - SavannaBiome.ShatteredSavannaBiome, TaigaBiome and ExtremeHillsBiome#method_6420
  - change topBlock and baseBlock based on some parameters
 - Biome#field_4631
@@ -31,6 +34,8 @@ Vanilla Parity Concerns
  - see Feature issues
  - lots of concerns
  - HugeMushroomFeature instance depends on one random call and then stays??
+  - it sure does!
+  - first time (once for mushroom island, once for mushroom shore) it generates a mushroom determines the type of mushroom it will always generate from then onwards
 - MesaBiome
 - IntArrayCache
 

@@ -1,4 +1,4 @@
-package me.contaria.seedqueue.mixin.server.parity.get_server;
+package me.contaria.seedqueue.mixin.server.synchronization.get_server;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;

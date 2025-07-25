@@ -5,7 +5,6 @@ import me.contaria.seedqueue.SeedQueueEntry;
 import java.util.Optional;
 
 public interface SQMinecraftServer {
-
     Optional<SeedQueueEntry> seedQueue$getEntry();
 
     boolean seedQueue$inQueue();
