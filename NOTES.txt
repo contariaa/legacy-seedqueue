@@ -1,8 +1,46 @@
 Vanilla Parity Concerns
 
+/block
+
+- DispenserBlock.random is actually just fully unused
+- FallingBlock.instantFall
+- FlowingFluidBlock#neighborSourceBlocks
+- FurnaceBlock.keepInventory
+- LeavesBlock.neighborBlockDecayInfo
+- PumpkinBlock and SkullBlock BlockPatterns are initialized lazily
+ - not an issue, might create multiple ones but it doesnt affect the final result if theyre created concurrently
+- RedstoneWireBlock.wiresGivePower and affectedNeighbors
+- StairsBlock#isRayTraced and StairsBlock#rayTracePass
+
+/block/entity
+
+- DispenserBlockEntity.RANDOM
+ - not an issue since i dont think its possible for a dispenser/dropper to dispense during worldgen/the first tick
+  - surely a mob cant spawn inside a jungle temple and instantly trigger it?
+  - this is actually in 1.16.1 too
+- EnchantingTableBlockEntity.RANDOM
+ - same thing except it needs player input to even be used
+
 /command
 
 - AbstractCommand#commandProvider
+
+/entity
+- Entity.entityCount
+ - this is already full of race-conditions because its not atomic and accessed by both client and server so thats fun
+
+/entity/bossbar
+
+- Bossbar
+ - fully static but not an issue since its only used client-side
+
+/item
+
+- Item.RANDOM
+ - only used to spawn particles and play sound
+ - probably accessed from multiple threads anyway, should be fine
+- PotionItem#STATUS_EFFECTS_1 and STATUS_EFFECTS_2
+ - initialized lazily, candidate for CMEs
 
 /server
 
@@ -14,6 +52,13 @@ Vanilla Parity Concerns
 
 /structures
 - StrongholdPieces.TOTAL_WEIGHT needs to be not static
+
+/util
+
+- FileIoThread.INSTANCE
+- ItemScatterer.RANDOM
+- RandomVectorGenerator.field_3660
+- ScheduledTick.entries
 
 /world/gen/feature
 - BigTreeFeature
@@ -41,13 +86,9 @@ Vanilla Parity Concerns
 
 Checked Directories
 
-- command, server, world
+- command, server, world, block, entity, item, util
  - see concerns above
 - structures
  - seems fine, structures are instantiated and stored in the Generators, which are per-world
-- advancement, enchantment, inventory, recipe, scoreboard, stat
+- advancement, enchantment, inventory, recipe, scoreboard, stat, network
  - seems fine
-
-Need to be checked
-
-- block, entity, item, network, util
