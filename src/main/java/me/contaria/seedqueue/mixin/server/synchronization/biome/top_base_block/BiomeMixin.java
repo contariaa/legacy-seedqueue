@@ -22,6 +22,11 @@ public abstract class BiomeMixin implements SQBiome {
     @Unique
     private final ThreadLocal<BlockState> threadedBaseBlock = ThreadLocal.withInitial(() -> this.baseBlock);
 
+    // adding this constructor fixes a weird mixin bug
+    // with merging the field initializers
+    private BiomeMixin() {
+    }
+
     @Redirect(
             method = "method_8590",
             at = @At(
