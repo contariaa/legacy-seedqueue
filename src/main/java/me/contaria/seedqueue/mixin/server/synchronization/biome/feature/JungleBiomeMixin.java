@@ -1,5 +1,6 @@
 package me.contaria.seedqueue.mixin.server.synchronization.biome.feature;
 
+import me.contaria.seedqueue.interfaces.SQBiome;
 import net.minecraft.world.biome.JungleBiome;
 import net.minecraft.world.gen.feature.BigTreeFeature;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,6 +18,6 @@ public abstract class JungleBiomeMixin {
             )
     )
     private BigTreeFeature createBigTreeFeature(JungleBiome biome) {
-        return new BigTreeFeature(false);
+        return ((SQBiome) biome).seedQueue$getBigTreeFeature();
     }
 }

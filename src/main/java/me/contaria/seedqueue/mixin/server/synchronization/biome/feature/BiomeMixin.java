@@ -4,11 +4,14 @@ import me.contaria.seedqueue.interfaces.SQBiome;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.BigTreeFeature;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Biome.class)
 public abstract class BiomeMixin implements SQBiome {
+    @Unique
+    private final ThreadLocal<BigTreeFeature> threadedBigTreeFeature = ThreadLocal.withInitial(() -> new BigTreeFeature(false));
 
     @Redirect(
             method = "method_3822",
@@ -18,6 +21,11 @@ public abstract class BiomeMixin implements SQBiome {
             )
     )
     private BigTreeFeature createBigTreeFeature(Biome biome) {
-        return new BigTreeFeature(false);
+        return this.seedQueue$getBigTreeFeature();
+    }
+
+    @Override
+    public BigTreeFeature seedQueue$getBigTreeFeature() {
+        return this.threadedBigTreeFeature.get();
     }
 }

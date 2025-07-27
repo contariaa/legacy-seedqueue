@@ -11,6 +11,11 @@ Vanilla Parity Concerns
  - not an issue, might create multiple ones but it doesnt affect the final result if theyre created concurrently
 - RedstoneWireBlock.wiresGivePower and affectedNeighbors
 - StairsBlock#isRayTraced and StairsBlock#rayTracePass
+ - the code architecture of this and raytracing in general is quite a big problem for seedqueue
+ - vanilla simply changes the bounding boxes of blocks which cause some problems when fixing:
+  - potential performance impact
+  - vanilla is actually buggy in this regard itself and we need to be careful not to fix it
+   - elios stronghold locating glitch
 
 /block/entity
 
@@ -51,13 +56,17 @@ Vanilla Parity Concerns
   - indeed not an issue, its just open to lan stuff
 
 /structures
-- StrongholdPieces.TOTAL_WEIGHT needs to be not static
+- StrongholdPieces.POSSIBLE_PIECES, ACTIVE_PIECE_TYPE and TOTAL_WEIGHT
 
 /util
 
 - FileIoThread.INSTANCE
 - ItemScatterer.RANDOM
+ - only used when breaking storage minecarts or block entities with inventories which shouldnt happen during worldgen or tick 1
+ - also in 1.16.1
 - RandomVectorGenerator.field_3660
+ - no idea what this is for, literally just stores the result just to immediately get it again after
+ - probably debug code, can cause a race condition with seedqueue tho yippee, atleast easy to fix
 - ScheduledTick.entries
 
 /world/gen/feature
