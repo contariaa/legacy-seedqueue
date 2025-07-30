@@ -1,9 +1,13 @@
 package me.contaria.seedqueue.mixin.worldpreview.server;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
-import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
+import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
 import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -12,78 +16,83 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements WPMinecraftServer {
+public abstract class MinecraftServerMixin implements SQMinecraftServer {
     @Shadow
     public ServerWorld[] worlds;
 
-    @Unique
-    protected volatile boolean killed;
-    @Unique
-    private volatile boolean tooLateToKill;
-    @Unique
-    private boolean shouldConfigurePreview;
-
-    @Inject(
-            method = "prepareWorlds",
-            at = @At("HEAD")
-    )
-    private void setShouldConfigurePreview(CallbackInfo ci) {
-        this.shouldConfigurePreview = ((SQMinecraftServer) this).seedQueue$inQueue();
-    }
-
-    @Inject(
+    @WrapOperation(
             method = "prepareWorlds",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/ServerChunkProvider;getOrGenerateChunk(II)Lnet/minecraft/world/chunk/Chunk;",
-                    shift = At.Shift.AFTER
-            ),
-            cancellable = true
-    )
-    private void killWorldGen(CallbackInfo ci) {
-        if (this.killed) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(
-            method = "prepareWorlds",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/MinecraftServer;save()V"
+                    target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;"
             )
     )
-    private void configureWorldPreview(CallbackInfo ci) {
-        ServerWorld world = this.worlds[0];
-        BlockPos pos = world.getSpawnPos();
-        if (this.shouldConfigurePreview && world.chunkCache.chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
-            WorldPreview.configure(world);
-            ((WPServerChunkProvider) world.getChunkProvider()).worldpreview$sendData();
-            this.shouldConfigurePreview = false;
+    private BlockPos configureWorldPreview(ServerWorld world, Operation<BlockPos> original, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+        if (this.shouldConfigurePreview()) {
+            properties.set(WorldPreview.configure(world));
+            return properties.get().player.getBlockPos();
         }
+        return original.call(world);
     }
 
-    @ModifyExpressionValue(
-            method = "run",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/MinecraftServer;setupServer()Z"
+    @ModifyConstant(
+            method = "prepareWorlds",
+            constant = @Constant(
+                    intValue = -192,
+                    ordinal = 0
             )
     )
-    private synchronized boolean killServer(boolean original) {
-        this.tooLateToKill = true;
-        return original && !this.killed;
+    private int reduceChunksNegativeX(int constant) {
+        if (this.shouldConfigurePreview()) {
+            return -WorldPreview.config.chunkDistance * 16;
+        }
+        return constant;
     }
 
-    @Override
-    public synchronized boolean worldpreview$kill() {
-        if (this.tooLateToKill) {
-            return false;
+    @ModifyConstant(
+            method = "prepareWorlds",
+            constant = @Constant(
+                    intValue = -192,
+                    ordinal = 1
+            )
+    )
+    private int reduceChunksNegativeZ(int constant) {
+        if (this.shouldConfigurePreview()) {
+            return -16;
         }
-        return this.killed = true;
+        return constant;
+    }
+
+    @ModifyConstant(
+            method = "prepareWorlds",
+            constant = @Constant(intValue = 192)
+    )
+    private int reduceChunksPositive(int constant) {
+        if (this.shouldConfigurePreview()) {
+            return WorldPreview.config.chunkDistance * 16;
+        }
+        return constant;
+    }
+
+    @Inject(
+            method = "prepareWorlds",
+            at = @At("TAIL")
+    )
+    private void sendWorldPreviewData(CallbackInfo ci, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+        if (this.shouldConfigurePreview()) {
+            ((WPServerChunkProvider) this.worlds[0].getChunkProvider()).worldpreview$sendData(properties.get());
+            this.seedQueue$getEntry().setPreviewProperties(properties.get());
+        }
+    }
+
+    @Unique
+    private boolean shouldConfigurePreview() {
+        return SeedQueue.config.shouldUseWall() && this.seedQueue$inQueue() && !this.seedQueue$getEntry().isLocked();
     }
 }

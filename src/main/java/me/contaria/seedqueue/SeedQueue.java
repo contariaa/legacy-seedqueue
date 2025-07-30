@@ -31,7 +31,6 @@ public class SeedQueue implements ClientModInitializer {
     private static final Queue<SeedQueueEntry> SEED_QUEUE = new LinkedBlockingQueue<>();
     private static SeedQueueThread thread;
 
-    public static final ThreadLocal<SeedQueueEntry> LOCAL_ENTRY = new ThreadLocal<>();
     public static SeedQueueEntry currentEntry;
 
     @Override
@@ -91,6 +90,24 @@ public class SeedQueue implements ClientModInitializer {
         MinecraftClient.getInstance().setScreen(new ProgressScreen());
         ((SQMinecraftClient) MinecraftClient.getInstance()).seedQueue$play(currentEntry);
         currentEntry = null;
+    }
+
+    public static void playOrJoinWall() {
+        if (SeedQueue.config.shouldUseWall()) {
+            if (SeedQueue.config.bypassWall) {
+                Optional<SeedQueueEntry> entry = SeedQueue.getEntryMatching(SeedQueueEntry::isLocked);
+                if (entry.isPresent()) {
+                    SeedQueue.playEntry(entry.get());
+                    return;
+                }
+            }
+            MinecraftClient.getInstance().setScreen(new SeedQueueWallScreen());
+            SeedQueue.ping();
+            return;
+        }
+        while (!SeedQueue.playEntry()) {
+            SeedQueue.ping();
+        }
     }
 
     /**
@@ -167,47 +184,11 @@ public class SeedQueue implements ClientModInitializer {
     }
 
     /**
-     * @return If all {@link SeedQueueEntry} have reached the {@link SeedQueueConfig#maxWorldGenerationPercentage}.
-     */
-    public static boolean allMaxWorldGenerationReached() {
-        for (SeedQueueEntry entry : SEED_QUEUE) {
-            if (!entry.isMaxWorldGenerationReached() && !entry.isLocked()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @return If all currently generating {@link SeedQueueEntry} are not locked.
-     */
-    public static boolean noLockedRemaining() {
-        for (SeedQueueEntry entry : SEED_QUEUE) {
-            if (entry.isLocked() && !entry.isReady()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * @return If the {@link SeedQueueThread} should unpause a {@link SeedQueueEntry} that was previously scheduled to pause.
      */
     public static boolean shouldResumeGenerating() {
         synchronized (LOCK) {
             return getGeneratingCount() < getMaxGeneratingCount();
-        }
-    }
-
-    /**
-     * @return If the {@link SeedQueueThread} should unpause a {@link SeedQueueEntry} that was previously scheduled to pause
-     * (after the queue is filled).
-     * @see SeedQueue#isFull()
-     * @see SeedQueue#allMaxWorldGenerationReached()
-     */
-    public static boolean shouldResumeAfterQueueFull() {
-        synchronized (LOCK) {
-            return config.resumeOnFilledQueue && isFull() && allMaxWorldGenerationReached();
         }
     }
 
@@ -246,7 +227,7 @@ public class SeedQueue implements ClientModInitializer {
         // add 1 when not using wall and the main world is currently generating
         MinecraftServer currentServer = MinecraftClient.getInstance().getServer();
         if (currentServer == null || !currentServer.isLoading()) {
-            //count++;
+            count++;
         }
         return count;
     }
@@ -286,7 +267,7 @@ public class SeedQueue implements ClientModInitializer {
     }
 
     private static boolean shouldStart() {
-        return config.maxCapacity > 0 && config.maxConcurrently > 0;
+        return config.maxCapacity > 0 && (config.maxConcurrently > 0 || config.shouldUseWall());
     }
 
     /**
@@ -375,13 +356,6 @@ public class SeedQueue implements ClientModInitializer {
      */
     public static boolean isOnWall() {
         return MinecraftClient.getInstance().currentScreen instanceof SeedQueueWallScreen;
-    }
-
-    /**
-     * @return The {@link SeedQueueEntry} corresponding to the calling server thread. Returns {@link Optional#empty()} if called before the server has created it's [IDK what yet in 1.8.9 we'll see] because that's when the field is set!
-     */
-    public static Optional<SeedQueueEntry> getThreadLocalEntry() {
-        return Optional.ofNullable(LOCAL_ENTRY.get());
     }
 
     /**

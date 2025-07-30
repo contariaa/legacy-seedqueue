@@ -43,9 +43,7 @@ public abstract class TitleScreenMixin extends Screen {
     private void startSeedQueueResets(ButtonWidget button, CallbackInfo ci) {
         if (button.id == 420) {
             SeedQueue.start();
-            while (!SeedQueue.playEntry()) {
-                SeedQueue.ping();
-            }
+            SeedQueue.playOrJoinWall();
         }
     }
 }

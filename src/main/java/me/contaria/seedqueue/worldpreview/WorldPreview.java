@@ -1,12 +1,10 @@
 package me.contaria.seedqueue.worldpreview;
 
 import com.google.common.collect.Sets;
-import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.ClientPlayNetworkHandlerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
@@ -33,8 +31,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class WorldPreview {
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final ThreadLocal<Boolean> CALCULATING_SPAWN = new ThreadLocal<>();
-
     public static final WorldPreviewConfig config = new WorldPreviewConfig();
 
     public static WorldRenderer worldRenderer;
@@ -42,19 +38,13 @@ public class WorldPreview {
 
     public static boolean renderingPreview;
 
-    public static void set(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Camera camera, Queue<Packet<?>> packetQueue) {
-        ((SQMinecraftServer) MinecraftServer.getServer()).seedQueue$getEntry().ifPresent(entry -> entry.setPreviewProperties(new WorldPreviewProperties(world, player, interactionManager, camera, packetQueue)));
-        //WorldPreview.properties = new WorldPreviewProperties(world, player, interactionManager, camera, packetQueue);
-    }
-
-    public static void configure(ServerWorld serverWorld) {
-        WPFakeServerPlayerEntity fakePlayer;
-        try {
-            CALCULATING_SPAWN.set(true);
-            fakePlayer = new WPFakeServerPlayerEntity(serverWorld.getServer(), serverWorld, MinecraftClient.getInstance().getSession().getProfile(), new ServerPlayerInteractionManager(serverWorld));
-        } finally {
-            CALCULATING_SPAWN.remove();
-        }
+    public static WorldPreviewProperties configure(ServerWorld serverWorld) {
+        WPFakeServerPlayerEntity fakePlayer = new WPFakeServerPlayerEntity(
+                serverWorld.getServer(),
+                serverWorld,
+                MinecraftClient.getInstance().getSession().getProfile(),
+                new ServerPlayerInteractionManager(serverWorld)
+        );
 
         ClientPlayNetworkHandler networkHandler = new ClientPlayNetworkHandler(
                 MinecraftClient.getInstance(),
@@ -159,11 +149,6 @@ public class WorldPreview {
 
         ((ClientPlayNetworkHandlerAccessor) player.networkHandler).worldpreview$setWorld(world);
 
-        set(world, player, interactionManager, null, packetQueue);
-    }
-
-    public static void clear() {
-        WorldPreview.properties = null;
-        WorldPreview.worldRenderer.setWorld(null);
+        return new WorldPreviewProperties(world, player, interactionManager, packetQueue);
     }
 }

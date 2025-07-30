@@ -17,21 +17,19 @@ public class SeedQueueConfig {
     public int maxConcurrently = 1;
     public int maxConcurrently_onWall = 9;
     public int maxWorldGenerationPercentage = 100;
-    public boolean resumeOnFilledQueue = false;
 
     public boolean useWall = true;
     public int rows = 3;
     public int columns = 3;
     public final WindowSize simulatedWindowSize = new WindowSize();
     public int resetCooldown = 150;
-    public boolean waitForPreviewSetup = true;
+    public boolean waitForPreviewSetup = false;
     public boolean bypassWall = false;
     public boolean smartSwitch = false;
 
     public int wallFPS = 60;
     public int previewFPS = 15;
     public int preparingPreviews = -1; // auto
-    public boolean freezeLockedPreviews = false;
     public boolean reduceLevelList = true;
 
     public boolean showAdvancedSettings = false;
@@ -68,6 +66,10 @@ public class SeedQueueConfig {
             scaleFactor += guiScale % 2;
         }
         return scaleFactor;
+    }
+
+    public boolean shouldUseWall() {
+        return this.maxCapacity > 0 && this.useWall;
     }
 
     public static class WindowSize {

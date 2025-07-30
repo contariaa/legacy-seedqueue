@@ -18,6 +18,9 @@ public abstract class RedstoneWireBlockMixin {
     @Unique
     private final ThreadLocal<Set<BlockPos>> threadedAffectedNeighbors = ThreadLocal.withInitial(HashSet::new);
 
+    private RedstoneWireBlockMixin() {
+    }
+
     @Redirect(
             method = "update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;",
             at = @At(

@@ -14,6 +14,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.resource.language.I18n;
 
 import java.util.Arrays;
 import java.util.List;
@@ -92,14 +93,12 @@ public class SeedQueuePreview extends DrawableHelper {
             if (this.previewProperties != null) {
                 this.buildChunks();
             }
+            this.renderLoading();
         } else {
             this.renderPreview();
             this.allowInteractions = true;
         }
 
-        if (!this.seedQueueEntry.isReady()) {
-            this.renderLoading();
-        }
         this.wall.resetOrtho();
     }
 
@@ -131,6 +130,14 @@ public class SeedQueuePreview extends DrawableHelper {
     }
 
     private void renderLoading() {
+        String title = I18n.translate("menu.loadingLevel");
+        this.client.textRenderer.drawWithShadow(title, (this.width - this.client.textRenderer.getStringWidth(title)) / 2.0f, this.height / 2.0f - 4 - 16, 16777215);
+
+        String operation = this.seedQueueEntry.getServer().getServerOperation();
+        if (operation != null) {
+            String task = I18n.translate(operation);
+            this.client.textRenderer.drawWithShadow(task, (this.width - this.client.textRenderer.getStringWidth(task)) / 2.0f, this.height / 2.0f - 4 + 8, 16777215);
+        }
     }
 
     public void build() {

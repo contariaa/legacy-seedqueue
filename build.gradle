@@ -31,6 +31,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings(legacy.yarn(project.minecraft_version, project.yarn_mappings))
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation(include("it.unimi.dsi:fastutil:8.2.2"))
 }
 
 processResources {

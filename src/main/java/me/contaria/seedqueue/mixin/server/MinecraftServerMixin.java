@@ -1,6 +1,7 @@
 package me.contaria.seedqueue.mixin.server;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.contaria.seedqueue.SeedQueue;
@@ -8,16 +9,12 @@ import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements SQMinecraftServer {
@@ -27,7 +24,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     private boolean loading;
 
     @Unique
-    private CompletableFuture<SeedQueueEntry> seedQueueEntry;
+    private SeedQueueEntry seedQueueEntry;
 
     @Unique
     private volatile boolean pauseScheduled;
@@ -60,14 +57,26 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
         return thread;
     }
 
-    @Inject(
-            method = "<init>*",
-            at = @At("TAIL")
+    @WrapWithCondition(
+            method = "logProgress",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;)V"
+            )
     )
-    private void setSeedQueueEntry(CallbackInfo ci) {
-        if (SeedQueue.inQueue()) {
-            this.seedQueueEntry = new CompletableFuture<>();
-        }
+    private boolean suppressProgressLogInQueue(Logger logger, String string) {
+        return this.seedQueueEntry != null && !this.seedQueueEntry.isLoaded();
+    }
+
+    @WrapWithCondition(
+            method = "run",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/lang/Thread;sleep(J)V"
+            )
+    )
+    private boolean doNotSleepInQueue(long ms) {
+        return !this.seedQueue$inQueue();
     }
 
     @WrapOperation(
@@ -93,8 +102,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     }
 
     @Override
-    public Optional<SeedQueueEntry> seedQueue$getEntry() {
-        return Optional.ofNullable(this.seedQueueEntry).map(CompletableFuture::join);
+    public SeedQueueEntry seedQueue$getEntry() {
+        return this.seedQueueEntry;
     }
 
     @Override
@@ -104,29 +113,17 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
 
     @Override
     public void seedQueue$setEntry(SeedQueueEntry entry) {
-        this.seedQueueEntry.complete(entry);
+        this.seedQueueEntry = entry;
     }
 
     @Override
     public boolean seedQueue$shouldPause() {
-        SeedQueueEntry entry = this.seedQueue$getEntry().orElse(null);
+        SeedQueueEntry entry = this.seedQueueEntry;
         if (entry == null || entry.isLoaded() || entry.isDiscarded()) {
             return false;
         }
-        if (this.pauseScheduled || entry.isReady()) {
-            return true;
-        }
-        if (entry.isLocked()) {
-            return false;
-        }
-        if (SeedQueue.config.resumeOnFilledQueue && entry.isMaxWorldGenerationReached() && SeedQueue.isFull()) {
-            return false;
-        }
-        if (SeedQueue.config.maxWorldGenerationPercentage < 100 && entry.getProgressPercentage() >= SeedQueue.config.maxWorldGenerationPercentage) {
-            entry.setMaxWorldGenerationReached();
-            return true;
-        }
-        return false;
+        // "loading" is a bad mapping, it means something more like "finishedLoading"
+        return this.pauseScheduled || this.loading;
     }
 
     @Override

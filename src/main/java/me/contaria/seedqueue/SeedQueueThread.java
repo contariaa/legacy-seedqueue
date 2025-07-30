@@ -113,9 +113,8 @@ public class SeedQueueThread extends Thread {
             saveHandler.saveWorld(levelProperties);
 
             IntegratedServer server = new IntegratedServer(MinecraftClient.getInstance(), name, name, levelInfo);
-            server.startServerThread();
-
             SeedQueue.add(new SeedQueueEntry(server, saveHandler, levelProperties, levelInfo));
+            server.startServerThread();
         }
     }
 

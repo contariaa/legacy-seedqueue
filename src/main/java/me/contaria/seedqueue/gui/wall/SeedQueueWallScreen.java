@@ -662,6 +662,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void lockInstance(SeedQueuePreview instance) {
+        SeedQueueProfiler.push("lock_instance");
         if (instance.areInteractionsAllowed() && instance.getSeedQueueEntry().lock()) {
             if (this.lockedPreviews != null) {
                 int index;
@@ -672,14 +673,9 @@ public class SeedQueueWallScreen extends Screen {
                     this.addLockedPreview(instance);
                 }
             }
-            if (SeedQueue.config.freezeLockedPreviews) {
-                // clearing SeedQueuePreviewProperties frees the previews WorldRenderer, allowing resources to be cleared
-                // it also means the amount of WorldRenderers does not exceed Rows * Columns + Background Previews
-                // when a custom layout with a locked group is used
-                instance.getSeedQueueEntry().setPreviewProperties(null);
-            }
             this.playSound(SeedQueueSounds.LOCK_INSTANCE);
         }
+        SeedQueueProfiler.pop();
     }
 
     private boolean resetInstance(SeedQueuePreview instance, boolean ignoreLock, boolean ignoreResetCooldown, boolean playSound) {

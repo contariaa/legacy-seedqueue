@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * Stores the {@link MinecraftServer} and any other resources related to a seed in the queue.
  */
 public class SeedQueueEntry {
-    private final IntegratedServer server;
+    private IntegratedServer server;
 
     // will be created lazily when using wall, see MinecraftClientMixin
     private final SaveHandler saveHandler;
@@ -119,8 +119,6 @@ public class SeedQueueEntry {
      * <p>
      * - the entry has finished world generation
      * <p>
-     * - the entry has reached the {@link SeedQueueConfig#maxWorldGenerationPercentage} and is not locked
-     * <p>
      * - the entry has been scheduled to pause by the {@link SeedQueueThread}
      *
      * @return If this entry's {@link MinecraftServer} should pause in its current state.
@@ -205,7 +203,7 @@ public class SeedQueueEntry {
      * @return True if the {@link MinecraftServer} has fully finished generation and is ready to be joined by the player.
      */
     public boolean isReady() {
-        return this.server.isLoading();
+        return this.locked && this.server.isLoading();
     }
 
     /**
@@ -216,20 +214,6 @@ public class SeedQueueEntry {
     }
 
     /**
-     * @return True if the {@link MinecraftServer} has not reached {@link SeedQueueConfig#maxWorldGenerationPercentage}.
-     */
-    public boolean isMaxWorldGenerationReached() {
-        return this.maxWorldGenerationReached;
-    }
-
-    /**
-     * Marks this entry as having reached {@link SeedQueueConfig#maxWorldGenerationPercentage}.
-     */
-    public void setMaxWorldGenerationReached() {
-        this.maxWorldGenerationReached = true;
-    }
-
-    /**
      * Locks this entry from being mass-reset on the Wall Screen.
      * Mass Resets include Reset All, Focus Reset, Reset Row, Reset Column.
      *
@@ -237,11 +221,29 @@ public class SeedQueueEntry {
      */
     public boolean lock() {
         if (!this.locked) {
+            this.restartSeedQueueEntry();
             this.locked = true;
             SeedQueue.ping();
             return true;
         }
         return false;
+    }
+
+    private void restartSeedQueueEntry() {
+        SeedQueueProfiler.push("stop_server");
+        ((FRMinecraftServer) this.server).fastReset$fastReset();
+        ((MinecraftServerAccessor) this.server).seedQueue$setRunning(false);
+
+        SeedQueueProfiler.swap("unpause");
+        this.unpause();
+
+        SeedQueueProfiler.swap("recreate");
+        IntegratedServer server = new IntegratedServer(MinecraftClient.getInstance(), this.levelProperties.getLevelName(), this.levelProperties.getLevelName(), this.levelInfo);
+        ((SQMinecraftServer) server).seedQueue$setEntry(this);
+        server.startServerThread();
+
+        this.server = server;
+        SeedQueueProfiler.pop();
     }
 
     /**

@@ -1,13 +1,13 @@
 package me.contaria.seedqueue.mixin.server.synchronization.block.falling_block;
 
 import me.contaria.seedqueue.synchronization.ThreadedFallingBlock;
-import net.minecraft.block.FallingBlock;
+import net.minecraft.block.DragonEggBlock;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(FallingBlock.class)
+@Mixin(DragonEggBlock.class)
 public abstract class DragonEggBlockMixin {
 
     @Redirect(

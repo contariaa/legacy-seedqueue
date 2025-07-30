@@ -1,7 +1,6 @@
 package me.contaria.seedqueue.mixin.worldpreview.server;
 
-import me.contaria.seedqueue.SeedQueueEntry;
-import me.contaria.seedqueue.interfaces.SQMinecraftServer;
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.EntityTrackerAccessor;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.TrackedEntityInstanceAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
@@ -30,8 +29,6 @@ import net.minecraft.world.chunk.ServerChunkProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.*;
 
@@ -48,19 +45,6 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
     private final Set<Long> sentEmptyChunks = new HashSet<>();
     @Unique
     private final Set<Integer> sentEntities = new HashSet<>();
-
-    @ModifyVariable(
-            method = "getOrGenerateChunk",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/Chunk;decorateChunk(Lnet/minecraft/world/chunk/ChunkProvider;Lnet/minecraft/world/chunk/ChunkProvider;II)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private Chunk sendDataAfterChunkGeneration(Chunk chunk) {
-        this.worldpreview$sendData();
-        return chunk;
-    }
 
     @Unique
     private List<Packet<?>> processChunk(Chunk chunk) {
@@ -144,11 +128,15 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
             return Collections.emptyList();
         }
 
-        List<Packet<?>> entityPackets = new ArrayList<>();
-
         // see TrackedEntityInstance#method_2184
         TrackedEntityInstance instance = ((EntityTrackerAccessor) this.world.getEntityTracker()).worldpreview$getTrackedEntityIds().get(id);
-        TrackedEntityInstanceAccessor accessor = (TrackedEntityInstanceAccessor) instance; 
+        TrackedEntityInstanceAccessor accessor = (TrackedEntityInstanceAccessor) instance;
+
+        if (instance == null) {
+            return Collections.emptyList();
+        }
+
+        List<Packet<?>> entityPackets = new ArrayList<>();
 
         Packet<?> spawnPacket = accessor.worldpreview$createSpawnPacket();
         entityPackets.add(spawnPacket);
@@ -210,26 +198,8 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
         return new ChunkDataS2CPacket(empty, true, 65535);
     }
 
-    @Unique
-    private WorldPreviewProperties getWorldPreviewProperties() {
-        return ((SQMinecraftServer) this.world.getServer()).seedQueue$getEntry().map(SeedQueueEntry::getPreviewProperties).orElse(null);
-    }
-
     @Override
-    public void worldpreview$sendData() {
-        if (this.world.getServer().getTicks() > 0) {
-            return;
-        }
-
-        WorldPreviewProperties properties = this.getWorldPreviewProperties();
-        if (properties == null) {
-            return;
-        }
-
-        if (this.world.dimension.getType() != properties.world.dimension.getType()) {
-            return;
-        }
-
+    public void worldpreview$sendData(WorldPreviewProperties properties) {
         for (Chunk chunk : this.chunks) {
             this.sendData(properties.packetQueue, properties.player, chunk);
         }

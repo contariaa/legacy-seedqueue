@@ -28,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.SocketAddress;
-import java.util.Optional;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin implements SQMinecraftClient {
@@ -162,20 +161,7 @@ public abstract class MinecraftClientMixin implements SQMinecraftClient {
         if (!(screen instanceof TitleScreen && SeedQueue.isActive())) {
             return;
         }
-        if (SeedQueue.config.useWall) {
-            if (SeedQueue.config.bypassWall) {
-                Optional<SeedQueueEntry> entry = SeedQueue.getEntryMatching(SeedQueueEntry::isLocked);
-                if (entry.isPresent()) {
-                    SeedQueue.playEntry(entry.get());
-                    return;
-                }
-            }
-            MinecraftClient.getInstance().setScreen(new SeedQueueWallScreen());
-            return;
-        }
-        while (!SeedQueue.playEntry()) {
-            SeedQueue.ping();
-        }
+        SeedQueue.playOrJoinWall();
     }
 
     @Inject(

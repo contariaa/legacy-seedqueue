@@ -1,9 +1,9 @@
 package me.contaria.seedqueue.mixin.server.synchronization.structure;
 
+import me.contaria.seedqueue.synchronization.ThreadedStrongholdPieces;
 import net.minecraft.structure.StrongholdPieces;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -11,12 +11,6 @@ import java.util.List;
 
 @Mixin(StrongholdPieces.class)
 public abstract class StrongholdPiecesMixin {
-    @Unique
-    private static final ThreadLocal<List<?>> THREADED_POSSIBLE_PIECES = new ThreadLocal<>();
-    @Unique
-    private static final ThreadLocal<Class<?>> THREADED_ACTIVE_PIECE_TYPE = new ThreadLocal<>();
-    @Unique
-    private static final ThreadLocal<Integer> THREADED_TOTAL_WEIGHT = ThreadLocal.withInitial(() -> 0);
 
     @Redirect(
             method = "init",
@@ -27,7 +21,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static void setThreadedPossiblePieces(List<?> possiblePieces) {
-        THREADED_POSSIBLE_PIECES.set(possiblePieces);
+        ThreadedStrongholdPieces.THREADED_POSSIBLE_PIECES.set(possiblePieces);
     }
 
     @Redirect(
@@ -42,7 +36,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static void setThreadedActivePieceType(Class<?> activePieceType) {
-        THREADED_ACTIVE_PIECE_TYPE.set(activePieceType);
+        ThreadedStrongholdPieces.THREADED_ACTIVE_PIECE_TYPE.set(activePieceType);
     }
 
     @Redirect(
@@ -54,7 +48,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static void setThreadedTotalWeight(int totalWeight) {
-        THREADED_TOTAL_WEIGHT.set(totalWeight);
+        ThreadedStrongholdPieces.THREADED_TOTAL_WEIGHT.set(totalWeight);
     }
 
     @Redirect(
@@ -70,7 +64,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static List<?> getThreadedPossiblePieces() {
-        return THREADED_POSSIBLE_PIECES.get();
+        return ThreadedStrongholdPieces.THREADED_POSSIBLE_PIECES.get();
     }
 
     @Redirect(
@@ -82,7 +76,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static Class<?> getThreadedActivePieceType() {
-        return THREADED_ACTIVE_PIECE_TYPE.get();
+        return ThreadedStrongholdPieces.THREADED_ACTIVE_PIECE_TYPE.get();
     }
 
     @Redirect(
@@ -97,7 +91,7 @@ public abstract class StrongholdPiecesMixin {
             )
     )
     private static int getThreadedTotalWeight() {
-        return THREADED_TOTAL_WEIGHT.get();
+        return ThreadedStrongholdPieces.THREADED_TOTAL_WEIGHT.get();
     }
 
     @Mixin(StrongholdPieces.SpiralStaircase.class)
@@ -110,7 +104,7 @@ public abstract class StrongholdPiecesMixin {
                 )
         )
         private static Class<?> setThreadedActivePieceType(Class<?> activePieceType) {
-            THREADED_ACTIVE_PIECE_TYPE.set(activePieceType);
+            ThreadedStrongholdPieces.THREADED_ACTIVE_PIECE_TYPE.set(activePieceType);
             return activePieceType;
         }
     }

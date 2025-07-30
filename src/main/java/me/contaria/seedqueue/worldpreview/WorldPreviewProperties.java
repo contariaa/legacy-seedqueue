@@ -30,36 +30,19 @@ public class WorldPreviewProperties extends DrawableHelper {
     public final ClientWorld world;
     public final ClientPlayerEntity player;
     public final ClientPlayerInteractionManager interactionManager;
-    public final Camera camera;
     public final Queue<Packet<?>> packetQueue;
-
-    private boolean initialized;
 
     private int frameCount;
 
-    public WorldPreviewProperties(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Camera camera, Queue<Packet<?>> packetQueue) {
+    public WorldPreviewProperties(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet<?>> packetQueue) {
         this.world = world;
         this.player = player;
         this.interactionManager = interactionManager;
-        this.camera = camera;
         this.packetQueue = packetQueue;
-    }
-
-    public void initialize() {
-        if (!this.initialized) {
-            WorldPreview.worldRenderer.setWorld(this.world);
-            this.initialized = true;
-        }
-    }
-
-    public boolean isInitialized() {
-        return this.initialized;
     }
 
     /**
      * Sets {@link WorldPreview} properties to the values stored in this {@link WorldPreviewProperties}.
-     *
-     * @see WorldPreview#set
      */
     public void run(Consumer<WorldPreviewProperties> consumer) {
         MinecraftClient client = MinecraftClient.getInstance();
