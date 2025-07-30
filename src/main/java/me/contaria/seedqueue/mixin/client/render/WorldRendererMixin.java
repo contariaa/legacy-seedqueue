@@ -1,6 +1,5 @@
 package me.contaria.seedqueue.mixin.client.render;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.contaria.seedqueue.SeedQueue;

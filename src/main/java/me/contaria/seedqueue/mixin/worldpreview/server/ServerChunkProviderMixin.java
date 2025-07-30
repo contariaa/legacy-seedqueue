@@ -1,6 +1,5 @@
 package me.contaria.seedqueue.mixin.worldpreview.server;
 
-import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.EntityTrackerAccessor;
 import me.contaria.seedqueue.mixin.worldpreview.accessor.TrackedEntityInstanceAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
