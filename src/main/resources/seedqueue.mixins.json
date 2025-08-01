@@ -3,6 +3,9 @@
   "minVersion": "0.8",
   "package": "me.contaria.seedqueue.mixin",
   "compatibilityLevel": "JAVA_8",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
   "client": [
     "accessor.DebugHudAccessor",
     "accessor.MinecraftClientAccessor",
@@ -16,6 +19,7 @@
     "client.render.InGameHudMixin",
     "client.render.WorldRendererMixin",
     "fastreset.MinecraftServerMixin",
+    "glacier.BiomeCacheEntryMixin",
     "glacier.BlockModelRendererMixin",
     "glacier.BuiltChunkStorageMixin",
     "glacier.ChunkOcclusionDataBuilderMixin",
