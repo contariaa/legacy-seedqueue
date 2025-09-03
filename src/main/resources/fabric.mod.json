@@ -34,6 +34,11 @@
       "me.contaria.seedqueue.SeedQueue"
     ]
   },
+  "custom": {
+    "speedrunapi": {
+      "config": "me.contaria.seedqueue.SeedQueueConfig"
+    }
+  },
   "mixins": [
     "seedqueue.mixins.json"
   ],

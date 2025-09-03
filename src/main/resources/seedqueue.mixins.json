@@ -6,6 +6,9 @@
   "mixinextras": {
     "minVersion": "0.5.0"
   },
+  "injectors": {
+    "defaultRequire": 1
+  },
   "client": [
     "accessor.DebugHudAccessor",
     "accessor.MinecraftClientAccessor",
@@ -59,7 +62,6 @@
     "server.synchronization.get_server.MinecraftServerMixin",
     "server.synchronization.structure.StrongholdPiecesMixin",
     "server.synchronization.structure.StrongholdPiecesMixin$SpiralStaircaseMixin",
-    "speedrunapi.resourceloader.DefaultResourcePackMixin",
     "worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
     "worldpreview.accessor.EntityAccessor",
     "worldpreview.accessor.EntityTrackerAccessor",
@@ -74,7 +76,8 @@
     "worldpreview.server.ServerChunkProviderMixin",
     "worldpreview.server.ServerPlayerEntityMixin"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin",
+  "mixins": [
+    "client.levellist.AnvilLevelStorageMixin"
+  ]
 }

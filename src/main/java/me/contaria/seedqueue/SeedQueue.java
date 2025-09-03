@@ -1,6 +1,7 @@
 package me.contaria.seedqueue;
 
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
+import me.contaria.seedqueue.debug.SeedQueueWatchdog;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.interfaces.SQMinecraftClient;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
@@ -26,7 +27,7 @@ public class SeedQueue implements ClientModInitializer {
     private static final Version VERSION = FabricLoader.getInstance().getModContainer("seedqueue").orElseThrow(IllegalStateException::new).getMetadata().getVersion();
     private static final Object LOCK = new Object();
 
-    public static final SeedQueueConfig config = new SeedQueueConfig();
+    public static SeedQueueConfig config;
 
     private static final Queue<SeedQueueEntry> SEED_QUEUE = new LinkedBlockingQueue<>();
     private static SeedQueueThread thread;
@@ -263,6 +264,8 @@ public class SeedQueue implements ClientModInitializer {
             LOGGER.info("Starting SeedQueue...");
             thread = new SeedQueueThread();
             thread.start();
+
+            SeedQueueWatchdog.start();
         }
     }
 
@@ -295,6 +298,8 @@ public class SeedQueue implements ClientModInitializer {
             throw new RuntimeException("Failed to stop SeedQueue Thread!", e);
         }
         thread = null;
+
+        SeedQueueWatchdog.stop();
 
         clear();
     }

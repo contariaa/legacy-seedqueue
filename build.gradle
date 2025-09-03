@@ -34,6 +34,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     include(implementation("it.unimi.dsi:fastutil:8.2.2"))
+
+    // SpeedrunAPI
+    // check for the latest versions at https://jitpack.io/#contariaa/speedrunapi
+    modImplementation "com.github.contariaa:SpeedrunAPI:c6c47b82a0"
+    annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 }
 
 processResources {
