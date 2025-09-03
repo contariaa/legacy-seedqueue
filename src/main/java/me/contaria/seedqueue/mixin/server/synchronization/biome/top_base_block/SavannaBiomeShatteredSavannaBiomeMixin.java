@@ -5,11 +5,21 @@ import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.SavannaBiome;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(SavannaBiome.ShatteredSavannaBiome.class)
-public abstract class SavannaBiomeShatteredSavannaBiomeMixin {
+public abstract class SavannaBiomeShatteredSavannaBiomeMixin extends BiomeMixin {
+    @Unique
+    private final ThreadLocal<BlockState> threadedTopBlock = ThreadLocal.withInitial(() -> this.topBlock);
+    @Unique
+    private final ThreadLocal<BlockState> threadedBaseBlock = ThreadLocal.withInitial(() -> this.baseBlock);
+
+    // adding this constructor fixes a weird mixin bug
+    // with merging the field initializers
+    public SavannaBiomeShatteredSavannaBiomeMixin() {
+    }
 
     @Redirect(
             method = "method_6420",
@@ -33,5 +43,25 @@ public abstract class SavannaBiomeShatteredSavannaBiomeMixin {
     )
     private void setThreadedBaseBlock(SavannaBiome.ShatteredSavannaBiome biome, BlockState baseBlock) {
         ((SQBiome) biome).seedQueue$setBaseBlock(baseBlock);
+    }
+
+    @Override
+    public BlockState seedQueue$getTopBlock() {
+        return this.threadedTopBlock.get();
+    }
+
+    @Override
+    public void seedQueue$setTopBlock(BlockState state) {
+        this.threadedTopBlock.set(state);
+    }
+
+    @Override
+    public BlockState seedQueue$getBaseBlock() {
+        return this.threadedBaseBlock.get();
+    }
+
+    @Override
+    public void seedQueue$setBaseBlock(BlockState state) {
+        this.threadedBaseBlock.set(state);
     }
 }

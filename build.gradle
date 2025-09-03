@@ -2,6 +2,7 @@ plugins {
     id "fabric-loom" version "1.11-SNAPSHOT"
     id "legacy-looming" version "1.10-SNAPSHOT"
     id "maven-publish"
+    id 'com.gradleup.shadow' version '8.3.5'
 }
 
 version = "$mod_version+$target_version"
@@ -32,7 +33,7 @@ dependencies {
     mappings(legacy.yarn(project.minecraft_version, project.yarn_mappings))
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    implementation(include("it.unimi.dsi:fastutil:8.2.2"))
+    include(implementation("it.unimi.dsi:fastutil:8.2.2"))
 }
 
 processResources {

@@ -6,7 +6,6 @@ import net.minecraft.world.biome.Biome;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -17,16 +16,6 @@ public abstract class BiomeMixin implements SQBiome {
     @Shadow
     public BlockState baseBlock;
 
-    @Unique
-    private final ThreadLocal<BlockState> threadedTopBlock = ThreadLocal.withInitial(() -> this.topBlock);
-    @Unique
-    private final ThreadLocal<BlockState> threadedBaseBlock = ThreadLocal.withInitial(() -> this.baseBlock);
-
-    // adding this constructor fixes a weird mixin bug
-    // with merging the field initializers
-    private BiomeMixin() {
-    }
-
     @Redirect(
             method = "method_8590",
             at = @At(
@@ -36,7 +25,7 @@ public abstract class BiomeMixin implements SQBiome {
             )
     )
     private BlockState getThreadedTopBlock(Biome biome) {
-        return this.threadedTopBlock.get();
+        return this.seedQueue$getTopBlock();
     }
 
     @Redirect(
@@ -48,26 +37,26 @@ public abstract class BiomeMixin implements SQBiome {
             )
     )
     private BlockState getThreadedBaseBlock(Biome biome) {
-        return this.threadedBaseBlock.get();
+        return this.seedQueue$getBaseBlock();
     }
 
     @Override
     public BlockState seedQueue$getTopBlock() {
-        return this.threadedTopBlock.get();
+        return this.topBlock;
     }
 
     @Override
     public void seedQueue$setTopBlock(BlockState state) {
-        this.threadedTopBlock.set(state);
+        throw new RuntimeException("Tried to set un-synchronized Biome#topBlock!");
     }
 
     @Override
     public BlockState seedQueue$getBaseBlock() {
-        return this.threadedBaseBlock.get();
+        return this.baseBlock;
     }
 
     @Override
     public void seedQueue$setBaseBlock(BlockState state) {
-        this.threadedBaseBlock.set(state);
+        throw new RuntimeException("Tried to set un-synchronized Biome#baseBlock!");
     }
 }

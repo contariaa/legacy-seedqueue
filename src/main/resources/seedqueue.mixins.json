@@ -24,7 +24,6 @@
     "glacier.BuiltChunkStorageMixin",
     "glacier.ChunkOcclusionDataBuilderMixin",
     "glacier.FluidRendererMixin",
-    "glacier.OreFeatureMixin",
     "glacier.WorldRendererMixin",
     "server.IntegratedServerMixin",
     "server.MinecraftServerMixin",
