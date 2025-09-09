@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.SeedQueueThread;
+import me.contaria.seedqueue.compat.ModCompat;
 import me.contaria.seedqueue.customization.AnimatedTexture;
 import me.contaria.seedqueue.customization.Layout;
 import me.contaria.seedqueue.customization.LockTexture;
@@ -14,6 +15,7 @@ import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import me.contaria.seedqueue.mixin.accessor.WorldRendererAccessor;
 import me.contaria.seedqueue.sounds.SeedQueueSounds;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.voidxwalker.autoreset.Atum;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.DebugHud;
@@ -518,7 +520,8 @@ public class SeedQueueWallScreen extends Screen {
         }
 
         if (code == 1 && Screen.hasShiftDown()) {
-            SeedQueue.stop();
+            ModCompat.standardsettings$loadCache();
+            Atum.stopRunning();
             this.client.setScreen(new TitleScreen());
             return;
         }

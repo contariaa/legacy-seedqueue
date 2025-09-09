@@ -1,7 +1,7 @@
 package me.contaria.seedqueue.worldpreview;
 
 import com.google.common.collect.Sets;
-import me.contaria.seedqueue.mixin.worldpreview.accessor.ClientPlayNetworkHandlerAccessor;
+import me.contaria.seedqueue.mixin.included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;

@@ -2,83 +2,164 @@ package me.contaria.seedqueue.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
-import me.contaria.seedqueue.interfaces.SQMinecraftClient;
+import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ProgressScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.render.LoadingScreenRenderer;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Session;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
-import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.world.SaveHandler;
+import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorageAccess;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.net.SocketAddress;
-
 @Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin implements SQMinecraftClient {
-    @Shadow
-    private IntegratedServer server;
+public abstract class MinecraftClientMixin {
 
-    @Shadow
-    private boolean isIntegratedServerRunning;
+    @WrapWithCondition(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/MinecraftClient;connect(Lnet/minecraft/client/world/ClientWorld;)V"
+            )
+    )
+    private boolean doNotDisconnectInQueue(MinecraftClient instance, ClientWorld world) {
+        return !SeedQueue.inQueue();
+    }
 
-    @Shadow
-    public LoadingScreenRenderer loadingScreenRenderer;
+    @WrapWithCondition(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/lang/System;gc()V",
+                    remap = false
+            )
+    )
+    private boolean doNotGcInQueue() {
+        return !SeedQueue.inQueue() && SeedQueue.currentEntry == null;
+    }
 
-    @Shadow
-    private ClientConnection clientConnection;
-
-    @Shadow
-    public abstract void setScreen(Screen screen);
-
-    @Shadow
-    public abstract Session getSession();
-
-    @Override
-    public void seedQueue$play(SeedQueueEntry entry) {
-        this.server = entry.getServer();
-        //this.server.getThread().setPriority(Thread.NORM_PRIORITY);
-        this.isIntegratedServerRunning = true;
-        entry.load();
-
-        this.loadingScreenRenderer.setTitle(I18n.translate("menu.loadingLevel"));
-
-        while (!this.server.isLoading()) {
-            String string = this.server.getServerOperation();
-            if (string != null) {
-                this.loadingScreenRenderer.setTask(I18n.translate(string));
-            } else {
-                this.loadingScreenRenderer.setTask("");
-            }
-
-            try {
-                Thread.sleep(200L);
-            } catch (InterruptedException ignored) {
-            }
+    @WrapOperation(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/storage/LevelStorageAccess;createSaveHandler(Ljava/lang/String;Z)Lnet/minecraft/world/SaveHandler;"
+            )
+    )
+    private SaveHandler loadSaveHandler(LevelStorageAccess storage, String worldName, boolean createPlayerDataDir, Operation<SaveHandler> original, @Share("saveHandler") LocalRef<SaveHandler> saveHandler) {
+        if (SeedQueue.inQueue()) {
+            saveHandler.set(original.call(storage, worldName, createPlayerDataDir));
+            return saveHandler.get();
         }
+        if (SeedQueue.currentEntry != null) {
+            return SeedQueue.currentEntry.getSaveHandler();
+        }
+        return original.call(storage, worldName, createPlayerDataDir);
+    }
 
-        this.setScreen(new ProgressScreen());
-        SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
-        ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, MinecraftClient.getInstance(), null));
-        clientConnection.send(new HandshakeC2SPacket(47, socketAddress.toString(), 0, NetworkState.LOGIN));
-        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
-        this.clientConnection = clientConnection;
+    @WrapOperation(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "NEW",
+                    target = "(Lnet/minecraft/world/level/LevelInfo;Ljava/lang/String;)Lnet/minecraft/world/level/LevelProperties;"
+            )
+    )
+    private LevelProperties saveLevelProperties(LevelInfo levelInfo, String worldName, Operation<LevelProperties> original, @Share("levelProperties") LocalRef<LevelProperties> levelProperties) {
+        if (SeedQueue.inQueue()) {
+            levelProperties.set(original.call(levelInfo, worldName));
+            return levelProperties.get();
+        }
+        if (SeedQueue.currentEntry != null) {
+            return SeedQueue.currentEntry.getLevelProperties();
+        }
+        return original.call(levelInfo, worldName);
+    }
+
+    @WrapOperation(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/SaveHandler;getLevelProperties()Lnet/minecraft/world/level/LevelProperties;"
+            )
+    )
+    private LevelProperties doNotReadLevelProperties(SaveHandler saveHandler, Operation<LevelProperties> original) {
+        if (SeedQueue.inQueue() || SeedQueue.currentEntry != null) {
+            return null;
+        }
+        return original.call(saveHandler);
+    }
+
+    @WrapOperation(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "NEW",
+                    target = "Lnet/minecraft/server/integrated/IntegratedServer;"
+            )
+    )
+    private IntegratedServer loadServer(MinecraftClient client, String worldName, String levelName, LevelInfo levelInfo, Operation<IntegratedServer> original) {
+        if (!SeedQueue.inQueue() && SeedQueue.currentEntry != null) {
+            IntegratedServer server = SeedQueue.currentEntry.getServer();
+            ((MinecraftServerAccessor) server).seedQueue$getServerThread().setPriority(Thread.NORM_PRIORITY);
+            return server;
+        }
+        return original.call(client, worldName, levelName, levelInfo);
+    }
+
+    @WrapOperation(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/MinecraftClient;server:Lnet/minecraft/server/integrated/IntegratedServer;",
+                    opcode = Opcodes.PUTFIELD
+            )
+    )
+    private void queueServer(MinecraftClient client, IntegratedServer server, Operation<Void> original, @Local(argsOnly = true) LevelInfo levelInfo, @Share("saveHandler") LocalRef<SaveHandler> saveHandler, @Share("levelProperties") LocalRef<LevelProperties> levelProperties) {
+        if (SeedQueue.inQueue()) {
+            SeedQueue.add(new SeedQueueEntry(server, saveHandler.get(), levelProperties.get(), levelInfo));
+            server.startServerThread();
+            return;
+        }
+        original.call(client, server);
+        if (SeedQueue.currentEntry != null) {
+            SeedQueue.currentEntry.load();
+        }
+    }
+
+    @Inject(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/integrated/IntegratedServer;startServerThread()V"
+            ),
+            cancellable = true
+    )
+    private void cancelJoiningWorld(CallbackInfo ci) {
+        if (SeedQueue.inQueue()) {
+            ci.cancel();
+        }
+    }
+
+    @WrapWithCondition(
+            method = "startIntegratedServer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/integrated/IntegratedServer;startServerThread()V"
+            )
+    )
+    private boolean doNotStartServerTwice(IntegratedServer server) {
+        return SeedQueue.currentEntry == null;
     }
 
     @ModifyExpressionValue(
@@ -151,17 +232,6 @@ public abstract class MinecraftClientMixin implements SQMinecraftClient {
         if (SeedQueue.isOnWall()) {
             cir.setReturnValue(SeedQueue.config.wallFPS);
         }
-    }
-
-    @Inject(
-            method = "setScreen",
-            at = @At("TAIL")
-    )
-    private void onSeedQueueReset(Screen screen, CallbackInfo ci) {
-        if (!(screen instanceof TitleScreen && SeedQueue.isActive())) {
-            return;
-        }
-        SeedQueue.playOrJoinWall();
     }
 
     @Inject(

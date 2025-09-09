@@ -1,8 +1,8 @@
 package me.contaria.seedqueue.worldpreview;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.contaria.seedqueue.mixin.worldpreview.accessor.EntityAccessor;
-import me.contaria.seedqueue.mixin.worldpreview.accessor.GameRendererAccessor;
+import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
+import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;

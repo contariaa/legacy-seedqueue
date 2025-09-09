@@ -1,15 +1,11 @@
 package me.contaria.seedqueue;
 
+import me.contaria.seedqueue.mixin.accessor.ScreenAccessor;
+import me.voidxwalker.autoreset.AtumCreateWorldScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.world.SaveHandler;
-import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -98,32 +94,16 @@ public class SeedQueueThread extends Thread {
         return false;
     }
 
-    private int resets = 0;
-
     /**
      * Creates a new {@link SeedQueueEntry} and adds it to the queue.
      */
     private void createSeedQueueEntry() {
         synchronized (WORLD_CREATION_LOCK) {
-            String name = this.getWorldName();
-            LevelInfo levelInfo = new LevelInfo(new Random().nextLong(), LevelInfo.GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT);
-
-            SaveHandler saveHandler = MinecraftClient.getInstance().getCurrentSave().createSaveHandler(name, false);
-            LevelProperties levelProperties = new LevelProperties(levelInfo, name);
-            saveHandler.saveWorld(levelProperties);
-
-            IntegratedServer server = new IntegratedServer(MinecraftClient.getInstance(), name, name, levelInfo);
-            SeedQueue.add(new SeedQueueEntry(server, saveHandler, levelProperties, levelInfo));
-            server.startServerThread();
+            AtumCreateWorldScreen screen = new AtumCreateWorldScreen(null);
+            ScreenAccessor accessor = (ScreenAccessor) screen;
+            screen.init(MinecraftClient.getInstance(), 1, 1);
+            accessor.seedQueue$buttonClicked(accessor.seedQueue$getButtons().get(0));
         }
-    }
-
-    private String getWorldName() {
-        String worldName;
-        do {
-            worldName = "SeedQueue Reset " + this.resets++;
-        } while (MinecraftClient.getInstance().getCurrentSave().levelExists(worldName));
-        return worldName;
     }
 
     public void ping() {

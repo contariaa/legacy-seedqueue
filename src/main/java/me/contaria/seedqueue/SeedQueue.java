@@ -3,9 +3,9 @@ package me.contaria.seedqueue;
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.debug.SeedQueueWatchdog;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
-import me.contaria.seedqueue.interfaces.SQMinecraftClient;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
+import me.voidxwalker.autoreset.AttemptTracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
@@ -28,6 +28,8 @@ public class SeedQueue implements ClientModInitializer {
     private static final Object LOCK = new Object();
 
     public static SeedQueueConfig config;
+
+    public static AttemptTracker.Type BENCHMARK_RESETS = new AttemptTracker.Type("Benchmark Reset #", "benchmark-resets.txt");
 
     private static final Queue<SeedQueueEntry> SEED_QUEUE = new LinkedBlockingQueue<>();
     private static SeedQueueThread thread;
@@ -89,26 +91,12 @@ public class SeedQueue implements ClientModInitializer {
         // standardsettings can cause the current screen to be re-initialized,
         // so we open an intermission screen to avoid atum reset logic being called twice
         MinecraftClient.getInstance().setScreen(new ProgressScreen());
-        ((SQMinecraftClient) MinecraftClient.getInstance()).seedQueue$play(currentEntry);
+        MinecraftClient.getInstance().startIntegratedServer(
+                currentEntry.getServer().getLevelName(),
+                currentEntry.getServer().getServerName(),
+                currentEntry.getLevelInfo()
+        );
         currentEntry = null;
-    }
-
-    public static void playOrJoinWall() {
-        if (SeedQueue.config.shouldUseWall()) {
-            if (SeedQueue.config.bypassWall) {
-                Optional<SeedQueueEntry> entry = SeedQueue.getEntryMatching(SeedQueueEntry::isLocked);
-                if (entry.isPresent()) {
-                    SeedQueue.playEntry(entry.get());
-                    return;
-                }
-            }
-            MinecraftClient.getInstance().setScreen(new SeedQueueWallScreen());
-            SeedQueue.ping();
-            return;
-        }
-        while (!SeedQueue.playEntry()) {
-            SeedQueue.ping();
-        }
     }
 
     /**
@@ -364,6 +352,14 @@ public class SeedQueue implements ClientModInitializer {
     }
 
     /**
+     * @return True if currently running a benchmark on the Wall Screen.
+     */
+    public static boolean isBenchmarking() {
+        Screen screen = MinecraftClient.getInstance().currentScreen;
+        return screen instanceof SeedQueueWallScreen && ((SeedQueueWallScreen) screen).isBenchmarking();
+    }
+
+    /**
      * Pings the currently active {@link SeedQueueThread}.
      */
     public static void ping() {
@@ -385,5 +381,19 @@ public class SeedQueue implements ClientModInitializer {
      */
     public static SeedQueueThread getThread() {
         return thread;
+    }
+
+    /**
+     * @return A {@link List} of debug information to add to the F3 screen when SeedQueue is active.
+     */
+    public static List<String> getDebugText() {
+        List<String> debugText = new ArrayList<>();
+        debugText.add("");
+        debugText.add("SeedQueue v" + VERSION.getFriendlyString());
+        debugText.add(String.join(", ",
+                "E: " + SEED_QUEUE.size() + "/" + SeedQueue.config.maxCapacity,
+                "C: " + SeedQueue.config.maxConcurrently + (SeedQueue.config.shouldUseWall() ? " | " + SeedQueue.config.maxConcurrently_onWall : "")
+        ));
+        return debugText;
     }
 }

@@ -7,6 +7,8 @@ import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.customization.LockTexture;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.voidxwalker.autoreset.Atum;
+import me.voidxwalker.autoreset.interfaces.ISeedStringHolder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -55,18 +57,12 @@ public class SeedQueuePreview extends DrawableHelper {
 
         this.buttons = WorldPreviewProperties.createMenu(this.width, this.height);
 
-        /*
-        if (Atum.inDemoMode()) {
-            this.seedString = "North Carolina";
-        } else if (Atum.getSeedProvider().shouldShowSeed()) {
+        if (Atum.getSeedProvider().shouldShowSeed()) {
             //noinspection DataFlowIssue
             this.seedString = ((ISeedStringHolder) (Object) this.seedQueueEntry.getLevelInfo()).atum$getSeedString();
         } else {
             this.seedString = "Set Seed";
         }
-
-         */
-        this.seedString = "";
 
         this.lockTexture = wall.getRandomLockTexture();
 
@@ -137,6 +133,10 @@ public class SeedQueuePreview extends DrawableHelper {
         if (operation != null) {
             String task = I18n.translate(operation);
             this.client.textRenderer.drawWithShadow(task, (this.width - this.client.textRenderer.getStringWidth(task)) / 2.0f, this.height / 2.0f - 4 + 8, 16777215);
+        }
+
+        if (this.seedString != null && !this.seedString.isEmpty()) {
+            this.client.textRenderer.drawWithShadow(this.seedString, (this.width - this.client.textRenderer.getStringWidth(this.seedString)) / 2.0f, this.height / 2.0f - 4 - 40, 16777215);
         }
     }
 
