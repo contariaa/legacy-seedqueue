@@ -33,8 +33,6 @@ dependencies {
     mappings(legacy.yarn(project.minecraft_version, project.yarn_mappings))
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    include(implementation("it.unimi.dsi:fastutil:8.2.2"))
-
     // SpeedrunAPI
     // check for the latest versions at https://jitpack.io/#contariaa/speedrunapi
     modImplementation "com.github.contariaa:SpeedrunAPI:c6c47b82a0"
@@ -43,6 +41,13 @@ dependencies {
     // Atum
     // check for the latest versions at https://jitpack.io/#contariaa/atum
     modImplementation "com.github.contariaa:atum:e99845ee05"
+
+    // StandardSettings
+    // check for the latest versions at https://jitpack.io/#contariaa/StandardSettings
+    modCompileOnly "com.github.contariaa:StandardSettings:4ffe5106c8"
+
+    // check for latest versions at https://jitpack.io/#dev.tildejustin/state-output
+    modCompileOnly "dev.tildejustin.state-output:state-output-common:v1.2.0"
 }
 
 processResources {

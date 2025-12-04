@@ -49,7 +49,7 @@ public class SeedQueuePreview extends DrawableHelper {
 
         // forceUnicodeFont is not being loaded from the settings cache because it is not included in SeedQueueSettingsCache.PREVIEW_SETTINGS
         int scale = SeedQueue.config.calculateSimulatedScaleFactor(
-                MinecraftClient.getInstance().options.guiScale,
+                this.seedQueueEntry.getSettingsCache() != null ? (int) this.seedQueueEntry.getSettingsCache().getValue("guiScale") : MinecraftClient.getInstance().options.guiScale,
                 MinecraftClient.getInstance().options.forcesUnicodeFont
         );
         this.width = (int) Math.ceil((double) SeedQueue.config.simulatedWindowSize.width() / scale);
@@ -75,6 +75,9 @@ public class SeedQueuePreview extends DrawableHelper {
         }
         if (this.previewProperties != null) {
             this.worldRenderer = SeedQueueWallScreen.getOrCreateWorldRenderer(this.previewProperties.world);
+            if (this.seedQueueEntry.getSettingsCache() == null) {
+                this.seedQueueEntry.setSettingsCache(this.wall.settingsCache);
+            }
         } else {
             this.worldRenderer = null;
         }

@@ -48,9 +48,12 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
                     ordinal = 0
             )
     )
-    private int reduceChunksNegativeX(int constant) {
+    private int reduceChunksNegativeX(int constant, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
         if (this.shouldGenerateFakePreview()) {
-            return -SeedQueue.config.previewChunkDistance * 16;
+            if (!properties.get().isInverseView()) {
+                return -SeedQueue.config.previewChunkDistance * 16;
+            }
+            return -16;
         }
         return constant;
     }
@@ -62,8 +65,11 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
                     ordinal = 1
             )
     )
-    private int reduceChunksNegativeZ(int constant) {
+    private int reduceChunksNegativeZ(int constant, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
         if (this.shouldGenerateFakePreview()) {
+            if (properties.get().isInverseView()) {
+                return -SeedQueue.config.previewChunkDistance * 16;
+            }
             return -16;
         }
         return constant;

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
+import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -32,6 +33,7 @@ public class WorldPreviewProperties extends DrawableHelper {
     public final ClientPlayerEntity player;
     public final ClientPlayerInteractionManager interactionManager;
     public final Queue<Packet<?>> packetQueue;
+    private final int perspective;
 
     private int frameCount;
 
@@ -40,6 +42,7 @@ public class WorldPreviewProperties extends DrawableHelper {
         this.player = player;
         this.interactionManager = interactionManager;
         this.packetQueue = packetQueue;
+        this.perspective = (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0);
     }
 
     /**
@@ -53,6 +56,7 @@ public class WorldPreviewProperties extends DrawableHelper {
         ClientWorld mcWorld = client.world;
         Entity mcCameraEntity = client.getCameraEntity();
         ClientPlayerInteractionManager mcInteractionManager = client.interactionManager;
+        int mcPerspective = client.options.perspective;
 
         try {
             WorldPreview.renderingPreview = true;
@@ -62,6 +66,7 @@ public class WorldPreviewProperties extends DrawableHelper {
             client.world = this.world;
             client.setCameraEntity(this.player);
             client.interactionManager = this.interactionManager;
+            client.options.perspective = this.perspective;
 
             consumer.accept(this);
         } finally {
@@ -72,6 +77,7 @@ public class WorldPreviewProperties extends DrawableHelper {
             client.world = mcWorld;
             client.setCameraEntity(mcCameraEntity);
             client.interactionManager = mcInteractionManager;
+            client.options.perspective = mcPerspective;
         }
     }
 
@@ -255,5 +261,13 @@ public class WorldPreviewProperties extends DrawableHelper {
         buttons.add(new ButtonWidget(5, width / 2 - 100, height / 4 + 48 + i, 98, 20, I18n.translate("gui.achievements")));
         buttons.add(new ButtonWidget(6, width / 2 + 2, height / 4 + 48 + i, 98, 20, I18n.translate("gui.stats")));
         return buttons;
+    }
+
+    public int getPerspective() {
+        return this.perspective;
+    }
+
+    public boolean isInverseView() {
+        return this.perspective == 2;
     }
 }

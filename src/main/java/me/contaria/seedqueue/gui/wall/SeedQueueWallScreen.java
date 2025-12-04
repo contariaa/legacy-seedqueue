@@ -5,6 +5,7 @@ import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.SeedQueueThread;
 import me.contaria.seedqueue.compat.ModCompat;
+import me.contaria.seedqueue.compat.SeedQueueSettingsCache;
 import me.contaria.seedqueue.customization.AnimatedTexture;
 import me.contaria.seedqueue.customization.Layout;
 import me.contaria.seedqueue.customization.LockTexture;
@@ -47,6 +48,9 @@ public class SeedQueueWallScreen extends Screen {
     private final DebugHud debugHud;
     private final Random random;
 
+    protected final SeedQueueSettingsCache settingsCache;
+    private SeedQueueSettingsCache lastSettingsCache;
+
     protected Layout layout;
     private SeedQueuePreview[] mainPreviews;
     @Nullable
@@ -87,6 +91,7 @@ public class SeedQueueWallScreen extends Screen {
         this.debugHud = SeedQueue.config.showDebugMenu ? new DebugHud(MinecraftClient.getInstance()) : null;
         this.random = new Random();
         this.preparingPreviews = new ArrayList<>();
+        this.lastSettingsCache = this.settingsCache = SeedQueueSettingsCache.create();
     }
 
     @Override
@@ -144,6 +149,8 @@ public class SeedQueueWallScreen extends Screen {
         SeedQueueProfiler.swap("build_preparing");
         for (; i < this.preparingPreviews.size(); i++) {
             SeedQueuePreview preparingInstance = this.preparingPreviews.get(i);
+            SeedQueueProfiler.push("load_settings");
+            this.loadPreviewSettings(preparingInstance);
             SeedQueueProfiler.push("build");
             preparingInstance.build();
             SeedQueueProfiler.pop();
@@ -151,6 +158,7 @@ public class SeedQueueWallScreen extends Screen {
 
         SeedQueueProfiler.swap("reset");
         this.resetViewport();
+        this.loadPreviewSettings(this.settingsCache, 0);
 
         if (this.overlay != null) {
             SeedQueueProfiler.swap("overlay");
@@ -185,6 +193,9 @@ public class SeedQueueWallScreen extends Screen {
             SeedQueueProfiler.pop();
             return;
         }
+
+        SeedQueueProfiler.swap("load_settings");
+        this.loadPreviewSettings(instance);
 
         SeedQueueProfiler.swap("render_preview");
         SeedQueueWallScreen.startRenderingPreview();
@@ -453,6 +464,23 @@ public class SeedQueueWallScreen extends Screen {
             entries.removeIf(entry -> !entry.hasWorldPreview());
         }
         return entries;
+    }
+
+    private void loadPreviewSettings(SeedQueuePreview instance) {
+        SeedQueueEntry entry = instance.getSeedQueueEntry();
+        if (entry.getSettingsCache() != null) {
+            this.loadPreviewSettings(entry.getSettingsCache(), entry.getPerspective());
+        } else {
+            this.loadPreviewSettings(this.settingsCache, 0);
+        }
+    }
+
+    private void loadPreviewSettings(SeedQueueSettingsCache settingsCache, int perspective) {
+        if (settingsCache != this.lastSettingsCache) {
+            settingsCache.loadPreview();
+            this.lastSettingsCache = settingsCache;
+        }
+        this.client.options.perspective = perspective;
     }
 
     @Override

@@ -12,30 +12,28 @@ public class ModCompat {
 
     public static void stateoutput$setWallState() {
         if (HAS_STATEOUTPUT) {
-            // TODO: StateOutputCompat.setWallState();
+            StateOutputCompat.setWallState();
         }
     }
 
     public static void standardsettings$cache() {
         if (HAS_STANDARDSETTINGS) {
-            // TODO: StandardSettingsCompat.createCache();
+            StandardSettingsCompat.createCache();
         }
     }
 
     public static void standardsettings$reset() {
         if (HAS_STANDARDSETTINGS) {
-            /* TODO:
             StandardSettingsCompat.resetPendingActions();
-            if (StandardSettings.isEnabled()) {
+            if (StandardSettingsCompat.isEnabled()) {
                 StandardSettingsCompat.reset();
             }
-             */
         }
     }
 
     public static void standardsettings$loadCache() {
         if (HAS_STANDARDSETTINGS) {
-            // TODO: StandardSettingsCompat.loadCache();
+            StandardSettingsCompat.loadCache();
         }
     }
 }
