@@ -44,10 +44,6 @@ public class SeedQueueConfig implements SpeedrunConfig {
     @Config.Numbers.Whole.Bounds(min = 1, max = 30)
     public int maxConcurrently_onWall = 1;
 
-    @Config.Category("queue")
-    @Config.Numbers.Whole.Bounds(max = 100)
-    public int maxWorldGenerationPercentage = 100;
-
     @Config.Category("wall")
     public boolean useWall = false;
 
@@ -89,6 +85,17 @@ public class SeedQueueConfig implements SpeedrunConfig {
 
     @Config.Category("performance")
     public boolean reduceLevelList = true;
+
+    @Config.Category("worldpreview")
+    public boolean generateFakePreview = true;
+
+    @Config.Category("worldpreview")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 16)
+    public int previewChunkDistance = 5;
+
+    @Config.Category("worldpreview")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 100)
+    public int previewDataLimit = 50;
 
     @Config.Category("advanced")
     public boolean showAdvancedSettings = false;

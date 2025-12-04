@@ -13,7 +13,6 @@
     "accessor.DebugHudAccessor",
     "accessor.MinecraftClientAccessor",
     "accessor.MinecraftServerAccessor",
-    "accessor.ScreenAccessor",
     "accessor.WorldRendererAccessor",
     "client.MinecraftClientMixin",
     "client.debug.DebugHudMixin",

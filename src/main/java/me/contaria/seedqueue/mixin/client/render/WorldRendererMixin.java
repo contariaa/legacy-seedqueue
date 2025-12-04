@@ -3,7 +3,6 @@ package me.contaria.seedqueue.mixin.client.render;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.contaria.seedqueue.SeedQueue;
-import me.contaria.seedqueue.worldpreview.WorldPreview;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.BuiltChunk;
 import net.minecraft.util.math.BlockPos;
@@ -35,7 +34,7 @@ public abstract class WorldRendererMixin {
     )
     private int modifyViewDistance(int viewDistance) {
         if (SeedQueue.isOnWall()) {
-            return WorldPreview.config.chunkDistance;
+            return SeedQueue.config.previewChunkDistance;
         }
         return viewDistance;
     }

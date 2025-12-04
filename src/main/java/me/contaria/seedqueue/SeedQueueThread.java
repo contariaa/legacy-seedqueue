@@ -1,6 +1,5 @@
 package me.contaria.seedqueue;
 
-import me.contaria.seedqueue.mixin.accessor.ScreenAccessor;
 import me.voidxwalker.autoreset.AtumCreateWorldScreen;
 import net.minecraft.client.MinecraftClient;
 
@@ -99,10 +98,7 @@ public class SeedQueueThread extends Thread {
      */
     private void createSeedQueueEntry() {
         synchronized (WORLD_CREATION_LOCK) {
-            AtumCreateWorldScreen screen = new AtumCreateWorldScreen(null);
-            ScreenAccessor accessor = (ScreenAccessor) screen;
-            screen.init(MinecraftClient.getInstance(), 1, 1);
-            accessor.seedQueue$buttonClicked(accessor.seedQueue$getButtons().get(0));
+            new AtumCreateWorldScreen(null).init(MinecraftClient.getInstance(), 1, 1);
         }
     }
 

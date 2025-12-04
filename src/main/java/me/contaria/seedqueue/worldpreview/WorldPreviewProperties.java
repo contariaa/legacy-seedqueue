@@ -1,6 +1,7 @@
 package me.contaria.seedqueue.worldpreview;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -106,7 +107,7 @@ public class WorldPreviewProperties extends DrawableHelper {
     }
 
     protected int getDataLimit() {
-        return WorldPreview.config.dataLimit;
+        return SeedQueue.config.previewDataLimit;
     }
 
     public void tickEntities() {

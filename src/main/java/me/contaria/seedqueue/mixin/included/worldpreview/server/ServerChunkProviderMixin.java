@@ -1,8 +1,8 @@
 package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityTrackerAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.TrackedEntityInstanceAccessor;
-import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
 import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
 import net.minecraft.entity.Entity;
@@ -97,7 +97,7 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
     private void sendData(Queue<Packet<?>> packetQueue, ClientPlayerEntity player, Chunk chunk) {
         ChunkPos pos = chunk.getChunkPos();
         ChunkPos playerPos = new ChunkPos(player.getBlockPos().getX() / 16, player.getBlockPos().getZ() / 16);
-        if (Math.max(Math.abs(pos.x - playerPos.x), Math.abs(pos.z - playerPos.z)) > WorldPreview.config.chunkDistance) {
+        if (Math.max(Math.abs(pos.x - playerPos.x), Math.abs(pos.z - playerPos.z)) > SeedQueue.config.previewChunkDistance) {
             return;
         }
 

@@ -52,7 +52,7 @@ public class SeedQueueKeybindingsScreen extends Screen {
             this.focusedBinding = null;
             return;
         }
-        if (code == 0) {
+        if (code == 1) {
             this.onClose();
         }
     }

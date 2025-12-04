@@ -31,8 +31,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class WorldPreview {
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final WorldPreviewConfig config = new WorldPreviewConfig();
-
     public static WorldRenderer worldRenderer;
     public static WorldPreviewProperties properties;
 

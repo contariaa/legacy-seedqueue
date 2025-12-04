@@ -33,7 +33,6 @@ public class SeedQueueEntry {
     private volatile boolean locked;
     private volatile boolean loaded;
     private volatile boolean discarded;
-    private volatile boolean maxWorldGenerationReached;
 
     /**
      * Stores the position (index) of the queue entry in the wall screen's main group.
@@ -172,12 +171,6 @@ public class SeedQueueEntry {
     }
 
     /**
-     * An entry can be unpaused if:
-     * <p>
-     * - it was paused by reaching the {@link SeedQueueConfig#maxWorldGenerationPercentage} but has been locked since
-     * <p>
-     * - it was scheduled to be paused by the {@link SeedQueueThread}
-     *
      * @return True if this entry is currently paused or scheduled to be paused and is allowed to be unpaused.
      */
     public boolean canUnpause() {
@@ -203,7 +196,7 @@ public class SeedQueueEntry {
      * @return True if the {@link MinecraftServer} has fully finished generation and is ready to be joined by the player.
      */
     public boolean isReady() {
-        return this.locked && this.server.isLoading();
+        return (!SeedQueue.config.generateFakePreview || this.locked) && this.server.isLoading();
     }
 
     /**
@@ -230,6 +223,10 @@ public class SeedQueueEntry {
     }
 
     private void restartSeedQueueEntry() {
+        if (!SeedQueue.config.generateFakePreview) {
+            return;
+        }
+
         SeedQueueProfiler.push("stop_server");
         ((FRMinecraftServer) this.server).fastReset$fastReset();
         ((MinecraftServerAccessor) this.server).seedQueue$setRunning(false);

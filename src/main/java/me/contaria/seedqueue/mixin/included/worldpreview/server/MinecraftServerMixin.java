@@ -49,8 +49,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             )
     )
     private int reduceChunksNegativeX(int constant) {
-        if (this.shouldConfigurePreview()) {
-            return -WorldPreview.config.chunkDistance * 16;
+        if (this.shouldGenerateFakePreview()) {
+            return -SeedQueue.config.previewChunkDistance * 16;
         }
         return constant;
     }
@@ -63,7 +63,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             )
     )
     private int reduceChunksNegativeZ(int constant) {
-        if (this.shouldConfigurePreview()) {
+        if (this.shouldGenerateFakePreview()) {
             return -16;
         }
         return constant;
@@ -74,8 +74,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             constant = @Constant(intValue = 192)
     )
     private int reduceChunksPositive(int constant) {
-        if (this.shouldConfigurePreview()) {
-            return WorldPreview.config.chunkDistance * 16;
+        if (this.shouldGenerateFakePreview()) {
+            return SeedQueue.config.previewChunkDistance * 16;
         }
         return constant;
     }
@@ -94,5 +94,10 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     @Unique
     private boolean shouldConfigurePreview() {
         return SeedQueue.config.shouldUseWall() && this.seedQueue$inQueue() && !this.seedQueue$getEntry().isLocked();
+    }
+
+    @Unique
+    private boolean shouldGenerateFakePreview() {
+        return this.shouldConfigurePreview() && SeedQueue.config.generateFakePreview;
     }
 }
