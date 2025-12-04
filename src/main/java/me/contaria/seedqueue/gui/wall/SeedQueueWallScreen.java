@@ -614,7 +614,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private SeedQueuePreview getInstance(double mouseX, double mouseY) {
-        double scale = this.client.options.guiScale;
+        double scale = new Window(this.client).getScaleFactor();
         double x = mouseX * scale;
         double y = mouseY * scale;
 
@@ -769,7 +769,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void resetColumn(double mouseX) {
-        double x = mouseX * this.client.options.guiScale;
+        double x = mouseX * new Window(this.client).getScaleFactor();
         boolean playSound = !this.playSound(SeedQueueSounds.RESET_COLUMN);
         for (int i = 0; i < this.mainPreviews.length; i++) {
             Layout.Pos pos = this.layout.main.getPos(i);
@@ -780,7 +780,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void resetRow(double mouseY) {
-        double y = mouseY * this.client.options.guiScale;
+        double y = mouseY * new Window(this.client).getScaleFactor();
         boolean playSound = !this.playSound(SeedQueueSounds.RESET_ROW);
         for (int i = 0; i < this.mainPreviews.length; i++) {
             Layout.Pos pos = this.layout.main.getPos(i);
