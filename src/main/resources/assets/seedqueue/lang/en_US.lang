@@ -11,9 +11,7 @@ seedqueue.menu.benchmark.result=%s resets in %ss (%s RPS)
 
 seedqueue.menu.config.useWall.notAvailable=§c§oNot Available
 seedqueue.menu.config.useWall.notAvailable.tooltip=Using the Wall Screen requires the following mods to be installed:
-seedqueue.menu.config.useWall.notAvailable.tooltip.1= - Sodium
-seedqueue.menu.config.useWall.notAvailable.tooltip.2= - StandardSettings
-seedqueue.menu.config.useWall.notAvailable.tooltip.3= - WorldPreview
+seedqueue.menu.config.useWall.notAvailable.tooltip.1= - StandardSettings
 
 seedqueue.menu.config.showAdvancedSettings.confirm.title=Are you sure you want to enable Advanced Settings?
 seedqueue.menu.config.showAdvancedSettings.confirm.message=Please only use these options if you know what they do or if you've been instructed to do so by someone who does!

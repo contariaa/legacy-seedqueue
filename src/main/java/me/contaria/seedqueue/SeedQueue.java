@@ -1,6 +1,8 @@
 package me.contaria.seedqueue;
 
+import com.google.gson.JsonParseException;
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
+import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.debug.SeedQueueWatchdog;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
@@ -18,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Predicate;
@@ -181,7 +184,6 @@ public class SeedQueue implements ClientModInitializer {
         }
     }
 
-
     /**
      * @return If the {@link SeedQueueThread} should actively schedule a {@link SeedQueueEntry} to be paused.
      */
@@ -248,6 +250,15 @@ public class SeedQueue implements ClientModInitializer {
             if (!shouldStart()) {
                 return;
             }
+
+            LOGGER.info("Reloading SeedQueue Config...");
+            try {
+                SeedQueue.config.reload();
+            } catch (IOException | JsonParseException e) {
+                LOGGER.error("Failed to reload SeedQueue Config!", e);
+            }
+            SeedQueue.config.simulatedWindowSize.init();
+            SeedQueueSystemInfo.logConfigSettings();
 
             LOGGER.info("Starting SeedQueue...");
             thread = new SeedQueueThread();

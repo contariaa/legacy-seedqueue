@@ -17,6 +17,7 @@ import me.contaria.speedrunapi.config.api.gui.CallbackButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import org.jetbrains.annotations.Nullable;
 
@@ -160,6 +161,21 @@ public class SeedQueueConfig implements SpeedrunConfig {
 
     @Override
     public @Nullable SpeedrunOption<?> parseField(Field field, SpeedrunConfig config, String... idPrefix) {
+        if ("useWall".equals(field.getName())) {
+            return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
+                    .createWidget((option, config_, configStorage, optionField) -> {
+                        if (!CAN_USE_WALL) {
+                            ButtonWidget widget = new ButtonWidget(-1, 0, 0, 150, 20, I18n.translate("seedqueue.menu.config.useWall.notAvailable"));
+                            widget.active = false;
+                            return widget;
+                        }
+                        return new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {
+                            option.set(!option.get());
+                            button.message = I18n.translate(option.get() ? "options.on" : "options.off");
+                        });
+                    })
+                    .build();
+        }
         if ("showAdvancedSettings".equals(field.getName())) {
             return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
                     .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {

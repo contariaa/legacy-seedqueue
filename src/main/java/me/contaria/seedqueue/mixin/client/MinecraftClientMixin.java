@@ -9,6 +9,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
+import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -232,6 +233,14 @@ public abstract class MinecraftClientMixin {
         if (SeedQueue.isOnWall()) {
             cir.setReturnValue(SeedQueue.config.wallFPS);
         }
+    }
+
+    @Inject(
+            method = "initializeGame",
+            at = @At("TAIL")
+    )
+    private void logSystemInformation(CallbackInfo ci) {
+        SeedQueueSystemInfo.logSystemInformation();
     }
 
     @Inject(

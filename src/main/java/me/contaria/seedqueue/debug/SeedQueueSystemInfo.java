@@ -1,5 +1,6 @@
 package me.contaria.seedqueue.debug;
 
+import com.google.gson.GsonBuilder;
 import com.sun.management.OperatingSystemMXBean;
 import me.contaria.seedqueue.SeedQueue;
 import org.lwjgl.opengl.GL11;
@@ -63,10 +64,7 @@ public class SeedQueueSystemInfo {
 
     public static void logConfigSettings() {
         if (Boolean.parseBoolean(System.getProperty("seedqueue.logConfigSettings", "true"))) {
-            /*
             SeedQueue.LOGGER.info("SeedQueue Config settings: {}", new GsonBuilder().setPrettyPrinting().create().toJson(SeedQueue.config.container.toJson()));
-
-             */
         }
     }
 }
