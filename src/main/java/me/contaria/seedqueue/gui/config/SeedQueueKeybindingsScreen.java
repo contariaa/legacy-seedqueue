@@ -29,20 +29,26 @@ public class SeedQueueKeybindingsScreen extends Screen {
     }
 
     @Override
+    public void handleMouse() {
+        super.handleMouse();
+        this.keyBindingListWidget.handleMouse();
+    }
+
+    @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if (this.focusedBinding != null) {
             this.focusedBinding.pressKey(button - 100);
             this.focusedBinding = null;
             return;
         }
-        this.keyBindingListWidget.mouseClicked(mouseX, mouseY, button);
         super.mouseClicked(mouseX, mouseY, button);
+        this.keyBindingListWidget.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int button) {
-        this.keyBindingListWidget.mouseReleased(mouseX, mouseY, button);
         super.mouseReleased(mouseX, mouseY, button);
+        this.keyBindingListWidget.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
