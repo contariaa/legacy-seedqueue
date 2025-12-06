@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@Mixin(ScheduledTick.class)
+// legacy crash fix also has this mixin,
+// to avoid crashing we set a low priority and require = 0
+@Mixin(value = ScheduledTick.class, priority = 500)
 public abstract class ScheduledTickMixin {
     @Unique
     private static final AtomicLong atomicIdCounter = new AtomicLong();
@@ -26,7 +28,8 @@ public abstract class ScheduledTickMixin {
                     value = "FIELD",
                     target = "Lnet/minecraft/util/ScheduledTick;id:J",
                     opcode = Opcodes.PUTFIELD
-            )
+            ),
+            require = 0
     )
     private void atomicIdCounter(ScheduledTick tick, long id) {
         this.id = atomicIdCounter.incrementAndGet();
