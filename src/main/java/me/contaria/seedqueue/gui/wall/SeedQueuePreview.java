@@ -95,6 +95,9 @@ public class SeedQueuePreview extends DrawableHelper {
             this.renderLoading();
         } else {
             this.renderPreview();
+            if (!this.seedQueueEntry.getServer().isLoading()) {
+                this.renderLoadingInCorner();
+            }
             this.allowInteractions = true;
         }
 
@@ -140,6 +143,21 @@ public class SeedQueuePreview extends DrawableHelper {
 
         if (this.seedString != null && !this.seedString.isEmpty()) {
             this.client.textRenderer.drawWithShadow(this.seedString, (this.width - this.client.textRenderer.getStringWidth(this.seedString)) / 2.0f, this.height / 2.0f - 4 - 40, 16777215);
+        }
+    }
+
+    private void renderLoadingInCorner() {
+        String title = I18n.translate("menu.loadingLevel");
+        this.client.textRenderer.drawWithShadow(title, 5, this.height - 5 - 9 - 24, 16777215);
+
+        String operation = this.seedQueueEntry.getServer().getServerOperation();
+        if (operation != null) {
+            String task = I18n.translate(operation);
+            this.client.textRenderer.drawWithShadow(task, 5, this.height - 5 - 9, 16777215);
+        }
+
+        if (this.seedString != null && !this.seedString.isEmpty()) {
+            this.client.textRenderer.drawWithShadow(this.seedString, 5, this.height - 5 - 9 - 40, 16777215);
         }
     }
 
