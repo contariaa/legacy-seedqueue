@@ -7,6 +7,7 @@ import me.contaria.seedqueue.fastreset.interfaces.FRMinecraftServer;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -282,6 +283,7 @@ public class SeedQueueEntry {
         SeedQueueProfiler.swap("recreate");
         IntegratedServer server = new IntegratedServer(MinecraftClient.getInstance(), this.levelProperties.getLevelName(), this.levelProperties.getLevelName(), this.levelInfo);
         ((SQMinecraftServer) server).seedQueue$setEntry(this);
+        ((WPMinecraftServer) server).worldpreview$setPreviewSpawnPos(((WPMinecraftServer) this.server).worldpreview$getPreviewSpawnPos());
         server.startServerThread();
 
         this.server = server;

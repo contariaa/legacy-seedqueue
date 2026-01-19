@@ -8,10 +8,12 @@ import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,9 +24,13 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements SQMinecraftServer {
+public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinecraftServer {
     @Shadow
     public ServerWorld[] worlds;
+
+    @Unique
+    @Nullable
+    private BlockPos previewSpawnPos;
 
     @WrapOperation(
             method = "prepareWorlds",
@@ -105,5 +111,20 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     @Unique
     private boolean shouldGenerateFakePreview() {
         return this.shouldConfigurePreview() && SeedQueue.config.generateFakePreview;
+    }
+
+    @Override
+    public void worldpreview$setPreviewSpawnPos(BlockPos pos) {
+        this.previewSpawnPos = pos;
+    }
+
+    @Override
+    public BlockPos worldpreview$getPreviewSpawnPos() {
+        return this.previewSpawnPos;
+    }
+
+    @Override
+    public void worldpreview$clearPreviewSpawnPos() {
+        this.previewSpawnPos = null;
     }
 }

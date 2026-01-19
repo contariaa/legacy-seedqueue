@@ -2,21 +2,27 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.worldpreview.WPFakeServerPlayerEntity;
+import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
-    @Unique
-    private static final ThreadLocal<BlockPos> PREVIEW_SPAWNPOS = new ThreadLocal<>();
+    @Shadow
+    @Final
+    public MinecraftServer server;
 
     @ModifyArg(
             method = "<init>",
@@ -27,13 +33,14 @@ public abstract class ServerPlayerEntityMixin {
             index = 0
     )
     private BlockPos setPreviewSpawnPos(BlockPos pos) {
+        WPMinecraftServer server = (WPMinecraftServer) this.server;
         if (this.isWorldPreviewFakePlayer()) {
-            PREVIEW_SPAWNPOS.set(pos);
+            server.worldpreview$setPreviewSpawnPos(pos);
             return pos;
         }
-        BlockPos spawnPos = PREVIEW_SPAWNPOS.get();
+        BlockPos spawnPos = server.worldpreview$getPreviewSpawnPos();
         if (spawnPos != null) {
-            PREVIEW_SPAWNPOS.remove();
+            server.worldpreview$clearPreviewSpawnPos();
             return spawnPos;
         }
         return pos;
