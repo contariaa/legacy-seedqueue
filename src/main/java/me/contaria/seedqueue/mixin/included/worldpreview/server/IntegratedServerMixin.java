@@ -2,6 +2,7 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -20,7 +21,10 @@ public abstract class IntegratedServerMixin implements SQMinecraftServer {
                     target = "Lnet/minecraft/network/NetworkEncryptionUtils;generateServerKeyPair()Ljava/security/KeyPair;"
             )
     )
-    private KeyPair test(Operation<KeyPair> original) {
+    private KeyPair skipGeneratingKeyPairOnFakePreview(Operation<KeyPair> original) {
+        if (!SeedQueue.config.generateFakePreview) {
+            return original.call();
+        }
         SeedQueueEntry entry = this.seedQueue$getEntry();
         if (entry != null && !entry.isLocked()) {
             return null;
