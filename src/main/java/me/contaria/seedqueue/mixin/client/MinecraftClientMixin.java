@@ -13,6 +13,7 @@ import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.SaveHandler;
@@ -161,6 +162,26 @@ public abstract class MinecraftClientMixin {
     )
     private boolean doNotStartServerTwice(IntegratedServer server) {
         return SeedQueue.currentEntry == null;
+    }
+
+    @Inject(
+            method = "startIntegratedServer",
+            at = @At("TAIL")
+    )
+    private void pingSeedQueueThreadOnLoadingWorld(CallbackInfo ci) {
+        if (!SeedQueue.inQueue()) {
+            SeedQueue.ping();
+        }
+    }
+
+    @Inject(
+            method = "setScreen",
+            at = @At("RETURN")
+    )
+    private void pingSeedQueueThreadOnOpeningWall(Screen screen, CallbackInfo ci) {
+        if (screen instanceof SeedQueueWallScreen) {
+            SeedQueue.ping();
+        }
     }
 
     @ModifyExpressionValue(
