@@ -52,6 +52,7 @@
     "server.synchronization.AbstractCommandMixin",
     "server.synchronization.RandomVectorGeneratorMixin",
     "server.synchronization.ScheduledTickMixin",
+    "server.synchronization.TypeFilterableListMixin",
     "server.synchronization.biome.IntArrayCacheMixin",
     "server.synchronization.biome.MesaBiomeMixin",
     "server.synchronization.biome.decorator.BiomeDecoratorMixin",
@@ -89,5 +90,7 @@
     "server.synchronization.structure.StrongholdPiecesMixin",
     "server.synchronization.structure.StrongholdPiecesMixin$SpiralStaircaseMixin"
   ],
-  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin"
+  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin",
+  "mixins": [
+  ]
 }
