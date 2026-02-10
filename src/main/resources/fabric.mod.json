@@ -49,6 +49,7 @@
     "atum": ">=2.5-"
   },
   "breaks": {
-    "optifabric": "*"
+    "optifabric": "*",
+    "perfectrng": "*"
   }
 }
