@@ -20,8 +20,8 @@ public abstract class WorldRendererMixin {
     @Inject(
             method = "setupTerrain",
             at = @At(
-                    value = "CONSTANT",
-                    args = "intValue=248"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/util/math/BlockPos;getY()I"
             )
     )
     private void createMutableBlockPos(CallbackInfo ci, @Share("mutable") LocalRef<BlockPos.Mutable> mutable) {
