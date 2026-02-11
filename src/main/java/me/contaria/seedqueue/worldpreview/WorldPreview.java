@@ -36,7 +36,7 @@ public class WorldPreview {
 
     public static boolean renderingPreview;
 
-    public static WorldPreviewProperties configure(ServerWorld serverWorld) {
+    public static WorldPreviewProperties configure(ServerWorld serverWorld, int perspective) {
         WPFakeServerPlayerEntity fakePlayer = new WPFakeServerPlayerEntity(
                 serverWorld.getServer(),
                 serverWorld,
@@ -147,6 +147,6 @@ public class WorldPreview {
 
         ((ClientPlayNetworkHandlerAccessor) player.networkHandler).worldpreview$setWorld(world);
 
-        return new WorldPreviewProperties(world, player, interactionManager, packetQueue);
+        return new WorldPreviewProperties(world, player, interactionManager, packetQueue, perspective);
     }
 }

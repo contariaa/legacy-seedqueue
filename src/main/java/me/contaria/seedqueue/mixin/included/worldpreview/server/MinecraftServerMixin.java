@@ -2,17 +2,17 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
 import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
+import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Random;
+
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinecraftServer {
     @Shadow
@@ -31,6 +33,8 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
     @Unique
     @Nullable
     private BlockPos previewSpawnPos;
+    @Unique
+    private int previewPerspective;
 
     @WrapOperation(
             method = "prepareWorlds",
@@ -39,10 +43,13 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
                     target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;"
             )
     )
-    private BlockPos configureWorldPreview(ServerWorld world, Operation<BlockPos> original, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+    private BlockPos configureWorldPreview(ServerWorld world, Operation<BlockPos> original) {
         if (this.shouldConfigurePreview()) {
-            properties.set(WorldPreview.configure(world));
-            return properties.get().player.getBlockPos();
+            this.previewSpawnPos = this.calculatePreviewSpawnPos(world);
+            this.previewPerspective = (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0);
+            if (this.shouldGenerateFakePreview()) {
+                return this.previewSpawnPos;
+            }
         }
         return original.call(world);
     }
@@ -54,9 +61,9 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
                     ordinal = 0
             )
     )
-    private int reduceChunksNegativeX(int constant, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+    private int reduceChunksNegativeX(int constant) {
         if (this.shouldGenerateFakePreview()) {
-            if (!properties.get().isInverseView()) {
+            if (this.previewPerspective == 2) {
                 return -SeedQueue.config.previewChunkDistance * 16;
             }
             return -16;
@@ -71,9 +78,9 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
                     ordinal = 1
             )
     )
-    private int reduceChunksNegativeZ(int constant, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+    private int reduceChunksNegativeZ(int constant) {
         if (this.shouldGenerateFakePreview()) {
-            if (properties.get().isInverseView()) {
+            if (this.previewPerspective != 2) {
                 return -SeedQueue.config.previewChunkDistance * 16;
             }
             return -16;
@@ -96,10 +103,12 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
             method = "prepareWorlds",
             at = @At("TAIL")
     )
-    private void sendWorldPreviewData(CallbackInfo ci, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
+    private void sendWorldPreviewData(CallbackInfo ci) {
         if (this.shouldConfigurePreview()) {
-            ((WPServerChunkProvider) this.worlds[0].getChunkProvider()).worldpreview$sendData(properties.get());
-            this.seedQueue$getEntry().setPreviewProperties(properties.get());
+            ServerWorld world = this.worlds[0];
+            WorldPreviewProperties properties = WorldPreview.configure(world, this.previewPerspective);
+            ((WPServerChunkProvider) world.getChunkProvider()).worldpreview$sendData(properties);
+            this.seedQueue$getEntry().setPreviewProperties(properties);
         }
     }
 
@@ -116,6 +125,22 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
     @Override
     public void worldpreview$setPreviewSpawnPos(BlockPos pos) {
         this.previewSpawnPos = pos;
+    }
+
+    @Unique
+    private BlockPos calculatePreviewSpawnPos(ServerWorld world) {
+        // see ServerPlayerEntity#<init>
+        Random random = new Random();
+        BlockPos spawnPos = world.getSpawnPos();
+        int radius = Math.max(5, world.getServer().getSpawnProtectionRadius() - 6);
+        int border = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder(spawnPos.getX(), spawnPos.getZ()));
+        if (border < radius) {
+            radius = border;
+        }
+        if (border <= 1) {
+            radius = 1;
+        }
+        return spawnPos.add(random.nextInt(radius * 2) - radius, 0, random.nextInt(radius * 2) - radius);
     }
 
     @Override

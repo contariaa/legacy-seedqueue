@@ -37,12 +37,12 @@ public class WorldPreviewProperties extends DrawableHelper {
 
     private int frameCount;
 
-    public WorldPreviewProperties(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet<?>> packetQueue) {
+    public WorldPreviewProperties(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet<?>> packetQueue, int perspective) {
         this.world = world;
         this.player = player;
         this.interactionManager = interactionManager;
         this.packetQueue = packetQueue;
-        this.perspective = (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0);
+        this.perspective = perspective;
     }
 
     /**
@@ -265,9 +265,5 @@ public class WorldPreviewProperties extends DrawableHelper {
 
     public int getPerspective() {
         return this.perspective;
-    }
-
-    public boolean isInverseView() {
-        return this.perspective == 2;
     }
 }

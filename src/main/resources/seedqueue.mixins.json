@@ -90,7 +90,5 @@
     "server.synchronization.structure.StrongholdPiecesMixin",
     "server.synchronization.structure.StrongholdPiecesMixin$SpiralStaircaseMixin"
   ],
-  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin",
-  "mixins": [
-  ]
+  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin"
 }

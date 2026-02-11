@@ -2,7 +2,7 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.contaria.seedqueue.SeedQueue;
+import com.llamalad7.mixinextras.sugar.Local;
 import me.contaria.seedqueue.worldpreview.WPFakeServerPlayerEntity;
 import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,15 +28,14 @@ public abstract class ServerPlayerEntityMixin {
             method = "<init>",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/ServerPlayerEntity;refreshPositionAndAngles(Lnet/minecraft/util/math/BlockPos;FF)V"
+                    target = "Lnet/minecraft/server/world/ServerWorld;getTopPosition(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;"
             ),
             index = 0
     )
-    private BlockPos setPreviewSpawnPos(BlockPos pos) {
-        WPMinecraftServer server = (WPMinecraftServer) this.server;
+    private BlockPos setPreviewSpawnPos(BlockPos pos, @Local(argsOnly = true) MinecraftServer minecraftServer) {
+        WPMinecraftServer server = (WPMinecraftServer) minecraftServer;
         if (this.isWorldPreviewFakePlayer()) {
-            server.worldpreview$setPreviewSpawnPos(pos);
-            return pos;
+            return server.worldpreview$getPreviewSpawnPos();
         }
         BlockPos spawnPos = server.worldpreview$getPreviewSpawnPos();
         if (spawnPos != null) {
