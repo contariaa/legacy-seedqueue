@@ -35,7 +35,7 @@ dependencies {
 
     // SpeedrunAPI
     // check for the latest versions at https://jitpack.io/#contariaa/speedrunapi
-    modCompileOnly "com.github.contariaa:SpeedrunAPI:c6c47b82a0"
+    modImplementation "com.github.contariaa:SpeedrunAPI:85b9b0b599"
     annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 
     // Atum

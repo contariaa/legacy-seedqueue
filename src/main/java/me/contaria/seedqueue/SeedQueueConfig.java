@@ -30,100 +30,100 @@ import java.lang.reflect.Field;
  * When implementing new options, make sure no Minecraft classes are loaded during initialization!
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class SeedQueueConfig /* implements SpeedrunConfig */ {
+public class SeedQueueConfig implements SpeedrunConfig  {
     private static final boolean CAN_USE_WALL = /* ModCompat.HAS_STANDARDSETTINGS */ true;
 
-//    @Config.Ignored
-//    public SpeedrunConfigContainer<?> container;
+    @Config.Ignored
+    public SpeedrunConfigContainer<?> container;
 
-//    @Config.Category("queue")
-//    @Config.Numbers.Whole.Bounds(min = 0, max = 30)
+    @Config.Category("queue")
+    @Config.Numbers.Whole.Bounds(min = 0, max = 30)
     public int maxCapacity = 4;
 
-//    @Config.Category("queue")
-//    @Config.Numbers.Whole.Bounds(min = 0, max = 30)
+    @Config.Category("queue")
+    @Config.Numbers.Whole.Bounds(min = 0, max = 30)
     public int maxConcurrently = 1;
 
-//    @Config.Category("queue")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 30)
+    @Config.Category("queue")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 30)
     public int maxConcurrently_onWall = 4;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public boolean useWall = true;
 
-//    @Config.Category("wall")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 10)
+    @Config.Category("wall")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 10)
     public int rows = 2;
 
-//    @Config.Category("wall")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 10)
+    @Config.Category("wall")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 10)
     public int columns = 2;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public final WindowSize simulatedWindowSize = new WindowSize();
 
-//    @Config.Category("wall")
-//    @Config.Numbers.Whole.Bounds(max = 1000)
+    @Config.Category("wall")
+    @Config.Numbers.Whole.Bounds(max = 1000)
     public int resetCooldown = 150;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public boolean waitForPreviewSetup = false;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public boolean bypassWall = false;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public boolean smartSwitch = false;
 
-//    @Config.Category("performance")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 255)
+    @Config.Category("performance")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 255)
     public int wallFPS = 60;
 
-//    @Config.Category("performance")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 255)
+    @Config.Category("performance")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 255)
     public int previewFPS = 15;
 
-//    @Config.Category("performance")
-//    @Config.Numbers.Whole.Bounds(min = -1, max = 30)
+    @Config.Category("performance")
+    @Config.Numbers.Whole.Bounds(min = -1, max = 30)
     public int preparingPreviews = 0; // auto
 
-//    @Config.Category("performance")
+    @Config.Category("performance")
     public boolean reduceLevelList = true;
 
-//    @Config.Category("worldpreview")
+    @Config.Category("worldpreview")
     public boolean generateFakePreview = true;
 
-//    @Config.Category("worldpreview")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 16)
+    @Config.Category("worldpreview")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 16)
     public int previewChunkDistance = 5;
 
-//    @Config.Category("worldpreview")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = 100)
+    @Config.Category("worldpreview")
+    @Config.Numbers.Whole.Bounds(min = 1, max = 100)
     public int previewDataLimit = 50;
 
-//    @Config.Category("advanced")
+    @Config.Category("advanced")
     public boolean showAdvancedSettings = false;
 
-//    @Config.Category("threading")
-//    @Config.Numbers.Whole.Bounds(min = Thread.MIN_PRIORITY, max = Thread.NORM_PRIORITY)
+    @Config.Category("threading")
+    @Config.Numbers.Whole.Bounds(min = Thread.MIN_PRIORITY, max = Thread.NORM_PRIORITY)
     public int seedQueueThreadPriority = Thread.NORM_PRIORITY;
 
-//    @Config.Category("threading")
-//    @Config.Numbers.Whole.Bounds(min = Thread.MIN_PRIORITY, max = Thread.NORM_PRIORITY)
+    @Config.Category("threading")
+    @Config.Numbers.Whole.Bounds(min = Thread.MIN_PRIORITY, max = Thread.NORM_PRIORITY)
     public int serverThreadPriority = 4;
 
-//    @Config.Category("debug")
+    @Config.Category("debug")
     public boolean showDebugMenu = false;
 
-//    @Config.Category("debug")
-//    @Config.Numbers.Whole.Bounds(min = 1, max = Integer.MAX_VALUE)
-//    @Config.Numbers.TextField
+    @Config.Category("debug")
+    @Config.Numbers.Whole.Bounds(min = 1, max = Integer.MAX_VALUE)
+    @Config.Numbers.TextField
     public int benchmarkResets = 1000;
 
-//    @Config.Category("debug")
+    @Config.Category("debug")
     public boolean useWatchdog = true;
 
-//    @Config.Category("wall")
+    @Config.Category("wall")
     public final SeedQueueMultiKeyBinding[] keyBindings = new SeedQueueMultiKeyBinding[]{
             SeedQueueKeyBindings.play,
             SeedQueueKeyBindings.focusReset,
@@ -159,104 +159,104 @@ public class SeedQueueConfig /* implements SpeedrunConfig */ {
         return CAN_USE_WALL && this.maxCapacity > 0 && this.useWall;
     }
 
-//    @Override
-//    public @Nullable SpeedrunOption<?> parseField(Field field, SpeedrunConfig config, String... idPrefix) {
-//        if ("useWall".equals(field.getName())) {
-//            return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
-//                    .createWidget((option, config_, configStorage, optionField) -> {
-//                        if (!CAN_USE_WALL) {
-//                            ButtonWidget widget = new ButtonWidget(-1, 0, 0, 150, 20, I18n.translate("seedqueue.menu.config.useWall.notAvailable"));
-//                            widget.active = false;
-//                            return widget;
-//                        }
-//                        return new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {
-//                            option.set(!option.get());
-//                            button.message = I18n.translate(option.get() ? "options.on" : "options.off");
-//                        });
-//                    })
-//                    .build();
-//        }
-//        if ("showAdvancedSettings".equals(field.getName())) {
-//            return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
-//                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {
-//                        if (!option.get()) {
-//                            Screen configScreen = MinecraftClient.getInstance().currentScreen;
-//                            MinecraftClient.getInstance().setScreen(new ConfirmScreen((confirm, id) -> {
-//                                option.set(confirm);
-//                                MinecraftClient.getInstance().setScreen(configScreen);
-//                            }, I18n.translate("seedqueue.menu.config.showAdvancedSettings.confirm.title"), I18n.translate("seedqueue.menu.config.showAdvancedSettings.confirm.message"), I18n.translate("gui.yes"), I18n.translate("gui.cancel"), 0));
-//                        } else {
-//                            option.set(false);
-//                            MinecraftClient.getInstance().setScreen(MinecraftClient.getInstance().currentScreen);
-//                        }
-//                    }))
-//                    .build();
-//        }
-//        if (WindowSize.class.equals(field.getType())) {
-//            return new SpeedrunConfigAPI.CustomOption.Builder<WindowSize>(config, this, field, idPrefix)
-//                    .fromJson((option, config_, configStorage, optionField, jsonElement) -> option.get().fromJson(jsonElement.getAsJsonObject()))
-//                    .toJson((option, config_, configStorage, optionField) -> option.get().toJson())
-//                    .setter((option, config_, configStorage, optionField, value) -> {
-//                        throw new UnsupportedOperationException();
-//                    })
-//                    // TODO
-////                    .createWidget((option, config_, configStorage, optionField) -> new SeedQueueWindowSizeWidget(option.get()))
-//                    .build();
-//        }
-//        if (SeedQueueMultiKeyBinding[].class.equals(field.getType())) {
-//            return new SpeedrunConfigAPI.CustomOption.Builder<SeedQueueMultiKeyBinding[]>(config, this, field, idPrefix)
-//                    .fromJson((option, config_, configStorage, optionField, jsonElement) -> {
-//                        for (SeedQueueMultiKeyBinding keyBinding : option.get()) {
-//                            keyBinding.fromJson(jsonElement.getAsJsonObject().get(keyBinding.getTranslationKey()));
-//                        }
-//                    })
-//                    .toJson((option, config_, configStorage, optionField) -> {
-//                        JsonObject jsonObject = new JsonObject();
-//                        for (SeedQueueMultiKeyBinding keyBinding : option.get()) {
-//                            jsonObject.add(keyBinding.getTranslationKey(), keyBinding.toJson());
-//                        }
-//                        return jsonObject;
-//                    })
-//                    .setter((option, config_, configStorage, optionField, value) -> {
-//                        throw new UnsupportedOperationException();
-//                    })
-////                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate("seedqueue.menu.keys.configure"), button -> MinecraftClient.getInstance().setScreen(new SeedQueueKeybindingsScreen(MinecraftClient.getInstance().currentScreen, this.keyBindings))))
-//                    .build();
-//        }
-//        return SpeedrunConfig.super.parseField(field, config, idPrefix);
-//    }
+    @Override
+    public @Nullable SpeedrunOption<?> parseField(Field field, SpeedrunConfig config, String... idPrefix) {
+        if ("useWall".equals(field.getName())) {
+            return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
+                    .createWidget((option, config_, configStorage, optionField) -> {
+                        if (!CAN_USE_WALL) {
+                            ButtonWidget widget = new ButtonWidget(-1, 0, 0, 150, 20, I18n.translate("seedqueue.menu.config.useWall.notAvailable"));
+                            widget.active = false;
+                            return widget;
+                        }
+                        return new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {
+                            option.set(!option.get());
+                            button.message = I18n.translate(option.get() ? "options.on" : "options.off");
+                        });
+                    })
+                    .build();
+        }
+        if ("showAdvancedSettings".equals(field.getName())) {
+            return new SpeedrunConfigAPI.CustomOption.Builder<Boolean>(config, this, field, idPrefix)
+                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate(option.get() ? "options.on" : "options.off"), button -> {
+                        if (!option.get()) {
+                            Screen configScreen = MinecraftClient.getInstance().currentScreen;
+                            MinecraftClient.getInstance().setScreen(new ConfirmScreen((confirm, id) -> {
+                                option.set(confirm);
+                                MinecraftClient.getInstance().setScreen(configScreen);
+                            }, I18n.translate("seedqueue.menu.config.showAdvancedSettings.confirm.title"), I18n.translate("seedqueue.menu.config.showAdvancedSettings.confirm.message"), I18n.translate("gui.yes"), I18n.translate("gui.cancel"), 0));
+                        } else {
+                            option.set(false);
+                            MinecraftClient.getInstance().setScreen(MinecraftClient.getInstance().currentScreen);
+                        }
+                    }))
+                    .build();
+        }
+        if (WindowSize.class.equals(field.getType())) {
+            return new SpeedrunConfigAPI.CustomOption.Builder<WindowSize>(config, this, field, idPrefix)
+                    .fromJson((option, config_, configStorage, optionField, jsonElement) -> option.get().fromJson(jsonElement.getAsJsonObject()))
+                    .toJson((option, config_, configStorage, optionField) -> option.get().toJson())
+                    .setter((option, config_, configStorage, optionField, value) -> {
+                        throw new UnsupportedOperationException();
+                    })
+                    // TODO
+//                    .createWidget((option, config_, configStorage, optionField) -> new SeedQueueWindowSizeWidget(option.get()))
+                    .build();
+        }
+        if (SeedQueueMultiKeyBinding[].class.equals(field.getType())) {
+            return new SpeedrunConfigAPI.CustomOption.Builder<SeedQueueMultiKeyBinding[]>(config, this, field, idPrefix)
+                    .fromJson((option, config_, configStorage, optionField, jsonElement) -> {
+                        for (SeedQueueMultiKeyBinding keyBinding : option.get()) {
+                            keyBinding.fromJson(jsonElement.getAsJsonObject().get(keyBinding.getTranslationKey()));
+                        }
+                    })
+                    .toJson((option, config_, configStorage, optionField) -> {
+                        JsonObject jsonObject = new JsonObject();
+                        for (SeedQueueMultiKeyBinding keyBinding : option.get()) {
+                            jsonObject.add(keyBinding.getTranslationKey(), keyBinding.toJson());
+                        }
+                        return jsonObject;
+                    })
+                    .setter((option, config_, configStorage, optionField, value) -> {
+                        throw new UnsupportedOperationException();
+                    })
+//                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate("seedqueue.menu.keys.configure"), button -> MinecraftClient.getInstance().setScreen(new SeedQueueKeybindingsScreen(MinecraftClient.getInstance().currentScreen, this.keyBindings))))
+                    .build();
+        }
+        return SpeedrunConfig.super.parseField(field, config, idPrefix);
+    }
 
     /**
      * Reloads the config from disk.
      */
     public void reload() throws IOException, JsonParseException {
-//        if (this.container != null) {
-//            this.container.load();
-//        }
+        if (this.container != null) {
+            this.container.load();
+        }
     }
 
-//    @Override
-//    public void finishInitialization(SpeedrunConfigContainer<?> container) {
-//        this.container = container;
-//    }
-//
-//    @Override
-//    public boolean shouldShowCategory(String category) {
-//        if (!this.showAdvancedSettings) {
-//            return !category.equals("threading") && !category.equals("experimental") && !category.equals("debug");
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public String modID() {
-//        return "seedqueue";
-//    }
-//
-//    @Override
-//    public boolean isAvailable() {
-//        return !SeedQueue.isActive();
-//    }
+    @Override
+    public void finishInitialization(SpeedrunConfigContainer<?> container) {
+        this.container = container;
+    }
+
+    @Override
+    public boolean shouldShowCategory(String category) {
+        if (!this.showAdvancedSettings) {
+            return !category.equals("threading") && !category.equals("experimental") && !category.equals("debug");
+        }
+        return true;
+    }
+
+    @Override
+    public String modID() {
+        return "seedqueue";
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return !SeedQueue.isActive();
+    }
 
     public static class WindowSize {
         private int width;

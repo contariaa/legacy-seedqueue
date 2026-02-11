@@ -67,7 +67,7 @@ public class SeedQueueSystemInfo {
     public static void logConfigSettings() {
         if (Boolean.parseBoolean(System.getProperty("seedqueue.logConfigSettings", "true"))) {
             // TODO
-//            SeedQueue.LOGGER.info("SeedQueue Config settings: {}", new GsonBuilder().setPrettyPrinting().create().toJson(SeedQueue.config.container.toJson()));
+            SeedQueue.LOGGER.info("SeedQueue Config settings: {}", new GsonBuilder().setPrettyPrinting().create().toJson(SeedQueue.config.container.toJson()));
         }
     }
 }
