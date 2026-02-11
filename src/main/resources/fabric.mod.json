@@ -50,6 +50,7 @@
   },
   "breaks": {
     "optifabric": "*",
-    "perfectrng": "*"
+    "perfectrng": "*",
+    "tabfocus": "*"
   }
 }
