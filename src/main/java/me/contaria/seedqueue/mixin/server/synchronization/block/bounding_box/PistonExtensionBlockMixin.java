@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PistonExtensionBlockMixin extends BlockMixin {
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMinX:D",
@@ -26,7 +26,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMinY:D",
@@ -38,7 +38,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMinZ:D",
@@ -50,7 +50,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMaxX:D",
@@ -62,7 +62,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMaxY:D",
@@ -74,7 +74,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMaxZ:D",
@@ -86,7 +86,7 @@ public abstract class PistonExtensionBlockMixin extends BlockMixin {
     }
 
     @Inject(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/PistonExtensionBlock;boundingBoxMaxZ:D",

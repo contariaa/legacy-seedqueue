@@ -13,7 +13,7 @@ public abstract class FurnaceBlockMixin {
     private static final ThreadLocal<Boolean> threadedKeepInventory = ThreadLocal.withInitial(() -> false);
 
     @Redirect(
-            method = "setBlockState",
+            method = "method_321",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/FurnaceBlock;keepInventory:Z",
@@ -25,7 +25,7 @@ public abstract class FurnaceBlockMixin {
     }
 
     @Redirect(
-            method = "onBreaking",
+            method = "method_411",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/FurnaceBlock;keepInventory:Z",

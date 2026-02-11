@@ -10,12 +10,11 @@
     "defaultRequire": 1
   },
   "client": [
-    "accessor.DebugHudAccessor",
     "accessor.MinecraftClientAccessor",
     "accessor.MinecraftServerAccessor",
     "accessor.WorldRendererAccessor",
     "client.MinecraftClientMixin",
-    "client.debug.DebugHudMixin",
+    "client.TitleScreenMixin",
     "client.levellist.AnvilLevelStorageMixin",
     "client.render.GameRendererMixin",
     "client.render.InGameHudMixin",
@@ -28,11 +27,7 @@
     "included.antiresourcereload.UserCacheMixin",
     "included.fastreset.MinecraftServerMixin",
     "included.glacier.BiomeCacheEntryMixin",
-    "included.glacier.BlockModelRendererMixin",
-    "included.glacier.BuiltChunkStorageMixin",
-    "included.glacier.ChunkOcclusionDataBuilderMixin",
-    "included.glacier.FluidRendererMixin",
-    "included.glacier.WorldRendererMixin",
+    "included.speedrunapi.resourceloader.DefaultResourcePackMixin",
     "included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
     "included.worldpreview.accessor.EntityAccessor",
     "included.worldpreview.accessor.EntityTrackerAccessor",
@@ -52,7 +47,6 @@
     "server.synchronization.AbstractCommandMixin",
     "server.synchronization.RandomVectorGeneratorMixin",
     "server.synchronization.ScheduledTickMixin",
-    "server.synchronization.TypeFilterableListMixin",
     "server.synchronization.biome.IntArrayCacheMixin",
     "server.synchronization.biome.MesaBiomeMixin",
     "server.synchronization.biome.decorator.BiomeDecoratorMixin",
@@ -87,10 +81,7 @@
     "server.synchronization.block.falling_block.SurfaceChunkGeneratorMixin",
     "server.synchronization.get_server.CommandManagerMixin",
     "server.synchronization.get_server.MinecraftServerMixin",
-    "server.synchronization.structure.StrongholdPiecesMixin",
-    "server.synchronization.structure.StrongholdPiecesMixin$SpiralStaircaseMixin"
+    "server.synchronization.structure.StrongholdPiecesMixin"
   ],
-  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin",
-  "mixins": [
-  ]
+  "plugin": "me.contaria.seedqueue.SeedQueueMixinConfigPlugin"
 }

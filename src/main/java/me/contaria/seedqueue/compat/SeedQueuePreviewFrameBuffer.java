@@ -1,14 +1,12 @@
 package me.contaria.seedqueue.compat;
 
 import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,37 +51,40 @@ public class SeedQueuePreviewFrameBuffer {
     }
 
     /**
-     * Draws the internal {@link Framebuffer} without setting {@link GlStateManager#ortho} and {@link GlStateManager#viewport}.
+     * Draws the internal {@link Framebuffer} without setting {@link GL11#glOrtho} and {@link GL11#glViewport}.
      */
     public void draw(int width, int height) {
         if (!GLX.supportsFbo()) {
             return;
         }
 
-        GlStateManager.colorMask(true, true, true, false);
-        GlStateManager.disableDepthTest();
-        GlStateManager.depthMask(false);
-        GlStateManager.enableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableBlend();
-        GlStateManager.enableColorMaterial();
+        GL11.glColorMask(true, true, true, false);
+        GL11.glDisable(2929); // depth test
+        GL11.glDepthMask(false);
+        GL11.glEnable(3553); // texture
+        GL11.glDisable(2896); // lighting
+        GL11.glDisable(3008); // alpha test
+        GL11.glDisable(3042); // blend
+        GL11.glEnable(2903); // color material
 
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+        double widthRatio = (double) this.framebuffer.viewportWidth / this.framebuffer.textureWidth;
+        double heightRatio = (double) this.framebuffer.viewportHeight / this.framebuffer.textureHeight;
 
         this.framebuffer.beginRead();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferBuilder.vertex(0.0, height, 0.0).texture(0.0f, 0.0f).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(width, height, 0.0).texture(1.0f, 0.0f).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(width, 0.0, 0.0).texture(1.0f, 1.0f).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, 1.0f).color(255, 255, 255, 255).next();
-        tessellator.draw();
+        Tessellator tessellator = Tessellator.INSTANCE;
+        tessellator.begin();
+        tessellator.color(-1);
+        tessellator.vertex(0.0, height, 0.0, 0.0, 0.0);
+        tessellator.vertex(width, height, 0.0, widthRatio, 0.0);
+        tessellator.vertex(width, 0.0, 0.0, widthRatio, heightRatio);
+        tessellator.vertex(0.0, 0.0, 0.0, 0.0, heightRatio);
+        tessellator.end();
         this.framebuffer.endRead();
 
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(true, true, true, true);
+        GL11.glDepthMask(true);
+        GL11.glColorMask(true, true, true, true);
     }
 
     public void discard() {

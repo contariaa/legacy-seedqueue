@@ -1,10 +1,8 @@
 package me.contaria.seedqueue.worldpreview;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
-import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -14,13 +12,14 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ClientPlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ControllablePlayerEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.util.profiler.Profiler;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +29,19 @@ import java.util.function.Consumer;
 
 public class WorldPreviewProperties extends DrawableHelper {
     public final ClientWorld world;
-    public final ClientPlayerEntity player;
+    public final ControllablePlayerEntity player;
     public final ClientPlayerInteractionManager interactionManager;
-    public final Queue<Packet<?>> packetQueue;
+    public final Queue<Packet> packetQueue;
     private final int perspective;
 
     private int frameCount;
 
-    public WorldPreviewProperties(ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet<?>> packetQueue) {
+    public WorldPreviewProperties(ClientWorld world, ControllablePlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet> packetQueue) {
         this.world = world;
         this.player = player;
         this.interactionManager = interactionManager;
         this.packetQueue = packetQueue;
-        this.perspective = (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0);
+        this.perspective = /* (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0) */ 0;
     }
 
     /**
@@ -52,9 +51,9 @@ public class WorldPreviewProperties extends DrawableHelper {
         MinecraftClient client = MinecraftClient.getInstance();
 
         WorldRenderer mcWorldRenderer = client.worldRenderer;
-        ClientPlayerEntity mcPlayer = client.player;
+        ControllablePlayerEntity mcPlayer = client.field_3805;
         ClientWorld mcWorld = client.world;
-        Entity mcCameraEntity = client.getCameraEntity();
+        LivingEntity mcCameraEntity = client.field_6279;
         ClientPlayerInteractionManager mcInteractionManager = client.interactionManager;
         int mcPerspective = client.options.perspective;
 
@@ -62,9 +61,9 @@ public class WorldPreviewProperties extends DrawableHelper {
             WorldPreview.renderingPreview = true;
 
             client.worldRenderer = WorldPreview.worldRenderer;
-            client.player = this.player;
+            client.field_3805 = this.player;
             client.world = this.world;
-            client.setCameraEntity(this.player);
+            client.field_6279 = this.player;
             client.interactionManager = this.interactionManager;
             client.options.perspective = this.perspective;
 
@@ -73,9 +72,9 @@ public class WorldPreviewProperties extends DrawableHelper {
             WorldPreview.renderingPreview = false;
 
             client.worldRenderer = mcWorldRenderer;
-            client.player = mcPlayer;
+            client.field_3805 = mcPlayer;
             client.world = mcWorld;
-            client.setCameraEntity(mcCameraEntity);
+            client.field_6279 = mcCameraEntity;
             client.interactionManager = mcInteractionManager;
             client.options.perspective = mcPerspective;
         }
@@ -96,19 +95,18 @@ public class WorldPreviewProperties extends DrawableHelper {
 
         profiler.swap("tick_packets");
         while (this.shouldApplyPacket(this.packetQueue.peek(), dataLimit, applied++)) {
-            //noinspection unchecked
-            Packet<ClientPlayPacketListener> packet = (Packet<ClientPlayPacketListener>) Objects.requireNonNull(this.packetQueue.poll());
+            Packet packet = Objects.requireNonNull(this.packetQueue.poll());
             profiler.push(packet.getClass().getSimpleName());
-            packet.apply(this.player.networkHandler);
+            packet.apply(this.player.field_1667);
             profiler.pop();
         }
     }
 
-    protected boolean shouldApplyPacket(Packet<?> packet, int dataLimit, int applied) {
+    protected boolean shouldApplyPacket(Packet packet, int dataLimit, int applied) {
         return packet != null && (dataLimit >= 100 || dataLimit > applied || !this.canStopAtPacket(packet));
     }
 
-    protected boolean canStopAtPacket(Packet<?> packet) {
+    protected boolean canStopAtPacket(Packet packet) {
         return packet instanceof ChunkDataS2CPacket || packet instanceof MobSpawnS2CPacket || packet instanceof EntitySpawnS2CPacket;
     }
 
@@ -120,7 +118,8 @@ public class WorldPreviewProperties extends DrawableHelper {
         Profiler profiler = MinecraftClient.getInstance().profiler;
 
         profiler.swap("tick_new_entities");
-        for (Entity entity : this.world.entities) {
+        for (Object object : this.world.entities) {
+            Entity entity = (Entity) object;
             if (!((EntityAccessor) entity).worldpreview$isFirstUpdate() || entity.vehicle != null && ((EntityAccessor) entity.vehicle).worldpreview$isFirstUpdate()) {
                 continue;
             }
@@ -157,11 +156,11 @@ public class WorldPreviewProperties extends DrawableHelper {
 
         profiler.swap("render_preview");
 
-        GlStateManager.clear(256);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0, client.width, client.height, 0.0, 1000.0, 3000.0);
-        GlStateManager.loadIdentity();
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        GL11.glClear(256);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0, client.width, client.height, 0.0, 1000.0, 3000.0);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, 0.0F);
 
         profiler.push("light_map");
         ((GameRendererAccessor) client.gameRenderer).worldpreview$tickLightmap();
@@ -170,7 +169,7 @@ public class WorldPreviewProperties extends DrawableHelper {
         profiler.swap("entity_outlines");
         profiler.pop();
 
-        GlStateManager.clear(256);
+        GL11.glClear(256);
     }
 
     public void buildChunks() {
@@ -179,69 +178,70 @@ public class WorldPreviewProperties extends DrawableHelper {
 
         profiler.swap("build_preview");
 
-        GlStateManager.clear(256);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0, client.width, client.height, 0.0, 1000.0, 3000.0);
-        GlStateManager.loadIdentity();
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        GL11.glClear(256);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0, client.width, client.height, 0.0, 1000.0, 3000.0);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, 0.0F);
 
         this.buildChunksInternal();
 
-        GlStateManager.clear(256);
+        GL11.glClear(256);
     }
 
     private void buildChunksInternal() {
         MinecraftClient client = MinecraftClient.getInstance();
         Profiler profiler = client.profiler;
 
-        GlStateManager.enableDepthTest();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.alphaFunc(516, 0.5F);
-        GlStateManager.enableCull();
-        GlStateManager.clear(256);
+        GL11.glEnable(2929); // depth test
+        GL11.glEnable(3008); // alpha test
+        GL11.glAlphaFunc(516, 0.5F);
+        GL11.glEnable(2884); // cull
+        GL11.glClear(256);
 
         profiler.push("camera");
         ((GameRendererAccessor) client.gameRenderer).worldpreview$setupCamera(1.0f, 2);
-        Camera.update(client.player, client.options.perspective == 2);
+        Camera.update(client.field_3805, client.options.perspective == 2);
 
         profiler.swap("frustum");
         Frustum.getInstance();
 
         profiler.swap("culling");
         CameraView cameraView = new CullingCameraView();
-        Entity entity = client.getCameraEntity();
+        LivingEntity entity = client.field_6279;
         cameraView.setPos(entity.x, entity.y, entity.z);
 
-        GlStateManager.shadeModel(7425);
+        GL11.glShadeModel(7425);
 
-        profiler.swap("prepareterrain");
-        client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        DiffuseLighting.disable();
-        profiler.swap("terrain_setup");
-        client.worldRenderer.setupTerrain(entity, 1.0f, cameraView, this.frameCount++, client.player.isSpectator());
         profiler.swap("updatechunks");
-        client.worldRenderer.updateChunks(System.nanoTime());
+        client.worldRenderer.method_1373(cameraView, 1.0f);
+        client.worldRenderer.method_1375(entity, false);
+
+        profiler.swap("terrain");
+        client.worldRenderer.method_1374(entity, 0, 1.0f);
+        client.worldRenderer.method_1374(entity, 1, 1.0f);
 
         profiler.pop();
 
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableBlend();
-        GlStateManager.clear(256);
+        GL11.glDisable(2929); // depth test
+        GL11.glDisable(3008); // alpha test
+        GL11.glDisable(3042); // blend
+        GL11.glClear(256);
     }
 
     public void renderHud() {
         MinecraftClient client = MinecraftClient.getInstance();
         Profiler profiler = client.profiler;
 
-        GlStateManager.clear(256);
+        GL11.glClear(256);
+        GL11.glAlphaFunc(516, 0.1F);
         client.gameRenderer.setupHudMatrixMode();
 
         profiler.push("ingame_hud");
-        client.inGameHud.render(0.0F);
+        client.inGameHud.render(0.0F, true, 0, 0);
         profiler.pop();
 
-        GlStateManager.clear(256);
+        GL11.glClear(256);
     }
 
     public void renderMenu(int mouseX, int mouseY, List<ButtonWidget> buttons, int width, int height) {

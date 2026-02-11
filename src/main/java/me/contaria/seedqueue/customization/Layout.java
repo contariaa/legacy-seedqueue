@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -97,7 +98,7 @@ public class Layout {
     public static boolean containsResource(Identifier id) {
         try {
             return MinecraftClient.getInstance().getResourceManager().getResource(id) != null;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return false;
         }
     }

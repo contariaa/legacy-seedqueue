@@ -12,5 +12,5 @@ public interface TrackedEntityInstanceAccessor {
     boolean worldpreview$shouldTrackVelocity();
 
     @Invoker("method_2182")
-    Packet<?> worldpreview$createSpawnPacket();
+    Packet worldpreview$createSpawnPacket();
 }

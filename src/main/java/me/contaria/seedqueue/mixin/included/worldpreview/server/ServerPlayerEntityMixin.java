@@ -2,7 +2,6 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.worldpreview.WPFakeServerPlayerEntity;
 import me.contaria.seedqueue.worldpreview.interfaces.WPMinecraftServer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,13 +9,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.stat.ServerStatHandler;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
@@ -24,26 +22,28 @@ public abstract class ServerPlayerEntityMixin {
     @Final
     public MinecraftServer server;
 
-    @ModifyArg(
+    @WrapOperation(
             method = "<init>",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/ServerPlayerEntity;refreshPositionAndAngles(Lnet/minecraft/util/math/BlockPos;FF)V"
-            ),
-            index = 0
+                    target = "Lnet/minecraft/entity/player/ServerPlayerEntity;refreshPositionAndAngles(DDDFF)V"
+            )
     )
-    private BlockPos setPreviewSpawnPos(BlockPos pos) {
+    private void setPreviewSpawnPos(ServerPlayerEntity player, double x, double y, double z, float yaw, float pitch, Operation<Void> original) {
         WPMinecraftServer server = (WPMinecraftServer) this.server;
         if (this.isWorldPreviewFakePlayer()) {
-            server.worldpreview$setPreviewSpawnPos(pos);
-            return pos;
+            server.worldpreview$setPreviewSpawnPos(Vec3d.of(x, y, z));
+            original.call(player, x, y, z, yaw, pitch);
+            return;
         }
-        BlockPos spawnPos = server.worldpreview$getPreviewSpawnPos();
+
+        Vec3d spawnPos = server.worldpreview$getPreviewSpawnPos();
         if (spawnPos != null) {
             server.worldpreview$clearPreviewSpawnPos();
-            return spawnPos;
+            original.call(player, spawnPos.x, spawnPos.y, spawnPos.z, yaw, pitch);
+            return;
         }
-        return pos;
+        original.call(player, x, y, z, yaw, pitch);
     }
 
     @WrapOperation(

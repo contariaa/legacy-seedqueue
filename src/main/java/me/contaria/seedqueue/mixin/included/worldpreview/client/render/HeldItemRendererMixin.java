@@ -13,10 +13,8 @@ public abstract class HeldItemRendererMixin {
 
     @ModifyExpressionValue(
             method = {
-                    "renderMap",
-                    "applyEatOrDrinkTransformation",
-                    "applyBowTransformation",
-                    "renderArmHoldingItem"
+                    "renderArmHoldingItem",
+                    "updateHeldItems"
             },
             at = @At(
                     value = "FIELD",

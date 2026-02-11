@@ -27,7 +27,7 @@ public abstract class StrongholdPiecesMixin {
     @Redirect(
             method = {
                     "init",
-                    "pickPiece"
+                    "method_22"
             },
             at = @At(
                     value = "FIELD",
@@ -55,7 +55,7 @@ public abstract class StrongholdPiecesMixin {
             method = {
                     "init",
                     "checkRemainingPieces",
-                    "pickPiece"
+                    "method_22"
             },
             at = @At(
                     value = "FIELD",
@@ -68,7 +68,7 @@ public abstract class StrongholdPiecesMixin {
     }
 
     @Redirect(
-            method = "pickPiece",
+            method = "method_22",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/structure/StrongholdPieces;ACTIVE_PIECE_TYPE:Ljava/lang/Class;",
@@ -82,7 +82,7 @@ public abstract class StrongholdPiecesMixin {
     @Redirect(
             method = {
                     "checkRemainingPieces",
-                    "pickPiece"
+                    "method_22"
             },
             at = @At(
                     value = "FIELD",
@@ -92,20 +92,5 @@ public abstract class StrongholdPiecesMixin {
     )
     private static int getThreadedTotalWeight() {
         return ThreadedStrongholdPieces.THREADED_TOTAL_WEIGHT.get();
-    }
-
-    @Mixin(StrongholdPieces.SpiralStaircase.class)
-    private abstract static class SpiralStaircaseMixin {
-        @Redirect(
-                method = "fillOpenings",
-                at = @At(
-                        value = "INVOKE",
-                        target = "Lnet/minecraft/structure/StrongholdPieces;method_19(Ljava/lang/Class;)Ljava/lang/Class;"
-                )
-        )
-        private static Class<?> setThreadedActivePieceType(Class<?> activePieceType) {
-            ThreadedStrongholdPieces.THREADED_ACTIVE_PIECE_TYPE.set(activePieceType);
-            return activePieceType;
-        }
     }
 }

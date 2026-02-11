@@ -1,22 +1,19 @@
 package me.contaria.seedqueue.gui.wall;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.customization.LockTexture;
+import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
-import me.voidxwalker.autoreset.Atum;
-import me.voidxwalker.autoreset.interfaces.ISeedStringHolder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.resource.language.I18n;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +46,7 @@ public class SeedQueuePreview extends DrawableHelper {
 
         // forceUnicodeFont is not being loaded from the settings cache because it is not included in SeedQueueSettingsCache.PREVIEW_SETTINGS
         int scale = SeedQueue.config.calculateSimulatedScaleFactor(
-                this.seedQueueEntry.getSettingsCache() != null ? (int) this.seedQueueEntry.getSettingsCache().getValue("guiScale") : MinecraftClient.getInstance().options.guiScale,
+                MinecraftClient.getInstance().options.guiScale,
                 MinecraftClient.getInstance().options.forcesUnicodeFont
         );
         this.width = (int) Math.ceil((double) SeedQueue.config.simulatedWindowSize.width() / scale);
@@ -57,12 +54,14 @@ public class SeedQueuePreview extends DrawableHelper {
 
         this.buttons = WorldPreviewProperties.createMenu(this.width, this.height);
 
-        if (Atum.getSeedProvider().shouldShowSeed()) {
-            //noinspection DataFlowIssue
-            this.seedString = ((ISeedStringHolder) (Object) this.seedQueueEntry.getLevelInfo()).atum$getSeedString();
-        } else {
-            this.seedString = "Set Seed";
-        }
+        // TODO
+//        if (Atum.getSeedProvider().shouldShowSeed()) {
+//            //noinspection DataFlowIssue
+//            this.seedString = ((ISeedStringHolder) (Object) this.seedQueueEntry.getLevelInfo()).atum$getSeedString();
+//        } else {
+//            this.seedString = "Set Seed";
+//        }
+        this.seedString = "";
 
         this.lockTexture = wall.getRandomLockTexture();
 
@@ -75,9 +74,9 @@ public class SeedQueuePreview extends DrawableHelper {
         }
         if (this.previewProperties != null) {
             this.worldRenderer = SeedQueueWallScreen.getOrCreateWorldRenderer(this.previewProperties.world);
-            if (this.seedQueueEntry.getSettingsCache() == null) {
-                this.seedQueueEntry.setSettingsCache(this.wall.settingsCache);
-            }
+//            if (this.seedQueueEntry.getSettingsCache() == null) {
+//                this.seedQueueEntry.setSettingsCache(this.wall.settingsCache);
+//            }
         } else {
             this.worldRenderer = null;
         }
@@ -107,7 +106,7 @@ public class SeedQueuePreview extends DrawableHelper {
     private void renderPreview() {
         SeedQueuePreviewFrameBuffer frameBuffer = this.seedQueueEntry.getFrameBuffer();
         if (this.previewProperties != null) {
-            if (this.shouldRedrawPreview() && (frameBuffer.updateRenderData(this.worldRenderer))) {
+            if (this.shouldRedrawPreview() && frameBuffer.updateRenderData(this.worldRenderer)) {
                 this.redrawPreview(frameBuffer);
             } else {
                 this.buildChunks();
@@ -133,31 +132,31 @@ public class SeedQueuePreview extends DrawableHelper {
 
     private void renderLoading() {
         String title = I18n.translate("menu.loadingLevel");
-        this.client.textRenderer.drawWithShadow(title, (this.width - this.client.textRenderer.getStringWidth(title)) / 2.0f, this.height / 2.0f - 4 - 16, 16777215);
+        this.client.textRenderer.draw(title, (this.width - this.client.textRenderer.getStringWidth(title)) / 2, this.height / 2 - 4 - 16, 16777215);
 
         String operation = this.seedQueueEntry.getServer().getServerOperation();
         if (operation != null) {
             String task = I18n.translate(operation);
-            this.client.textRenderer.drawWithShadow(task, (this.width - this.client.textRenderer.getStringWidth(task)) / 2.0f, this.height / 2.0f - 4 + 8, 16777215);
+            this.client.textRenderer.draw(task, (this.width - this.client.textRenderer.getStringWidth(task)) / 2, this.height / 2 - 4 + 8, 16777215);
         }
 
         if (this.seedString != null && !this.seedString.isEmpty()) {
-            this.client.textRenderer.drawWithShadow(this.seedString, (this.width - this.client.textRenderer.getStringWidth(this.seedString)) / 2.0f, this.height / 2.0f - 4 - 40, 16777215);
+            this.client.textRenderer.draw(this.seedString, (this.width - this.client.textRenderer.getStringWidth(this.seedString)) / 2, this.height / 2 - 4 - 40, 16777215);
         }
     }
 
     private void renderLoadingInCorner() {
         String title = I18n.translate("menu.loadingLevel");
-        this.client.textRenderer.drawWithShadow(title, 5, this.height - 5 - 9 - 24, 16777215);
+        this.client.textRenderer.draw(title, 5, this.height - 5 - 9 - 24, 16777215);
 
         String operation = this.seedQueueEntry.getServer().getServerOperation();
         if (operation != null) {
             String task = I18n.translate(operation);
-            this.client.textRenderer.drawWithShadow(task, 5, this.height - 5 - 9, 16777215);
+            this.client.textRenderer.draw(task, 5, this.height - 5 - 9, 16777215);
         }
 
         if (this.seedString != null && !this.seedString.isEmpty()) {
-            this.client.textRenderer.drawWithShadow(this.seedString, 5, this.height - 5 - 9 - 40, 16777215);
+            this.client.textRenderer.draw(this.seedString, 5, this.height - 5 - 9 - 40, 16777215);
         }
     }
 
@@ -238,7 +237,7 @@ public class SeedQueuePreview extends DrawableHelper {
     }
 
     public void printStacktrace() {
-        SeedQueue.LOGGER.info("SeedQueue-DEBUG | Instance: {}, Stacktrace: {}", this.seedQueueEntry.getServer().getLevelName(), Arrays.toString(this.seedQueueEntry.getServer().getThread().getStackTrace()));
+        SeedQueue.LOGGER.info("SeedQueue-DEBUG | Instance: {}, Stacktrace: {}", this.seedQueueEntry.getServer().getLevelName(), Arrays.toString(((SQMinecraftServer) this.seedQueueEntry.getServer()).seedQueue$getThread().getStackTrace()));
     }
 
     public SeedQueueEntry getSeedQueueEntry() {
@@ -251,15 +250,15 @@ public class SeedQueuePreview extends DrawableHelper {
 
     // see Screen#renderBackground
     public static void renderBackground(int width, int height) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        Tessellator var2 = Tessellator.INSTANCE;
         MinecraftClient.getInstance().getTextureManager().bindTexture(OPTIONS_BACKGROUND_TEXTURE);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        buffer.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-        buffer.vertex(0.0, height, 0.0).texture(0.0F, height / 32.0F).color(64, 64, 64, 255).next();
-        buffer.vertex(width, height, 0.0).texture(width / 32.0F, height / 32.0F).color(64, 64, 64, 255).next();
-        buffer.vertex(width, 0.0, 0.0).texture(width / 32.0F, 0.0F).color(64, 64, 64, 255).next();
-        buffer.vertex(0.0, 0.0, 0.0).texture(0.0F, 0.0F).color(64, 64, 64, 255).next();
-        tessellator.draw();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        var2.begin();
+        var2.color(4210752);
+        var2.vertex(0.0, height, 0.0, 0.0, height / 32.0);
+        var2.vertex(width, height, 0.0, width / 32.0, height / 32.0);
+        var2.vertex(width, 0.0, 0.0, width / 32.0, 0);
+        var2.vertex(0.0, 0.0, 0.0, 0.0, 0);
+        var2.end();
     }
 }

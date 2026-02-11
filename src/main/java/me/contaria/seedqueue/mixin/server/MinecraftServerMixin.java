@@ -1,6 +1,6 @@
 package me.contaria.seedqueue.mixin.server;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -9,6 +9,7 @@ import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.class_739;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,20 +32,21 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
     @Unique
     private volatile boolean paused;
 
-    @Shadow
-    public abstract boolean isOnThread();
+    @Unique
+    private Thread thread;
 
     @Shadow
     public abstract PlayerManager getPlayerManager();
 
-    @ModifyExpressionValue(
+    @ModifyReceiver(
             method = "startServerThread",
             at = @At(
-                    value = "NEW",
-                    target = "(Ljava/lang/Runnable;Ljava/lang/String;)Ljava/lang/Thread;"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/class_739;start()V"
             )
     )
-    private Thread modifyServerThreadProperties(Thread thread) {
+    private class_739 modifyServerThreadProperties(class_739 thread) {
+        this.thread = thread;
         if (SeedQueue.inQueue()) {
             thread.setPriority(SeedQueue.config.serverThreadPriority);
         }
@@ -128,7 +130,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
 
     @Override
     public synchronized void seedQueue$tryPausingServer() {
-        if (!this.isOnThread()) {
+        if (Thread.currentThread() != this.thread) {
             throw new IllegalStateException("Tried to pause the server from another thread!");
         }
 
@@ -172,5 +174,10 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             this.notify();
             this.paused = false;
         }
+    }
+
+    @Override
+    public Thread seedQueue$getThread() {
+        return this.thread;
     }
 }

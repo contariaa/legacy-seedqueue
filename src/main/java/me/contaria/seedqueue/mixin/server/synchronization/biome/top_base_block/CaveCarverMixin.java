@@ -1,7 +1,7 @@
 package me.contaria.seedqueue.mixin.server.synchronization.biome.top_base_block;
 
 import me.contaria.seedqueue.interfaces.SQBiome;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.Block;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.CaveCarver;
 import org.objectweb.asm.Opcodes;
@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class CaveCarverMixin {
 
     @Redirect(
-            method = "carveCave(JIILnet/minecraft/world/chunk/ChunkBlockStateStorage;DDDFFFIID)V",
+            method = "method_4002",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/Biome;topBlock:Lnet/minecraft/block/BlockState;",
+                    target = "Lnet/minecraft/world/biome/Biome;field_7204:Lnet/minecraft/block/Block;",
                     opcode = Opcodes.GETFIELD
             )
     )
-    private BlockState getThreadedTopBlock(Biome biome) {
+    private Block getThreadedTopBlock(Biome biome) {
         return ((SQBiome) biome).seedQueue$getTopBlock();
     }
 }

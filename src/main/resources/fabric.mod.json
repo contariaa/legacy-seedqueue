@@ -44,9 +44,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.17.2",
-    "minecraft": "1.8.9",
-    "speedrunapi": ">=2.0-",
-    "atum": ">=2.5-"
+    "minecraft": "1.7.10"
   },
   "breaks": {
     "optifabric": "*",

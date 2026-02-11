@@ -28,6 +28,6 @@ public class SeedQueueProfiler {
     }
 
     private static boolean shouldProfile() {
-        return MinecraftClient.getInstance().isOnThread() && SeedQueue.isOnWall() && SeedQueue.config.showDebugMenu;
+        return MinecraftClient.getInstance().method_6640() && SeedQueue.isOnWall() && SeedQueue.config.showDebugMenu;
     }
 }

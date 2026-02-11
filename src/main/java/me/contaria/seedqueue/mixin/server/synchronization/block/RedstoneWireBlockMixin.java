@@ -22,7 +22,7 @@ public abstract class RedstoneWireBlockMixin {
     }
 
     @Redirect(
-            method = "update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;",
+            method = "method_371",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/RedstoneWireBlock;wiresGivePower:Z",
@@ -51,8 +51,8 @@ public abstract class RedstoneWireBlockMixin {
 
     @Redirect(
             method = {
-                    "update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;",
-                    "update(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"
+                    "method_371",
+                    "method_375"
             },
             at = @At(
                     value = "FIELD",

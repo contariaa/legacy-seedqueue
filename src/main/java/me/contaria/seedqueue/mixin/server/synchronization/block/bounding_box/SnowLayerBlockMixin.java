@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SnowLayerBlock.class)
 public abstract class SnowLayerBlockMixin extends BlockMixin {
     @Inject(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At("HEAD")
     )
     private void getThreadedBoundingBox(CallbackInfoReturnable<Box> cir, @Share("boundingBox") LocalRef<double[]> boundingBox) {
@@ -22,7 +22,7 @@ public abstract class SnowLayerBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/SnowLayerBlock;boundingBoxMinX:D",
@@ -34,7 +34,7 @@ public abstract class SnowLayerBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/SnowLayerBlock;boundingBoxMinY:D",
@@ -46,7 +46,7 @@ public abstract class SnowLayerBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/SnowLayerBlock;boundingBoxMinZ:D",
@@ -58,7 +58,7 @@ public abstract class SnowLayerBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/SnowLayerBlock;boundingBoxMaxX:D",
@@ -70,7 +70,7 @@ public abstract class SnowLayerBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/SnowLayerBlock;boundingBoxMaxZ:D",

@@ -14,8 +14,8 @@ public abstract class FlowingFluidBlockMixin {
 
     @Redirect(
             method = {
-                    "onScheduledTick",
-                    "getFluidLevelFromNeighbor"
+                    "onTick",
+                    "method_337"
             },
             at = @At(
                     value = "FIELD",
@@ -29,8 +29,8 @@ public abstract class FlowingFluidBlockMixin {
 
     @Redirect(
             method = {
-                    "onScheduledTick",
-                    "getFluidLevelFromNeighbor"
+                    "onTick",
+                    "method_337"
             },
             at = @At(
                     value = "FIELD",

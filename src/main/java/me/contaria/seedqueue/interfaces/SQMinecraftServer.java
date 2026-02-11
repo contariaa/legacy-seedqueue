@@ -20,4 +20,6 @@ public interface SQMinecraftServer {
     void seedQueue$schedulePause();
 
     void seedQueue$unpause();
+
+    Thread seedQueue$getThread();
 }

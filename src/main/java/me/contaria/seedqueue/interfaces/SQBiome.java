@@ -1,16 +1,16 @@
 package me.contaria.seedqueue.interfaces;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.block.Block;
 import net.minecraft.world.gen.feature.BigTreeFeature;
 
 public interface SQBiome {
-    BlockState seedQueue$getTopBlock();
+    Block seedQueue$getTopBlock();
 
-    void seedQueue$setTopBlock(BlockState state);
+    void seedQueue$setTopBlock(Block state);
 
-    BlockState seedQueue$getBaseBlock();
+    Block seedQueue$getBaseBlock();
 
-    void seedQueue$setBaseBlock(BlockState state);
+    void seedQueue$setBaseBlock(Block state);
 
     BigTreeFeature seedQueue$getBigTreeFeature();
 }

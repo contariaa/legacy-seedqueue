@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class DragonEggBlockMixin {
 
     @Redirect(
-            method = "scheduledTick",
+            method = "method_307",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/FallingBlock;instantFall:Z",

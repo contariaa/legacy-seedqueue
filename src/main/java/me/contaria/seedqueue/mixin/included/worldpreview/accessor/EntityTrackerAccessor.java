@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(EntityTracker.class)
 public interface EntityTrackerAccessor {
     @Accessor("trackedEntityIds")
-    IntObjectStorage<TrackedEntityInstance> worldpreview$getTrackedEntityIds();
+    IntObjectStorage worldpreview$getTrackedEntityIds();
 }

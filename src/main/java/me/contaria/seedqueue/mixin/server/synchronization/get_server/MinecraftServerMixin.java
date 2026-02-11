@@ -43,7 +43,7 @@ public abstract class MinecraftServerMixin {
      */
     @Overwrite
     public static MinecraftServer getServer() {
-        if (MinecraftClient.getInstance().isOnThread()) {
+        if (MinecraftClient.getInstance().method_6640()) {
             return MinecraftClient.getInstance().getServer();
         }
         return Objects.requireNonNull(threadedInstance.get());

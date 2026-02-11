@@ -8,7 +8,4 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MinecraftServerAccessor {
     @Accessor("running")
     void seedQueue$setRunning(boolean running);
-
-    @Accessor("serverThread")
-    Thread seedQueue$getServerThread();
 }

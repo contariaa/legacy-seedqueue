@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LilyPadBlock.class)
 public abstract class LilyPadBlockMixin extends BlockMixin {
     @Inject(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At("HEAD")
     )
     private void getThreadedBoundingBox(CallbackInfoReturnable<Box> cir, @Share("boundingBox") LocalRef<double[]> boundingBox) {
@@ -22,7 +22,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMinX:D",
@@ -34,7 +34,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMinY:D",
@@ -46,7 +46,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMinZ:D",
@@ -58,7 +58,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMaxX:D",
@@ -70,7 +70,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMaxY:D",
@@ -82,7 +82,7 @@ public abstract class LilyPadBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LilyPadBlock;boundingBoxMaxZ:D",

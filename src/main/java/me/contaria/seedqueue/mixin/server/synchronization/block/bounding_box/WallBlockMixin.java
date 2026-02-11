@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class WallBlockMixin extends BlockMixin {
 
     @Redirect(
-            method = "getCollisionBox",
+            method = "getBoundingBox",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/WallBlock;boundingBoxMaxY:D",

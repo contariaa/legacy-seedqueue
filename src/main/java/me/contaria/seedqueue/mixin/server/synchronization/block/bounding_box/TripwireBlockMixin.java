@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TripwireBlock.class)
 public abstract class TripwireBlockMixin extends BlockMixin {
     @Inject(
-            method = "updatePowered",
+            method = "method_502",
             at = @At("HEAD")
     )
     private void getThreadedBoundingBox(CallbackInfo ci, @Share("boundingBox") LocalRef<double[]> boundingBox) {
@@ -21,7 +21,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMinX:D",
@@ -33,7 +33,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMinY:D",
@@ -45,7 +45,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMinZ:D",
@@ -57,7 +57,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMaxX:D",
@@ -69,7 +69,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMaxY:D",
@@ -81,7 +81,7 @@ public abstract class TripwireBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "updatePowered",
+            method = "method_502",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/TripwireBlock;boundingBoxMaxZ:D",

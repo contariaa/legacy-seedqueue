@@ -6,19 +6,17 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.ClientPlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.player.ControllablePlayerEntity;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelInfo;
 import org.apache.logging.log4j.LogManager;
@@ -47,8 +45,7 @@ public class WorldPreview {
         ClientPlayNetworkHandler networkHandler = new ClientPlayNetworkHandler(
                 MinecraftClient.getInstance(),
                 null,
-                null,
-                MinecraftClient.getInstance().getSession().getProfile()
+                null
         );
         ClientPlayerInteractionManager interactionManager = new ClientPlayerInteractionManager(
                 MinecraftClient.getInstance(),
@@ -58,11 +55,11 @@ public class WorldPreview {
         ClientWorld world = new ClientWorld(
                 networkHandler,
                 new LevelInfo(serverWorld.getLevelProperties()),
-                serverWorld.dimension.getType(),
-                serverWorld.getGlobalDifficulty(),
+                serverWorld.dimension.dimensionType,
+                serverWorld.difficulty,
                 MinecraftClient.getInstance().profiler
         );
-        ClientPlayerEntity player = interactionManager.createPlayer(
+        ControllablePlayerEntity player = interactionManager.method_1232(
                 world,
                 null
         );
@@ -77,28 +74,30 @@ public class WorldPreview {
         // reset the randomness introduced to the yaw in LivingEntity#<init>
         player.headYaw = player.yaw = 0.0F;
 
-        LevelInfo.GameMode gameMode = LevelInfo.GameMode.NOT_SET;
+        // TODO
+//        LevelInfo.GameMode gameMode = LevelInfo.GameMode.NOT_SET;
+//
+//        // This part is not actually relevant for previewing new worlds,
+//        // I just personally like the idea of worldpreview principally being able to work on old worlds as well
+//        // same with sending world info and scoreboard data
+//        NbtCompound playerData = serverWorld.getServer().getPlayerManager().getUserData();
+//        if (playerData != null) {
+//            player.fromNbt(playerData);
+//            // see ServerPlayerEntity#readCustomDataFromNbt
+//            if (!MinecraftServer.getServer().shouldForceGameMode() && playerData.contains("playerGameType", 99)) {
+//                gameMode = LevelInfo.GameMode.byId(playerData.getInt("playerGameType"));
+//            }
+//        }
 
-        // This part is not actually relevant for previewing new worlds,
-        // I just personally like the idea of worldpreview principally being able to work on old worlds as well
-        // same with sending world info and scoreboard data
-        NbtCompound playerData = serverWorld.getServer().getPlayerManager().getUserData();
-        if (playerData != null) {
-            player.fromNbt(playerData);
-            // see ServerPlayerEntity#readCustomDataFromNbt
-            if (!MinecraftServer.getServer().shouldForceGameMode() && playerData.contains("playerGameType", 99)) {
-                gameMode = LevelInfo.GameMode.byId(playerData.getInt("playerGameType"));
-            }
-        }
-
-        Queue<Packet<?>> packetQueue = new LinkedBlockingQueue<>();
-        packetQueue.add(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, fakePlayer));
-        packetQueue.add(new GameStateChangeS2CPacket(3, (gameMode != LevelInfo.GameMode.NOT_SET ? gameMode : serverWorld.getServer().getDefaultGameMode()).getId()));
+        Queue<Packet> packetQueue = new LinkedBlockingQueue<>();
+        packetQueue.add(new PlayerListS2CPacket(player.getTranslationKey(), true, 1000));
+        // TODO
+//        packetQueue.add(new GameStateChangeS2CPacket(3, (gameMode != LevelInfo.GameMode.NOT_SET ? gameMode : serverWorld.getServer().getDefaultGameMode()).getId()));
 
         // see PlayerManager#sendWorldInfo
-        packetQueue.add(new WorldBorderS2CPacket(serverWorld.getWorldBorder(), WorldBorderS2CPacket.Type.INITIALIZE));
         packetQueue.add(new WorldTimeUpdateS2CPacket(serverWorld.getLastUpdateTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
-        packetQueue.add(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos()));
+        BlockPos spawnPos = serverWorld.getWorldSpawnPos();
+        packetQueue.add(new PlayerSpawnPositionS2CPacket(spawnPos.x, spawnPos.y, spawnPos.z));
         if (serverWorld.isRaining()) {
             packetQueue.add(new GameStateChangeS2CPacket(1, 0.0F));
             packetQueue.add(new GameStateChangeS2CPacket(7, world.getRainGradient(1.0F)));
@@ -108,27 +107,19 @@ public class WorldPreview {
         // see PlayerManager#sendScoreboard
         ServerScoreboard scoreboard = (ServerScoreboard) serverWorld.getScoreboard();
         HashSet<ScoreboardObjective> set = Sets.newHashSet();
-        for (Team team : scoreboard.getTeams()) {
-            packetQueue.add(new TeamS2CPacket(team, 0));
+        for (Object team : scoreboard.getTeams()) {
+            packetQueue.add(new TeamS2CPacket((Team) team, 0));
         }
-        for (int i = 0; i < 19; ++i) {
+        for (int i = 0; i < 3; i++) {
             ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(i);
             if (scoreboardObjective == null || set.contains(scoreboardObjective)) {
                 continue;
             }
-            for (Packet<?> packet : scoreboard.createChangePackets(scoreboardObjective)) {
-                packetQueue.add(packet);
+            for (Object packet : scoreboard.createChangePackets(scoreboardObjective)) {
+                packetQueue.add((Packet) packet);
             }
             set.add(scoreboardObjective);
         }
-
-        // make player model parts visible
-        int playerModelPartsBitMask = 0;
-        for (PlayerModelPart playerModelPart : MinecraftClient.getInstance().options.getEnabledPlayerModelParts()) {
-            playerModelPartsBitMask |= playerModelPart.getBitFlag();
-        }
-        player.getDataTracker().setProperty(10, (byte) playerModelPartsBitMask);
-
 
         // set cape to player position
         player.capeX = player.prevCapeX = player.x;
@@ -145,7 +136,7 @@ public class WorldPreview {
         player.chunkY = MathHelper.clamp(MathHelper.floor(player.y / 16.0), 0, 16);
         player.chunkZ = MathHelper.floor(player.z / 16.0);
 
-        ((ClientPlayNetworkHandlerAccessor) player.networkHandler).worldpreview$setWorld(world);
+        ((ClientPlayNetworkHandlerAccessor) player.field_1667).worldpreview$setWorld(world);
 
         return new WorldPreviewProperties(world, player, interactionManager, packetQueue);
     }

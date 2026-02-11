@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.ClientPlayerEntity;
+import net.minecraft.entity.player.ControllablePlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -19,11 +19,11 @@ public abstract class ClientWorldMixin {
             method = "getEntityById",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/ClientPlayerEntity;getEntityId()I"
+                    target = "Lnet/minecraft/entity/player/ControllablePlayerEntity;getEntityId()I"
             )
     )
-    private int doNotAccessPlayerDuringPreviewConfiguration(ClientPlayerEntity player, Operation<Integer> original, int id) {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+    private int doNotAccessPlayerDuringPreviewConfiguration(ControllablePlayerEntity player, Operation<Integer> original, int id) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             return id + 1;
         }
         return original.call(player);

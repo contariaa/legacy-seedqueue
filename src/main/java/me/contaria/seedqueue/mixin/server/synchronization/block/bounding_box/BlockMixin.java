@@ -2,6 +2,7 @@ package me.contaria.seedqueue.mixin.server.synchronization.block.bounding_box;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
@@ -124,10 +125,10 @@ public abstract class BlockMixin {
 
     @Inject(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXYBounds",
                     "isVecWithinXZBounds",
                     "isVecWithinYZBounds"
@@ -140,10 +141,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXYBounds",
                     "isVecWithinXZBounds"
             },
@@ -159,10 +160,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXYBounds",
                     "isVecWithinYZBounds"
             },
@@ -178,10 +179,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXZBounds",
                     "isVecWithinYZBounds"
             },
@@ -197,10 +198,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXYBounds",
                     "isVecWithinXZBounds"
             },
@@ -216,10 +217,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXYBounds",
                     "isVecWithinYZBounds"
             },
@@ -235,10 +236,10 @@ public abstract class BlockMixin {
 
     @Redirect(
             method = {
-                    "isSideInvisible",
-                    "getSelectionBox",
-                    "getCollisionBox",
-                    "rayTrace",
+                    "shouldRenderSide",
+                    "getRenderBoundingBox",
+                    "getBoundingBox",
+                    "method_414",
                     "isVecWithinXZBounds",
                     "isVecWithinYZBounds"
             },
@@ -259,7 +260,7 @@ public abstract class BlockMixin {
         }
         MinecraftClient client = MinecraftClient.getInstance();
         MinecraftServer server = client.getServer();
-        if (client.isOnThread() || (server != null && server.isOnThread())) {
+        if (client.method_6640() || (server != null && Thread.currentThread() == ((SQMinecraftServer) server).seedQueue$getThread())) {
             return this.mainBoundingBox;
         }
         return this.threadedBoundingBox.get();

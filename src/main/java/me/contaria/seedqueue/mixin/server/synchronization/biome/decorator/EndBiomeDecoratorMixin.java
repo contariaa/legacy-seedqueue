@@ -1,6 +1,5 @@
 package me.contaria.seedqueue.mixin.server.synchronization.biome.decorator;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.EndBiomeDecorator;
 import org.objectweb.asm.Opcodes;
@@ -41,11 +40,23 @@ public abstract class EndBiomeDecoratorMixin extends BiomeDecoratorMixin {
             method = "generate",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/EndBiomeDecorator;startPos:Lnet/minecraft/util/math/BlockPos;",
+                    target = "Lnet/minecraft/world/biome/EndBiomeDecorator;field_4689:I",
                     opcode = Opcodes.GETFIELD
             )
     )
-    private BlockPos getThreadedStartPos(EndBiomeDecorator decorator) {
-        return this.threadedStartPos.get();
+    private int getThreadedX(EndBiomeDecorator decorator) {
+        return this.threadedX.get();
+    }
+
+    @Redirect(
+            method = "generate",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/world/biome/EndBiomeDecorator;field_4690:I",
+                    opcode = Opcodes.GETFIELD
+            )
+    )
+    private int getThreadedZ(EndBiomeDecorator decorator) {
+        return this.threadedZ.get();
     }
 }

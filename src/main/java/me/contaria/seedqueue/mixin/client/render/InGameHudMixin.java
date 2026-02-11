@@ -9,7 +9,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
@@ -42,27 +41,16 @@ public abstract class InGameHudMixin extends DrawableHelper {
     }
 
     @ModifyExpressionValue(
-            method = "render",
+            method = "method_5587",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/client/gui/hud/InGameHud;titleRemainTicks:I",
-                    opcode = Opcodes.GETFIELD,
-                    ordinal = 0
+                    target = "Lnet/minecraft/entity/player/ControllablePlayerEntity;timeUntilRegen:I"
             )
     )
-    private int doNotRenderTitleMessageOnWall(int titleRemainTicks) {
+    private int doNotRenderBlinkingHeartsOnWall(int timeUntilRegen) {
         if (SeedQueue.isOnWall()) {
             return 0;
         }
-        return titleRemainTicks;
-    }
-
-    @ModifyVariable(
-            method = "renderStatusBars",
-            at = @At("STORE"),
-            ordinal = 0
-    )
-    private boolean doNotRenderBlinkingHeartsOnWall(boolean blinking) {
-        return blinking && !SeedQueue.isOnWall();
+        return timeUntilRegen;
     }
 }

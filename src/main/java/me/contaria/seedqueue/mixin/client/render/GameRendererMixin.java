@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class GameRendererMixin {
 
     @WrapWithCondition(
-            method = "renderWorld(IFJ)V",
+            method = "renderWorld",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/platform/GlStateManager;viewport(IIII)V"
+                    target = "Lorg/lwjgl/opengl/GL11;glViewport(IIII)V"
             )
     )
     private boolean doNotSetViewportOnWall(int x, int y, int width, int height) {
@@ -22,10 +22,10 @@ public abstract class GameRendererMixin {
     }
 
     @ModifyArg(
-            method = "renderWorld(IFJ)V",
+            method = "renderWorld",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/platform/GlStateManager;clear(I)V",
+                    target = "Lorg/lwjgl/opengl/GL11;glClear(I)V",
                     ordinal = 0
             )
     )

@@ -15,7 +15,7 @@ public abstract class LeavesBlockMixin {
     private final ThreadLocal<int[]> threadedNeighborBlockDecayInfo = new ThreadLocal<>();
 
     @Redirect(
-            method = "onScheduledTick",
+            method = "onTick",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LeavesBlock;neighborBlockDecayInfo:[I",
@@ -27,7 +27,7 @@ public abstract class LeavesBlockMixin {
     }
 
     @WrapOperation(
-            method = "onScheduledTick",
+            method = "onTick",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/LeavesBlock;neighborBlockDecayInfo:[I",

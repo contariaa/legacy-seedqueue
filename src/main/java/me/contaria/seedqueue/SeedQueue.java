@@ -5,8 +5,8 @@ import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.debug.SeedQueueWatchdog;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
+import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
-import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import me.voidxwalker.autoreset.AttemptTracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -30,9 +30,10 @@ public class SeedQueue implements ClientModInitializer {
     private static final Version VERSION = FabricLoader.getInstance().getModContainer("seedqueue").orElseThrow(IllegalStateException::new).getMetadata().getVersion();
     private static final Object LOCK = new Object();
 
-    public static SeedQueueConfig config;
+    public static SeedQueueConfig config = new SeedQueueConfig();
 
-    public static AttemptTracker.Type BENCHMARK_RESETS = new AttemptTracker.Type("Benchmark Reset #", "benchmark-resets.txt");
+    // TODO
+//    public static AttemptTracker.Type BENCHMARK_RESETS = new AttemptTracker.Type("Benchmark Reset #", "benchmark-resets.txt");
 
     private static final Queue<SeedQueueEntry> SEED_QUEUE = new LinkedBlockingQueue<>();
     private static SeedQueueThread thread;
@@ -44,13 +45,31 @@ public class SeedQueue implements ClientModInitializer {
         LOGGER.info("Initializing SeedQueue for 1.8.9");
     }
 
+    public static void playOrJoinWall() {
+        if (SeedQueue.config.shouldUseWall()) {
+            if (SeedQueue.config.bypassWall) {
+                Optional<SeedQueueEntry> entry = SeedQueue.getEntryMatching(SeedQueueEntry::isLocked);
+                if (entry.isPresent()) {
+                    SeedQueue.playEntry(entry.get());
+                    return;
+                }
+            }
+            MinecraftClient.getInstance().setScreen(new SeedQueueWallScreen());
+            SeedQueue.ping();
+            return;
+        }
+        while (!SeedQueue.playEntry()) {
+            SeedQueue.ping();
+        }
+    }
+
     /**
      * Polls a new {@link SeedQueueEntry} from the queue and plays it.
      *
      * @return True if a new {@link SeedQueueEntry} was successfully loaded.
      */
     public static boolean playEntry() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to load a SeedQueueEntry off-thread!");
         }
         synchronized (LOCK) {
@@ -68,7 +87,7 @@ public class SeedQueue implements ClientModInitializer {
      * Removes the given {@link SeedQueueEntry} from the queue and plays it.
      */
     public static void playEntry(@NotNull SeedQueueEntry entry) {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to load a SeedQueueEntry off-thread!");
         }
         synchronized (LOCK) {
@@ -85,7 +104,7 @@ public class SeedQueue implements ClientModInitializer {
      * Plays the {@link SeedQueue#currentEntry} and sets it back to {@code null} after.
      */
     private static void play() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to play a SeedQueueEntry off-thread!");
         }
         if (currentEntry == null) {
@@ -218,7 +237,7 @@ public class SeedQueue implements ClientModInitializer {
         // add 1 when not using wall and the main world is currently generating
         MinecraftServer currentServer = MinecraftClient.getInstance().getServer();
         if (currentServer == null || !currentServer.isLoading()) {
-            count++;
+//            count++;
         }
         return count;
     }
@@ -238,7 +257,7 @@ public class SeedQueue implements ClientModInitializer {
      * This method may only be called from the Render Thread and when SeedQueue is not currently active!
      */
     public static void start() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to start SeedQueue off-thread!");
         }
 
@@ -279,7 +298,7 @@ public class SeedQueue implements ClientModInitializer {
      * This method may only be called from the Render Thread!
      */
     public static void stop() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to stop SeedQueue off-thread!");
         }
 
@@ -331,7 +350,7 @@ public class SeedQueue implements ClientModInitializer {
 
         while (!SEED_QUEUE.isEmpty()) {
             ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
-            SEED_QUEUE.removeIf(entry -> !((MinecraftServerAccessor) entry.getServer()).seedQueue$getServerThread().isAlive());
+            SEED_QUEUE.removeIf(entry -> !((SQMinecraftServer) entry.getServer()).seedQueue$getThread().isAlive());
         }
 
         SeedQueueWallScreen.clearWorldRenderers();

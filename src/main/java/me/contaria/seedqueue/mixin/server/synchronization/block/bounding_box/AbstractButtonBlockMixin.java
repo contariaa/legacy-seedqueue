@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractButtonBlock.class)
 public abstract class AbstractButtonBlockMixin extends BlockMixin {
     @Inject(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At("HEAD")
     )
     private void getThreadedBoundingBox(CallbackInfo ci, @Share("boundingBox") LocalRef<double[]> boundingBox) {
@@ -21,7 +21,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMinX:D",
@@ -33,7 +33,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMinY:D",
@@ -45,7 +45,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMinZ:D",
@@ -57,7 +57,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMaxX:D",
@@ -69,7 +69,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMaxY:D",
@@ -81,7 +81,7 @@ public abstract class AbstractButtonBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "onPossibleArrowCollision",
+            method = "method_4163",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/AbstractButtonBlock;boundingBoxMaxZ:D",

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +31,7 @@ public abstract class GameRendererMixin {
     )
     private float modifyMovementFovMultiplier(float movementFovMultiplier) {
         if (WorldPreview.renderingPreview) {
-            return Math.min(Math.max(WorldPreview.properties.player.getSpeed(), 0.1f), 1.5f);
+            return Math.min(Math.max(WorldPreview.properties.player.method_1305(), 0.1f), 1.5f);
         }
         return movementFovMultiplier;
     }
@@ -52,8 +52,11 @@ public abstract class GameRendererMixin {
             }
     )
     private float modifyFogColor(float fogColor) {
-        float brightness = this.client.world.getBrightness(new BlockPos(this.client.getCameraEntity()));
-        float chunkDistance = this.client.options.viewDistance / 32.0F;
-        return brightness * (1.0F - chunkDistance) + chunkDistance;
+        if (WorldPreview.renderingPreview) {
+            float brightness = this.client.world.method_3780(MathHelper.floor(this.client.field_6279.x), MathHelper.floor(this.client.field_6279.y), MathHelper.floor(this.client.field_6279.z));
+            float chunkDistance = this.client.options.viewDistance / 32.0F;
+            return brightness * (1.0F - chunkDistance) + chunkDistance;
+        }
+        return fogColor;
     }
 }

@@ -25,9 +25,11 @@ public class SeedQueueSystemInfo {
     }
 
     private static String getCpuInfo() {
-        // see GLX#_init
-        oshi.hardware.Processor[] processors = new oshi.SystemInfo().getHardware().getProcessors();
-        return String.format("%dx %s", processors.length, processors[0]).replaceAll("\\s+", " ");
+        // TODO
+//        // see GLX#_init
+//        oshi.hardware.Processor[] processors = new oshi.SystemInfo().getHardware().getProcessors();
+//        return String.format("%dx %s", processors.length, processors[0]).replaceAll("\\s+", " ");
+        return "TODO";
     }
 
     private static String getGpuInfo() {
@@ -64,7 +66,8 @@ public class SeedQueueSystemInfo {
 
     public static void logConfigSettings() {
         if (Boolean.parseBoolean(System.getProperty("seedqueue.logConfigSettings", "true"))) {
-            SeedQueue.LOGGER.info("SeedQueue Config settings: {}", new GsonBuilder().setPrettyPrinting().create().toJson(SeedQueue.config.container.toJson()));
+            // TODO
+//            SeedQueue.LOGGER.info("SeedQueue Config settings: {}", new GsonBuilder().setPrettyPrinting().create().toJson(SeedQueue.config.container.toJson()));
         }
     }
 }

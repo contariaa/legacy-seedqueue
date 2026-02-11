@@ -1,25 +1,20 @@
 package me.contaria.seedqueue.gui.wall;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.SeedQueueThread;
 import me.contaria.seedqueue.compat.ModCompat;
-import me.contaria.seedqueue.compat.SeedQueueSettingsCache;
 import me.contaria.seedqueue.customization.AnimatedTexture;
 import me.contaria.seedqueue.customization.Layout;
 import me.contaria.seedqueue.customization.LockTexture;
 import me.contaria.seedqueue.debug.SeedQueueProfiler;
 import me.contaria.seedqueue.keybindings.SeedQueueKeyBindings;
-import me.contaria.seedqueue.mixin.accessor.DebugHudAccessor;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import me.contaria.seedqueue.mixin.accessor.WorldRendererAccessor;
 import me.contaria.seedqueue.sounds.SeedQueueSounds;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
-import me.voidxwalker.autoreset.Atum;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.render.WorldRenderer;
@@ -30,6 +25,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -44,12 +40,10 @@ public class SeedQueueWallScreen extends Screen {
     private static final Identifier INSTANCE_OVERLAY = new Identifier("seedqueue", "textures/gui/wall/instance_overlay.png");
 
     private final MinecraftClient client;
-    @Nullable
-    private final DebugHud debugHud;
     private final Random random;
 
-    protected final SeedQueueSettingsCache settingsCache;
-    private SeedQueueSettingsCache lastSettingsCache;
+//    protected final SeedQueueSettingsCache settingsCache;
+//    private SeedQueueSettingsCache lastSettingsCache;
 
     protected Layout layout;
     private SeedQueuePreview[] mainPreviews;
@@ -88,10 +82,9 @@ public class SeedQueueWallScreen extends Screen {
 
     public SeedQueueWallScreen() {
         this.client = MinecraftClient.getInstance();
-        this.debugHud = SeedQueue.config.showDebugMenu ? new DebugHud(MinecraftClient.getInstance()) : null;
         this.random = new Random();
         this.preparingPreviews = new ArrayList<>();
-        this.lastSettingsCache = this.settingsCache = SeedQueueSettingsCache.create();
+//        this.lastSettingsCache = this.settingsCache = SeedQueueSettingsCache.create();
     }
 
     @Override
@@ -149,8 +142,8 @@ public class SeedQueueWallScreen extends Screen {
         SeedQueueProfiler.swap("build_preparing");
         for (; i < this.preparingPreviews.size(); i++) {
             SeedQueuePreview preparingInstance = this.preparingPreviews.get(i);
-            SeedQueueProfiler.push("load_settings");
-            this.loadPreviewSettings(preparingInstance);
+//            SeedQueueProfiler.push("load_settings");
+//            this.loadPreviewSettings(preparingInstance);
             SeedQueueProfiler.push("build");
             preparingInstance.build();
             SeedQueueProfiler.pop();
@@ -158,17 +151,13 @@ public class SeedQueueWallScreen extends Screen {
 
         SeedQueueProfiler.swap("reset");
         this.resetViewport();
-        this.loadPreviewSettings(this.settingsCache, 0);
+//        this.loadPreviewSettings(this.settingsCache, 0);
 
         if (this.overlay != null) {
             SeedQueueProfiler.swap("overlay");
             this.drawAnimatedTexture(this.overlay, 0, 0, this.width, this.height);
         }
 
-        if (this.debugHud != null) {
-            SeedQueueProfiler.swap("fps_graph");
-            ((DebugHudAccessor) this.debugHud).seedQueue$drawMetricsData();
-        }
         SeedQueueProfiler.pop();
     }
 
@@ -249,7 +238,7 @@ public class SeedQueueWallScreen extends Screen {
     private void drawLock(Layout.Pos pos, LockTexture lock) {
         this.setOrtho(this.client.width, this.client.height);
         this.client.getTextureManager().bindTexture(lock.getId());
-        GlStateManager.enableBlend();
+        GL11.glEnable(3042); // blend
         DrawableHelper.drawTexture(
                 pos.x,
                 pos.y,
@@ -260,14 +249,14 @@ public class SeedQueueWallScreen extends Screen {
                 (int) (pos.height * lock.getAspectRatio()),
                 pos.height * lock.getIndividualFrameCount()
         );
-        GlStateManager.disableBlend();
+        GL11.glDisable(3042); // blend
         this.resetOrtho();
     }
 
     @SuppressWarnings("SameParameterValue")
     private void drawAnimatedTexture(AnimatedTexture texture, int x, int y, int width, int height) {
         this.client.getTextureManager().bindTexture(texture.getId());
-        GlStateManager.enableBlend();
+        GL11.glEnable(3042); // blend
         DrawableHelper.drawTexture(
                 x,
                 y,
@@ -278,7 +267,7 @@ public class SeedQueueWallScreen extends Screen {
                 width,
                 height * texture.getIndividualFrameCount()
         );
-        GlStateManager.disableBlend();
+        GL11.glDisable(3042); // blend
     }
 
     private boolean playSound(Identifier sound) {
@@ -298,7 +287,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void setViewport(int x, int y, int width, int height) {
-        GlStateManager.viewport(x, y, width, height);
+        GL11.glViewport(x, y, width, height);
     }
 
     protected void refreshViewport() {
@@ -310,7 +299,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void resetViewport() {
-        Window window = new Window(this.client);
+        Window window = new Window(this.client, this.client.width, this.client.height);
         this.setViewport(0, 0, this.client.width, this.client.height);
         this.setOrtho(window.getScaledWidth(), window.getScaledHeight());
         this.currentPos = null;
@@ -319,13 +308,13 @@ public class SeedQueueWallScreen extends Screen {
     protected void setOrtho(double width, double height) {
         // see GameRenderer#render or WorldPreview#render
         // we need this to reset GlStateManager.ortho after simulating a different window size
-        GlStateManager.clear(256);
-        GlStateManager.matrixMode(5889);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
-        GlStateManager.matrixMode(5888);
-        GlStateManager.loadIdentity();
-        GlStateManager.translate(0.0F, 0.0F, -2000.0F);
+        GL11.glClear(256);
+        GL11.glMatrixMode(5889);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
+        GL11.glMatrixMode(5888);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
     }
 
     protected void resetOrtho() {
@@ -467,21 +456,21 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void loadPreviewSettings(SeedQueuePreview instance) {
-        SeedQueueEntry entry = instance.getSeedQueueEntry();
-        if (entry.getSettingsCache() != null) {
-            this.loadPreviewSettings(entry.getSettingsCache(), entry.getPerspective());
-        } else {
-            this.loadPreviewSettings(this.settingsCache, 0);
-        }
+//        SeedQueueEntry entry = instance.getSeedQueueEntry();
+//        if (entry.getSettingsCache() != null) {
+//            this.loadPreviewSettings(entry.getSettingsCache(), entry.getPerspective());
+//        } else {
+//            this.loadPreviewSettings(this.settingsCache, 0);
+//        }
     }
 
-    private void loadPreviewSettings(SeedQueueSettingsCache settingsCache, int perspective) {
-        if (settingsCache != this.lastSettingsCache) {
-            settingsCache.loadPreview();
-            this.lastSettingsCache = settingsCache;
-        }
-        this.client.options.perspective = perspective;
-    }
+//    private void loadPreviewSettings(SeedQueueSettingsCache settingsCache, int perspective) {
+//        if (settingsCache != this.lastSettingsCache) {
+//            settingsCache.loadPreview();
+//            this.lastSettingsCache = settingsCache;
+//        }
+//        this.client.options.perspective = perspective;
+//    }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
@@ -549,7 +538,7 @@ public class SeedQueueWallScreen extends Screen {
 
         if (code == 1 && Screen.hasShiftDown()) {
             ModCompat.standardsettings$loadCache();
-            Atum.stopRunning();
+            SeedQueue.stop();
             this.client.setScreen(new TitleScreen());
             return;
         }
@@ -614,7 +603,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private SeedQueuePreview getInstance(double mouseX, double mouseY) {
-        double scale = new Window(this.client).getScaleFactor();
+        double scale = new Window(this.client, this.client.width, this.client.height).getScaleFactor();
         double x = mouseX * scale;
         double y = mouseY * scale;
 
@@ -769,7 +758,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void resetColumn(double mouseX) {
-        double x = mouseX * new Window(this.client).getScaleFactor();
+        double x = mouseX * new Window(this.client, this.client.width, this.client.height).getScaleFactor();
         boolean playSound = !this.playSound(SeedQueueSounds.RESET_COLUMN);
         for (int i = 0; i < this.mainPreviews.length; i++) {
             Layout.Pos pos = this.layout.main.getPos(i);
@@ -780,7 +769,7 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void resetRow(double mouseY) {
-        double y = mouseY * new Window(this.client).getScaleFactor();
+        double y = mouseY * new Window(this.client, this.client.width, this.client.height).getScaleFactor();
         boolean playSound = !this.playSound(SeedQueueSounds.RESET_ROW);
         for (int i = 0; i < this.mainPreviews.length; i++) {
             Layout.Pos pos = this.layout.main.getPos(i);

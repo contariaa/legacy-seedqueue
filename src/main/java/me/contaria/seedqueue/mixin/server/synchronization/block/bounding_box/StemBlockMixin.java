@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class StemBlockMixin extends BlockMixin {
 
     @Inject(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At("HEAD")
     )
     private void getThreadedBoundingBox(CallbackInfo ci, @Share("boundingBox") LocalRef<double[]> boundingBox) {
@@ -22,7 +22,7 @@ public abstract class StemBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/StemBlock;boundingBoxMaxY:D",
@@ -34,7 +34,7 @@ public abstract class StemBlockMixin extends BlockMixin {
     }
 
     @Redirect(
-            method = "setBoundingBox",
+            method = "onRender",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/block/StemBlock;boundingBoxMaxY:D",

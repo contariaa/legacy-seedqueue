@@ -15,7 +15,7 @@ public abstract class InGameHudMixin {
     private ItemStack heldItem;
 
     @ModifyExpressionValue(
-            method = "renderHeldItemName",
+            method = "render",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/client/gui/hud/InGameHud;heldItem:Lnet/minecraft/item/ItemStack;",
@@ -30,7 +30,7 @@ public abstract class InGameHudMixin {
     }
 
     @ModifyExpressionValue(
-            method = "renderHeldItemName",
+            method = "render",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/client/gui/hud/InGameHud;heldItemTooltipFade:I",

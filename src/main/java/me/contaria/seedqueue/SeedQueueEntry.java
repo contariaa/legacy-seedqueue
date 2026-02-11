@@ -1,7 +1,6 @@
 package me.contaria.seedqueue;
 
 import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
-import me.contaria.seedqueue.compat.SeedQueueSettingsCache;
 import me.contaria.seedqueue.debug.SeedQueueProfiler;
 import me.contaria.seedqueue.fastreset.interfaces.FRMinecraftServer;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
@@ -32,8 +31,8 @@ public class SeedQueueEntry {
     @Nullable
     private SeedQueuePreviewFrameBuffer frameBuffer;
 
-    @Nullable
-    private SeedQueueSettingsCache settingsCache;
+//    @Nullable
+//    private SeedQueueSettingsCache settingsCache;
     private int perspective;
 
     private volatile boolean locked;
@@ -80,7 +79,7 @@ public class SeedQueueEntry {
     }
 
     public SeedQueuePreviewFrameBuffer getFrameBuffer() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new IllegalStateException("Tried to get WorldPreviewFrameBuffer off-thread!");
         }
         if (this.frameBuffer == null) {
@@ -101,7 +100,7 @@ public class SeedQueueEntry {
      * @see SeedQueuePreviewFrameBuffer#discard
      */
     public void discardFrameBuffer() {
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!MinecraftClient.getInstance().method_6640()) {
             throw new RuntimeException("Tried to discard WorldPreviewFrameBuffer off-thread!");
         }
         if (this.frameBuffer != null) {
@@ -117,38 +116,37 @@ public class SeedQueueEntry {
         return this.previewProperties != null || this.frameBuffer != null;
     }
 
-    public @Nullable SeedQueueSettingsCache getSettingsCache() {
-        return this.settingsCache;
-    }
+//    public @Nullable SeedQueueSettingsCache getSettingsCache() {
+//        return this.settingsCache;
+//    }
 
-    /**
-     * Sets the settings cache to be loaded when loading this entry.
-     *
-     * @throws IllegalStateException If this method is called but {@link SeedQueueEntry#previewProperties} is null.
-     */
-    public void setSettingsCache(SeedQueueSettingsCache settingsCache) {
-        if (this.previewProperties == null) {
-            throw new IllegalStateException("Tried to set SettingsCache but SeedQueuePreviewProperties is null!");
-        }
-        this.settingsCache = settingsCache;
-        this.settingsCache.loadPlayerModelParts(this.previewProperties.player);
-        this.perspective = this.previewProperties.getPerspective();
-    }
+//    /**
+//     * Sets the settings cache to be loaded when loading this entry.
+//     *
+//     * @throws IllegalStateException If this method is called but {@link SeedQueueEntry#previewProperties} is null.
+//     */
+//    public void setSettingsCache(SeedQueueSettingsCache settingsCache) {
+//        if (this.previewProperties == null) {
+//            throw new IllegalStateException("Tried to set SettingsCache but SeedQueuePreviewProperties is null!");
+//        }
+//        this.settingsCache = settingsCache;
+//        this.perspective = this.previewProperties.getPerspective();
+//    }
 
-    // TODO: use this
-    /**
-     * Loads this entry's {@link SeedQueueEntry#settingsCache} and {@link SeedQueueEntry#perspective}.
-     *
-     * @return True if this entry has a settings cache which was loaded.
-     */
-    public boolean loadSettingsCache() {
-        if (this.settingsCache != null) {
-            this.settingsCache.load();
-            MinecraftClient.getInstance().options.perspective = this.getPerspective();
-            return true;
-        }
-        return false;
-    }
+//    // TODO: use this
+//    /**
+//     * Loads this entry's {@link SeedQueueEntry#settingsCache} and {@link SeedQueueEntry#perspective}.
+//     *
+//     * @return True if this entry has a settings cache which was loaded.
+//     */
+//    public boolean loadSettingsCache() {
+//        if (this.settingsCache != null) {
+//            this.settingsCache.load();
+//            MinecraftClient.getInstance().options.perspective = this.getPerspective();
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * @return The perspective used in the preview of this entry.

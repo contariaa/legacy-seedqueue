@@ -2,7 +2,6 @@ package me.contaria.seedqueue.mixin.server.synchronization.biome;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.PerlinNoiseGenerator;
 import net.minecraft.world.biome.MesaBiome;
 import org.objectweb.asm.Opcodes;
@@ -14,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(MesaBiome.class)
 public abstract class MesaBiomeMixin {
     @Unique
-    private final ThreadLocal<BlockState[]> threadedLayerBlocks = new ThreadLocal<>();
+    private final ThreadLocal<byte[]> threadedLayerBlocks = new ThreadLocal<>();
     @Unique
     private final ThreadLocal<Long> threadedSeed = ThreadLocal.withInitial(() -> 0L);
     @Unique
@@ -64,11 +63,11 @@ public abstract class MesaBiomeMixin {
             method = "initLayerBlocks",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/MesaBiome;layerBlocks:[Lnet/minecraft/block/BlockState;",
+                    target = "Lnet/minecraft/world/biome/MesaBiome;field_7244:[B",
                     opcode = Opcodes.PUTFIELD
             )
     )
-    private void setThreadedLayerBlocks(MesaBiome biome, BlockState[] layerBlocks, Operation<Void> original) {
+    private void setThreadedLayerBlocks(MesaBiome instance, byte[] layerBlocks, Operation<Void> original) {
         this.threadedLayerBlocks.set(layerBlocks);
     }
 
@@ -124,20 +123,20 @@ public abstract class MesaBiomeMixin {
             method = {
                     "method_6420",
                     "initLayerBlocks",
-                    "calculateLayerBlockState"
+                    "method_6438"
             },
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/MesaBiome;layerBlocks:[Lnet/minecraft/block/BlockState;",
+                    target = "Lnet/minecraft/world/biome/MesaBiome;field_7244:[B",
                     opcode = Opcodes.GETFIELD
             )
     )
-    private BlockState[] getThreadedLayerBlocks(MesaBiome biome) {
+    private byte[] getThreadedLayerBlocks(MesaBiome biome) {
         return this.threadedLayerBlocks.get();
     }
 
     @Redirect(
-            method = "calculateLayerBlockState",
+            method = "method_6438",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/world/biome/MesaBiome;layerNoise:Lnet/minecraft/util/math/noise/PerlinNoiseGenerator;",

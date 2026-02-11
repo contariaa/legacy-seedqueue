@@ -13,6 +13,7 @@ import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,19 +31,21 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
 
     @Unique
     @Nullable
-    private BlockPos previewSpawnPos;
+    private Vec3d previewSpawnPos;
 
     @WrapOperation(
             method = "prepareWorlds",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;"
+                    target = "Lnet/minecraft/server/world/ServerWorld;getWorldSpawnPos()Lnet/minecraft/util/math/BlockPos;"
             )
     )
     private BlockPos configureWorldPreview(ServerWorld world, Operation<BlockPos> original, @Share("properties") LocalRef<WorldPreviewProperties> properties) {
         if (this.shouldConfigurePreview()) {
             properties.set(WorldPreview.configure(world));
-            return properties.get().player.getBlockPos();
+            if (this.shouldGenerateFakePreview()) {
+                return properties.get().player.getPosition();
+            }
         }
         return original.call(world);
     }
@@ -114,12 +117,12 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
     }
 
     @Override
-    public void worldpreview$setPreviewSpawnPos(BlockPos pos) {
+    public void worldpreview$setPreviewSpawnPos(Vec3d pos) {
         this.previewSpawnPos = pos;
     }
 
     @Override
-    public BlockPos worldpreview$getPreviewSpawnPos() {
+    public Vec3d worldpreview$getPreviewSpawnPos() {
         return this.previewSpawnPos;
     }
 

@@ -6,8 +6,6 @@ import net.minecraft.client.resource.AnimationMetadata;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-
 public class AnimatedTexture {
     private final Identifier id;
     @Nullable
@@ -17,8 +15,8 @@ public class AnimatedTexture {
         this.id = id;
         AnimationMetadata animation = null;
         try {
-            animation = MinecraftClient.getInstance().getResourceManager().getResource(id).getMetadata("animation");
-        } catch (IOException e) {
+            animation = (AnimationMetadata) MinecraftClient.getInstance().getResourceManager().getResource(id).getMetadata("animation");
+        } catch (Exception e) {
             SeedQueue.LOGGER.warn("Failed to read animation data for {}!", id, e);
         }
         this.animation = animation;

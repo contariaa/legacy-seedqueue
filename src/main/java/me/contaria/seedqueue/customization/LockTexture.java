@@ -2,9 +2,9 @@ package me.contaria.seedqueue.customization;
 
 import me.contaria.seedqueue.SeedQueue;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.util.Identifier;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class LockTexture extends AnimatedTexture {
 
     public LockTexture(Identifier id) throws IOException {
         super(id);
-        BufferedImage image = TextureUtil.create(MinecraftClient.getInstance().getResourceManager().getResource(id).getInputStream());
+        BufferedImage image = ImageIO.read(MinecraftClient.getInstance().getResourceManager().getResource(id).getInputStream());
         this.width = image.getWidth();
         this.height = image.getHeight() / (this.animation != null ? this.animation.getIndices().size() : 1);
     }

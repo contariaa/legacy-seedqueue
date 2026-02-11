@@ -11,7 +11,7 @@ import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
-import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
+import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
@@ -113,7 +113,7 @@ public abstract class MinecraftClientMixin {
     private IntegratedServer loadServer(MinecraftClient client, String worldName, String levelName, LevelInfo levelInfo, Operation<IntegratedServer> original) {
         if (!SeedQueue.inQueue() && SeedQueue.currentEntry != null) {
             IntegratedServer server = SeedQueue.currentEntry.getServer();
-            ((MinecraftServerAccessor) server).seedQueue$getServerThread().setPriority(Thread.NORM_PRIORITY);
+            ((SQMinecraftServer) server).seedQueue$getThread().setPriority(Thread.NORM_PRIORITY);
             return server;
         }
         return original.call(client, worldName, levelName, levelInfo);
@@ -203,18 +203,6 @@ public abstract class MinecraftClientMixin {
         return enabled || (SeedQueue.isOnWall() && SeedQueue.config.showDebugMenu);
     }
 
-    @ModifyExpressionValue(
-            method = "runGameLoop",
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/option/GameOptions;hudHidden:Z",
-                    opcode = Opcodes.GETFIELD
-            )
-    )
-    private boolean showDebugMenuOnWall2(boolean hudHidden) {
-        return hudHidden && !(SeedQueue.isOnWall() && SeedQueue.config.showDebugMenu);
-    }
-
     @WrapWithCondition(
             method = "runGameLoop",
             at = @At(
@@ -230,11 +218,7 @@ public abstract class MinecraftClientMixin {
 
     @Inject(
             method = "runGameLoop",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/MinecraftClient;updateDisplay()V",
-                    shift = At.Shift.AFTER
-            )
+            at = @At("TAIL")
     )
     private void finishRenderingWall(CallbackInfo ci) {
         if (SeedQueue.isOnWall()) {
@@ -282,7 +266,7 @@ public abstract class MinecraftClientMixin {
     )
     private static void shutdownQueueOnCrash(CallbackInfo ci) {
         // don't try to stop SeedQueue if Minecraft crashes before the client is initialized
-        if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().isOnThread()) {
+        if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().method_6640()) {
             SeedQueue.stop();
         }
     }
