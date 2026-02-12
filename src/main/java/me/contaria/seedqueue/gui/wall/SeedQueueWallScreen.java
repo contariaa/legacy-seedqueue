@@ -151,7 +151,7 @@ public class SeedQueueWallScreen extends Screen {
             SeedQueuePreview preparingInstance = this.preparingPreviews.get(i);
             SeedQueueProfiler.push("load_settings");
             this.loadPreviewSettings(preparingInstance);
-            SeedQueueProfiler.push("build");
+            SeedQueueProfiler.swap("build");
             preparingInstance.build();
             SeedQueueProfiler.pop();
         }
