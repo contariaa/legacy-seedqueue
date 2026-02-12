@@ -135,7 +135,6 @@ public class SeedQueueEntry {
         this.perspective = this.previewProperties.getPerspective();
     }
 
-    // TODO: use this
     /**
      * Loads this entry's {@link SeedQueueEntry#settingsCache} and {@link SeedQueueEntry#perspective}.
      *

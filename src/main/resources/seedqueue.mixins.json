@@ -24,6 +24,7 @@
     "compat.atum.AtumMixin",
     "compat.atum.CreateWorldScreenMixin",
     "compat.speedrunigt.MinecraftClientMixin",
+    "compat.standardsettings.MinecraftClientMixin",
     "included.antiresourcereload.MinecraftServerMixin",
     "included.antiresourcereload.UserCacheMixin",
     "included.fastreset.MinecraftServerMixin",
