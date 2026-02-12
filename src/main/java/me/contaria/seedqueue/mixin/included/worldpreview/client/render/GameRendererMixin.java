@@ -52,8 +52,11 @@ public abstract class GameRendererMixin {
             }
     )
     private float modifyFogColor(float fogColor) {
-        float brightness = this.client.world.getBrightness(new BlockPos(this.client.getCameraEntity()));
-        float chunkDistance = this.client.options.viewDistance / 32.0F;
-        return brightness * (1.0F - chunkDistance) + chunkDistance;
+        if (WorldPreview.renderingPreview) {
+            float brightness = this.client.world.getBrightness(new BlockPos(this.client.getCameraEntity()));
+            float chunkDistance = this.client.options.viewDistance / 32.0F;
+            return brightness * (1.0F - chunkDistance) + chunkDistance;
+        }
+        return fogColor;
     }
 }
