@@ -9,7 +9,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.*;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -33,8 +32,6 @@ public class WorldPreviewProperties extends DrawableHelper {
     public final ClientPlayerInteractionManager interactionManager;
     public final Queue<Packet> packetQueue;
     private final int perspective;
-
-    private int frameCount;
 
     public WorldPreviewProperties(ClientWorld world, ControllablePlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet> packetQueue) {
         this.world = world;

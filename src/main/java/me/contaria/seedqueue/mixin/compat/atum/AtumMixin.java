@@ -76,7 +76,7 @@ public abstract class AtumMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private static void test(CallbackInfoReturnable<Boolean> cir) {
+    private static void preventReset(CallbackInfoReturnable<Boolean> cir) {
         if (SeedQueue.isOnWall() || MinecraftClient.getInstance().currentScreen instanceof SeedQueueKeybindingsScreen) {
             cir.setReturnValue(false);
         }

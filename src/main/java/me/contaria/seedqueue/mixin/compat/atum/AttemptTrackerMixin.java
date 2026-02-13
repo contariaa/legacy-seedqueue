@@ -21,7 +21,6 @@ public abstract class AttemptTrackerMixin {
             at = @At("TAIL")
     )
     private void registerBenchmarkResetCounter(CallbackInfo ci) throws IOException {
-        // TODO
-//        this.register(SeedQueue.BENCHMARK_RESETS);
+        this.register(SeedQueue.BENCHMARK_RESETS);
     }
 }

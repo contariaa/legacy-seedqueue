@@ -27,8 +27,7 @@ public abstract class CreateWorldScreenMixin {
     )
     private AttemptTracker.Type useBenchmarkResetCounter(AttemptTracker.Type type) {
         if (SeedQueue.isBenchmarking()) {
-            // TODO
-//            return SeedQueue.BENCHMARK_RESETS;
+            return SeedQueue.BENCHMARK_RESETS;
         }
         return type;
     }

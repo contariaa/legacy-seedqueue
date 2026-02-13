@@ -7,6 +7,8 @@ import me.contaria.seedqueue.customization.LockTexture;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.voidxwalker.autoreset.Atum;
+import me.voidxwalker.autoreset.interfaces.ISeedStringHolder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -46,7 +48,7 @@ public class SeedQueuePreview extends DrawableHelper {
 
         // forceUnicodeFont is not being loaded from the settings cache because it is not included in SeedQueueSettingsCache.PREVIEW_SETTINGS
         int scale = SeedQueue.config.calculateSimulatedScaleFactor(
-                MinecraftClient.getInstance().options.guiScale,
+                this.seedQueueEntry.getSettingsCache() != null ? (int) this.seedQueueEntry.getSettingsCache().getValue("guiScale") : MinecraftClient.getInstance().options.guiScale,
                 MinecraftClient.getInstance().options.forcesUnicodeFont
         );
         this.width = (int) Math.ceil((double) SeedQueue.config.simulatedWindowSize.width() / scale);
@@ -54,14 +56,12 @@ public class SeedQueuePreview extends DrawableHelper {
 
         this.buttons = WorldPreviewProperties.createMenu(this.width, this.height);
 
-        // TODO
-//        if (Atum.getSeedProvider().shouldShowSeed()) {
-//            //noinspection DataFlowIssue
-//            this.seedString = ((ISeedStringHolder) (Object) this.seedQueueEntry.getLevelInfo()).atum$getSeedString();
-//        } else {
-//            this.seedString = "Set Seed";
-//        }
-        this.seedString = "";
+        if (Atum.getSeedProvider().shouldShowSeed()) {
+            //noinspection DataFlowIssue
+            this.seedString = ((ISeedStringHolder) (Object) this.seedQueueEntry.getLevelInfo()).atum$getSeedString();
+        } else {
+            this.seedString = "Set Seed";
+        }
 
         this.lockTexture = wall.getRandomLockTexture();
 
@@ -74,9 +74,9 @@ public class SeedQueuePreview extends DrawableHelper {
         }
         if (this.previewProperties != null) {
             this.worldRenderer = SeedQueueWallScreen.getOrCreateWorldRenderer(this.previewProperties.world);
-//            if (this.seedQueueEntry.getSettingsCache() == null) {
-//                this.seedQueueEntry.setSettingsCache(this.wall.settingsCache);
-//            }
+            if (this.seedQueueEntry.getSettingsCache() == null) {
+                this.seedQueueEntry.setSettingsCache(this.wall.settingsCache);
+            }
         } else {
             this.worldRenderer = null;
         }

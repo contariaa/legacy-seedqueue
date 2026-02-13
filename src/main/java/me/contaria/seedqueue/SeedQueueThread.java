@@ -2,14 +2,9 @@ package me.contaria.seedqueue;
 
 import me.voidxwalker.autoreset.AtumCreateWorldScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
-import net.minecraft.world.GameMode;
-import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -98,17 +93,12 @@ public class SeedQueueThread extends Thread {
         return false;
     }
 
-    private static int i = 0;
-
     /**
      * Creates a new {@link SeedQueueEntry} and adds it to the queue.
      */
     private void createSeedQueueEntry() {
         synchronized (WORLD_CREATION_LOCK) {
-            String name = "SeedQueue Reset #" + i++;
-            LevelInfo var6 = new LevelInfo(new Random().nextLong(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT);
-            MinecraftClient.getInstance().startIntegratedServer(CreateWorldScreen.checkDirectoryName(MinecraftClient.getInstance().getCurrentSave(), name), name, var6);
-//            new AtumCreateWorldScreen(null).init(MinecraftClient.getInstance(), 1, 1);
+            new AtumCreateWorldScreen(null).init(MinecraftClient.getInstance(), 1, 1);
         }
     }
 

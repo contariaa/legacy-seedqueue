@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import me.contaria.seedqueue.compat.ModCompat;
-import me.contaria.seedqueue.gui.config.SeedQueueKeybindingsScreen;
-import me.contaria.seedqueue.gui.config.SeedQueueWindowSizeWidget;
 import me.contaria.seedqueue.keybindings.SeedQueueKeyBindings;
 import me.contaria.seedqueue.keybindings.SeedQueueMultiKeyBinding;
 import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
@@ -31,7 +29,7 @@ import java.lang.reflect.Field;
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class SeedQueueConfig implements SpeedrunConfig  {
-    private static final boolean CAN_USE_WALL = /* ModCompat.HAS_STANDARDSETTINGS */ true;
+    private static final boolean CAN_USE_WALL = ModCompat.HAS_STANDARDSETTINGS;
 
     @Config.Ignored
     public SpeedrunConfigContainer<?> container;

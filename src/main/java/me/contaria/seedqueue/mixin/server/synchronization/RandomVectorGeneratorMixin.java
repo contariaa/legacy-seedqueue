@@ -2,7 +2,6 @@ package me.contaria.seedqueue.mixin.server.synchronization;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import net.minecraft.entity.PathAwareEntity;
 import net.minecraft.util.RandomVectorGenerator;
 import net.minecraft.util.math.Vec3d;
 import org.objectweb.asm.Opcodes;

@@ -1,10 +1,6 @@
 package me.contaria.seedqueue.gui.config;
 
-import me.contaria.seedqueue.keybindings.SeedQueueMultiKeyBinding;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
-import org.jetbrains.annotations.Nullable;
 
 // TODO
 public class SeedQueueKeybindingsScreen extends Screen {

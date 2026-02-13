@@ -1,8 +1,5 @@
 package me.contaria.seedqueue.gui.config;
 
-import me.contaria.speedrunapi.config.api.gui.ButtonWidgetCallback;
-import net.minecraft.client.gui.widget.ButtonWidget;
-
 // TODO
 public class SeedQueueKeyButtonWidget /* extends ButtonWidget implements ButtonWidgetCallback */ {
 //    private final SeedQueueKeybindingsListWidget.KeyEntry entry;

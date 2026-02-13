@@ -20,7 +20,7 @@ class StandardSettingsCompat {
         StandardSettings.loadCache(StandardSettings.lastWorld);
     }
 
-    public static boolean isEnabled() {
+    static boolean isEnabled() {
         return StandardSettings.isEnabled();
     }
 }

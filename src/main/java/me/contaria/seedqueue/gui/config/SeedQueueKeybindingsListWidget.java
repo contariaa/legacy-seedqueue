@@ -1,20 +1,5 @@
 package me.contaria.seedqueue.gui.config;
 
-import me.contaria.seedqueue.keybindings.SeedQueueMultiKeyBinding;
-import me.contaria.speedrunapi.config.api.gui.ButtonWidgetCallback;
-import me.contaria.speedrunapi.config.api.gui.CallbackButtonWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.class_1803;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-
 // TODO
 public class SeedQueueKeybindingsListWidget /* extends EntryListWidget */ {
 //    private final SeedQueueKeybindingsScreen parent;

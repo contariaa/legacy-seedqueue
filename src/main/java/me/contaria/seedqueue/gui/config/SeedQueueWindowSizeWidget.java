@@ -1,11 +1,5 @@
 package me.contaria.seedqueue.gui.config;
 
-import me.contaria.seedqueue.SeedQueueConfig;
-import me.contaria.speedrunapi.config.api.gui.SpeedrunWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-
 // TODO
 public class SeedQueueWindowSizeWidget /* implements SpeedrunWidget*/ {
 //    private final SeedQueueConfig.WindowSize windowSize;

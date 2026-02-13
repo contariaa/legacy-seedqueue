@@ -4,6 +4,7 @@ import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.SeedQueueEntry;
 import me.contaria.seedqueue.SeedQueueThread;
 import me.contaria.seedqueue.compat.ModCompat;
+import me.contaria.seedqueue.compat.SeedQueueSettingsCache;
 import me.contaria.seedqueue.customization.AnimatedTexture;
 import me.contaria.seedqueue.customization.Layout;
 import me.contaria.seedqueue.customization.LockTexture;
@@ -13,6 +14,7 @@ import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import me.contaria.seedqueue.mixin.accessor.WorldRendererAccessor;
 import me.contaria.seedqueue.sounds.SeedQueueSounds;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
+import me.voidxwalker.autoreset.Atum;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,8 +44,8 @@ public class SeedQueueWallScreen extends Screen {
     private final MinecraftClient client;
     private final Random random;
 
-//    protected final SeedQueueSettingsCache settingsCache;
-//    private SeedQueueSettingsCache lastSettingsCache;
+    protected final SeedQueueSettingsCache settingsCache;
+    private SeedQueueSettingsCache lastSettingsCache;
 
     protected Layout layout;
     private SeedQueuePreview[] mainPreviews;
@@ -84,7 +86,7 @@ public class SeedQueueWallScreen extends Screen {
         this.client = MinecraftClient.getInstance();
         this.random = new Random();
         this.preparingPreviews = new ArrayList<>();
-//        this.lastSettingsCache = this.settingsCache = SeedQueueSettingsCache.create();
+        this.lastSettingsCache = this.settingsCache = SeedQueueSettingsCache.create();
     }
 
     @Override
@@ -142,16 +144,16 @@ public class SeedQueueWallScreen extends Screen {
         SeedQueueProfiler.swap("build_preparing");
         for (; i < this.preparingPreviews.size(); i++) {
             SeedQueuePreview preparingInstance = this.preparingPreviews.get(i);
-//            SeedQueueProfiler.push("load_settings");
-//            this.loadPreviewSettings(preparingInstance);
-            SeedQueueProfiler.push("build");
+            SeedQueueProfiler.push("load_settings");
+            this.loadPreviewSettings(preparingInstance);
+            SeedQueueProfiler.swap("build");
             preparingInstance.build();
             SeedQueueProfiler.pop();
         }
 
         SeedQueueProfiler.swap("reset");
         this.resetViewport();
-//        this.loadPreviewSettings(this.settingsCache, 0);
+        this.loadPreviewSettings(this.settingsCache, 0);
 
         if (this.overlay != null) {
             SeedQueueProfiler.swap("overlay");
@@ -456,21 +458,21 @@ public class SeedQueueWallScreen extends Screen {
     }
 
     private void loadPreviewSettings(SeedQueuePreview instance) {
-//        SeedQueueEntry entry = instance.getSeedQueueEntry();
-//        if (entry.getSettingsCache() != null) {
-//            this.loadPreviewSettings(entry.getSettingsCache(), entry.getPerspective());
-//        } else {
-//            this.loadPreviewSettings(this.settingsCache, 0);
-//        }
+        SeedQueueEntry entry = instance.getSeedQueueEntry();
+        if (entry.getSettingsCache() != null) {
+            this.loadPreviewSettings(entry.getSettingsCache(), entry.getPerspective());
+        } else {
+            this.loadPreviewSettings(this.settingsCache, 0);
+        }
     }
 
-//    private void loadPreviewSettings(SeedQueueSettingsCache settingsCache, int perspective) {
-//        if (settingsCache != this.lastSettingsCache) {
-//            settingsCache.loadPreview();
-//            this.lastSettingsCache = settingsCache;
-//        }
-//        this.client.options.perspective = perspective;
-//    }
+    private void loadPreviewSettings(SeedQueueSettingsCache settingsCache, int perspective) {
+        if (settingsCache != this.lastSettingsCache) {
+            settingsCache.loadPreview();
+            this.lastSettingsCache = settingsCache;
+        }
+        this.client.options.perspective = perspective;
+    }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
@@ -538,7 +540,7 @@ public class SeedQueueWallScreen extends Screen {
 
         if (code == 1 && Screen.hasShiftDown()) {
             ModCompat.standardsettings$loadCache();
-            SeedQueue.stop();
+            Atum.stopRunning();
             this.client.setScreen(new TitleScreen());
             return;
         }

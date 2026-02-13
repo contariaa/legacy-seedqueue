@@ -35,16 +35,16 @@ dependencies {
 
     // SpeedrunAPI
     // check for the latest versions at https://jitpack.io/#contariaa/speedrunapi
-    modImplementation "com.github.contariaa:SpeedrunAPI:85b9b0b599"
+    modImplementation "com.github.contariaa:SpeedrunAPI:cce674a7df"
     annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 
     // Atum
     // check for the latest versions at https://jitpack.io/#contariaa/atum
-    modCompileOnly "com.github.contariaa:atum:e99845ee05"
+    modImplementation "com.github.contariaa:atum:cec4824790"
 
     // StandardSettings
     // check for the latest versions at https://jitpack.io/#contariaa/StandardSettings
-    modCompileOnly "com.github.contariaa:StandardSettings:4ffe5106c8"
+    modCompileOnly "com.github.contariaa:StandardSettings:d8ff5dcba0"
 
     // check for latest versions at https://jitpack.io/#dev.tildejustin/state-output
     modCompileOnly "dev.tildejustin.state-output:state-output-common:v1.2.0"

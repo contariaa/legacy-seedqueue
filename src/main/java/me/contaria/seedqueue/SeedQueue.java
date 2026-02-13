@@ -32,8 +32,7 @@ public class SeedQueue implements ClientModInitializer {
 
     public static SeedQueueConfig config = new SeedQueueConfig();
 
-    // TODO
-//    public static AttemptTracker.Type BENCHMARK_RESETS = new AttemptTracker.Type("Benchmark Reset #", "benchmark-resets.txt");
+    public static AttemptTracker.Type BENCHMARK_RESETS = new AttemptTracker.Type("Benchmark Reset #", "benchmark-resets.txt");
 
     private static final Queue<SeedQueueEntry> SEED_QUEUE = new LinkedBlockingQueue<>();
     private static SeedQueueThread thread;
@@ -43,24 +42,6 @@ public class SeedQueue implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOGGER.info("Initializing SeedQueue for 1.8.9");
-    }
-
-    public static void playOrJoinWall() {
-        if (SeedQueue.config.shouldUseWall()) {
-            if (SeedQueue.config.bypassWall) {
-                Optional<SeedQueueEntry> entry = SeedQueue.getEntryMatching(SeedQueueEntry::isLocked);
-                if (entry.isPresent()) {
-                    SeedQueue.playEntry(entry.get());
-                    return;
-                }
-            }
-            MinecraftClient.getInstance().setScreen(new SeedQueueWallScreen());
-            SeedQueue.ping();
-            return;
-        }
-        while (!SeedQueue.playEntry()) {
-            SeedQueue.ping();
-        }
     }
 
     /**
@@ -237,7 +218,7 @@ public class SeedQueue implements ClientModInitializer {
         // add 1 when not using wall and the main world is currently generating
         MinecraftServer currentServer = MinecraftClient.getInstance().getServer();
         if (currentServer == null || !currentServer.isLoading()) {
-//            count++;
+            count++;
         }
         return count;
     }
