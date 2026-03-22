@@ -3,15 +3,23 @@ package me.contaria.seedqueue.mixin.client.render;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.contaria.seedqueue.SeedQueue;
+import me.contaria.seedqueue.interfaces.SQChunkBuilder;
+import me.contaria.seedqueue.interfaces.SQWorldRenderer;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.world.BuiltChunk;
 import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(WorldRenderer.class)
-public abstract class WorldRendererMixin {
+public abstract class WorldRendererMixin implements SQWorldRenderer {
+    @Shadow
+    @Final
+    private ChunkBuilder chunkBuilder;
 
     @WrapOperation(
             method = "setupTerrain",
@@ -37,5 +45,10 @@ public abstract class WorldRendererMixin {
             return SeedQueue.config.previewChunkDistance;
         }
         return viewDistance;
+    }
+
+    @Override
+    public void seedqueue$stopBuilder() {
+        ((SQChunkBuilder) this.chunkBuilder).seedqueue$stopThreads();
     }
 }

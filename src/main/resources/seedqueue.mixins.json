@@ -17,6 +17,8 @@
     "client.MinecraftClientMixin",
     "client.debug.DebugHudMixin",
     "client.levellist.AnvilLevelStorageMixin",
+    "client.render.ChunkBuilderMixin",
+    "client.render.ChunkRenderThreadMixin",
     "client.render.GameRendererMixin",
     "client.render.InGameHudMixin",
     "client.render.WorldRendererMixin",

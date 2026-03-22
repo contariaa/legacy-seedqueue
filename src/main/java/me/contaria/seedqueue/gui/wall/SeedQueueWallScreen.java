@@ -10,6 +10,7 @@ import me.contaria.seedqueue.customization.AnimatedTexture;
 import me.contaria.seedqueue.customization.Layout;
 import me.contaria.seedqueue.customization.LockTexture;
 import me.contaria.seedqueue.debug.SeedQueueProfiler;
+import me.contaria.seedqueue.interfaces.SQWorldRenderer;
 import me.contaria.seedqueue.keybindings.SeedQueueKeyBindings;
 import me.contaria.seedqueue.mixin.accessor.DebugHudAccessor;
 import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
@@ -956,6 +957,7 @@ public class SeedQueueWallScreen extends Screen {
     public static void clearWorldRenderers() {
         for (WorldRenderer worldRenderer : WORLD_RENDERERS) {
             worldRenderer.setWorld(null);
+            ((SQWorldRenderer) worldRenderer).seedqueue$stopBuilder();
             worldRenderer.cleanUp();
         }
         WORLD_RENDERERS.clear();
