@@ -135,9 +135,6 @@ public class WorldPreview {
         player.capeY = player.prevCapeY = player.y;
         player.capeZ = player.prevCapeZ = player.z;
 
-        // TODO: add player to world, crashes because MinecraftClient#player is being accessed
-        world.addEntity(player.getEntityId(), player);
-
         // set player chunk coordinates,
         // usually these get set when adding the entity to a chunk,
         // however the chunk the player is in is not actually loaded yet

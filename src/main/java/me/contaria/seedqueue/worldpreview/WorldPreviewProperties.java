@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
-import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -119,6 +118,10 @@ public class WorldPreviewProperties extends DrawableHelper {
     public void tickEntities() {
         Profiler profiler = MinecraftClient.getInstance().profiler;
 
+        profiler.swap("spawn_player");
+        if (!this.world.loadedEntities.contains(this.player)) {
+            this.world.spawnEntity(this.player);
+        }
         profiler.swap("tick_new_entities");
         for (Entity entity : this.world.entities) {
             if (!((EntityAccessor) entity).worldpreview$isFirstUpdate() || entity.vehicle != null && ((EntityAccessor) entity.vehicle).worldpreview$isFirstUpdate()) {
