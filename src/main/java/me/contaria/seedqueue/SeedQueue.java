@@ -14,7 +14,6 @@ import net.fabricmc.loader.api.Version;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -315,21 +314,6 @@ public class SeedQueue implements ClientModInitializer {
     private static void clear() {
         LOGGER.info("Clearing SeedQueue...");
 
-        Screen screen = MinecraftClient.getInstance().currentScreen;
-        MinecraftClient.getInstance().setScreen(new Screen() {
-            @Override
-            public void render(int mouseX, int mouseY, float tickDelta) {
-                this.renderDirtBackground(0);
-                this.drawCenteredString(this.textRenderer, I18n.translate("seedqueue.menu.clearing"), this.width / 2, this.height / 2 - 50, 16777215);
-            }
-
-            @Override
-            protected void keyPressed(char id, int code) {
-                // do not close on esc
-            }
-        });
-        ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
-
         synchronized (LOCK) {
             if (currentEntry != null && !currentEntry.isLoaded()) {
                 currentEntry.discard();
@@ -347,8 +331,6 @@ public class SeedQueue implements ClientModInitializer {
         SeedQueueWallScreen.clearWorldRenderers();
         SeedQueuePreviewFrameBuffer.clearFramebufferPool();
         System.gc();
-
-        MinecraftClient.getInstance().setScreen(screen);
     }
 
     /**
