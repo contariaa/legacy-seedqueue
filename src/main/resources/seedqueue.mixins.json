@@ -42,6 +42,7 @@
     "included.worldpreview.accessor.GameRendererAccessor",
     "included.worldpreview.accessor.TrackedEntityInstanceAccessor",
     "included.worldpreview.client.ClientWorldMixin",
+    "included.worldpreview.client.render.ChunkRenderCacheMixin",
     "included.worldpreview.client.render.GameRendererMixin",
     "included.worldpreview.client.render.HeldItemRendererMixin",
     "included.worldpreview.client.render.InGameHudMixin",

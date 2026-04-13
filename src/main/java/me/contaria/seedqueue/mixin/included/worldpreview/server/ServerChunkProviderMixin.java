@@ -5,6 +5,7 @@ import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityTrackerA
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.TrackedEntityInstanceAccessor;
 import me.contaria.seedqueue.worldpreview.WorldPreviewProperties;
 import me.contaria.seedqueue.worldpreview.interfaces.WPServerChunkProvider;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TrackedEntityInstance;
@@ -56,6 +57,12 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
 
         chunkPackets.add(new ChunkDataS2CPacket(chunk, true, 65535));
         //chunkPackets.add(new LightUpdateS2CPacket(chunk.getPos(), chunk.getLightingProvider()));
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            Packet<?> packet = blockEntity.getPacket();
+            if (packet != null) {
+                chunkPackets.add(packet);
+            }
+        }
         chunkPackets.addAll(this.processNeighborChunks(pos));
 
         this.sentChunks.add(ChunkPos.getIdFromCoords(pos.x, pos.z));
