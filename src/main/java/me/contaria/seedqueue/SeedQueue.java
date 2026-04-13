@@ -93,7 +93,12 @@ public class SeedQueue implements ClientModInitializer {
         }
         // standardsettings can cause the current screen to be re-initialized,
         // so we open an intermission screen to avoid atum reset logic being called twice
-        MinecraftClient.getInstance().setScreen(new ProgressScreen());
+        MinecraftClient.getInstance().setScreen(new ProgressScreen() {
+            @Override
+            protected void keyPressed(char id, int code) {
+                // do not close on esc
+            }
+        });
         MinecraftClient.getInstance().startIntegratedServer(
                 currentEntry.getServer().getLevelName(),
                 currentEntry.getServer().getServerName(),
@@ -316,6 +321,11 @@ public class SeedQueue implements ClientModInitializer {
             public void render(int mouseX, int mouseY, float tickDelta) {
                 this.renderDirtBackground(0);
                 this.drawCenteredString(this.textRenderer, I18n.translate("seedqueue.menu.clearing"), this.width / 2, this.height / 2 - 50, 16777215);
+            }
+
+            @Override
+            protected void keyPressed(char id, int code) {
+                // do not close on esc
             }
         });
         ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
