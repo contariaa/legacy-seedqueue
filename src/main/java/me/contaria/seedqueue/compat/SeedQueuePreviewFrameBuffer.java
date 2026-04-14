@@ -7,26 +7,17 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.WorldRenderer;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Wrapper for Minecrafts {@link Framebuffer} storing a previews last drawn image.
- * <p>
- * Stores {@link SeedQueuePreviewFrameBuffer#lastRenderData} as to only redraw the preview if it has changed.
  */
 public class SeedQueuePreviewFrameBuffer {
     private static final List<Framebuffer> FRAMEBUFFER_POOL = new ArrayList<>();
 
     private final Framebuffer framebuffer;
-
-    // stores a string unique to the current state of world rendering when writing to the framebuffer
-    @Nullable
-    private String lastRenderData;
 
     public SeedQueuePreviewFrameBuffer() {
         if (FRAMEBUFFER_POOL.isEmpty()) {
@@ -46,10 +37,6 @@ public class SeedQueuePreviewFrameBuffer {
 
     public void endWrite() {
         this.framebuffer.unbind();
-    }
-
-    public boolean updateRenderData(WorldRenderer worldRenderer) {
-        return !Objects.equals(this.lastRenderData, this.lastRenderData = worldRenderer.getChunksDebugString() + "\n" + worldRenderer.getEntitiesDebugString());
     }
 
     /**
