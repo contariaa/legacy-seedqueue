@@ -37,6 +37,7 @@
     "included.glacier.FluidRendererMixin",
     "included.glacier.WorldRendererMixin",
     "included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
+    "included.worldpreview.accessor.ClientWorldAccessor",
     "included.worldpreview.accessor.EntityAccessor",
     "included.worldpreview.accessor.EntityTrackerAccessor",
     "included.worldpreview.accessor.GameRendererAccessor",

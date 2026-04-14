@@ -172,6 +172,7 @@ public class SeedQueuePreview extends DrawableHelper {
         this.run(properties -> {
             properties.tickPackets();
             properties.tickEntities();
+            properties.tickWorld();
             properties.buildChunks();
         });
     }

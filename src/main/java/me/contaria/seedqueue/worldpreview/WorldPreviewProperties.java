@@ -2,6 +2,7 @@ package me.contaria.seedqueue.worldpreview;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.contaria.seedqueue.SeedQueue;
+import me.contaria.seedqueue.mixin.included.worldpreview.accessor.ClientWorldAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -83,6 +84,7 @@ public class WorldPreviewProperties extends DrawableHelper {
     public void render(int mouseX, int mouseY, List<ButtonWidget> buttons, int width, int height) {
         this.tickPackets();
         this.tickEntities();
+        this.tickWorld();
         this.renderWorld();
         this.renderHud();
         this.renderMenu(mouseX, mouseY, buttons, width, height);
@@ -101,6 +103,16 @@ public class WorldPreviewProperties extends DrawableHelper {
             packet.apply(this.player.networkHandler);
             profiler.pop();
         }
+    }
+
+    public void tickWorld() {
+        Profiler profiler = MinecraftClient.getInstance().profiler;
+        ClientWorldAccessor world = (ClientWorldAccessor) this.world;
+
+        profiler.swap("chunkCache");
+        world.worldpreview$getClientChunkCache().tickChunks();
+        profiler.swap("blocks");
+        world.worldpreview$tickBlocks();
     }
 
     protected boolean shouldApplyPacket(Packet<?> packet, int dataLimit, int applied) {
