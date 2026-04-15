@@ -324,7 +324,6 @@ public class SeedQueue implements ClientModInitializer {
         SEED_QUEUE.forEach(SeedQueueEntry::discard);
 
         while (!SEED_QUEUE.isEmpty()) {
-            ((MinecraftClientAccessor) MinecraftClient.getInstance()).seedQueue$runGameLoop();
             SEED_QUEUE.removeIf(entry -> !((MinecraftServerAccessor) entry.getServer()).seedQueue$getServerThread().isAlive());
         }
 
