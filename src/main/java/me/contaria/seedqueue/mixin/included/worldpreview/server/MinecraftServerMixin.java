@@ -63,10 +63,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
     )
     private int reduceChunksNegativeX(int constant) {
         if (this.shouldGenerateFakePreview()) {
-            if (this.previewPerspective == 2) {
-                return -SeedQueue.config.previewChunkDistance * 16;
-            }
-            return -16;
+            return -SeedQueue.config.previewChunkDistance * 16;
         }
         return constant;
     }
@@ -81,19 +78,39 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer, WPMinec
     private int reduceChunksNegativeZ(int constant) {
         if (this.shouldGenerateFakePreview()) {
             if (this.previewPerspective != 2) {
-                return -SeedQueue.config.previewChunkDistance * 16;
+                return -16;
             }
-            return -16;
+            return -SeedQueue.config.previewChunkDistance * 16;
         }
         return constant;
     }
 
     @ModifyConstant(
             method = "prepareWorlds",
-            constant = @Constant(intValue = 192)
+            constant = @Constant(
+                    intValue = 192,
+                    ordinal = 1
+            )
     )
-    private int reduceChunksPositive(int constant) {
+    private int reduceChunksPositiveX(int constant) {
         if (this.shouldGenerateFakePreview()) {
+            return SeedQueue.config.previewChunkDistance * 16;
+        }
+        return constant;
+    }
+
+    @ModifyConstant(
+            method = "prepareWorlds",
+            constant = @Constant(
+                    intValue = 192,
+                    ordinal = 2
+            )
+    )
+    private int reduceChunksPositiveZ(int constant) {
+        if (this.shouldGenerateFakePreview()) {
+            if (this.previewPerspective == 2) {
+                return 16;
+            }
             return SeedQueue.config.previewChunkDistance * 16;
         }
         return constant;
