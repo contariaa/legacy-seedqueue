@@ -28,7 +28,6 @@
     "included.antiresourcereload.UserCacheMixin",
     "included.fastreset.MinecraftServerMixin",
     "included.glacier.BiomeCacheEntryMixin",
-    "included.speedrunapi.resourceloader.DefaultResourcePackMixin",
     "included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
     "included.worldpreview.accessor.EntityAccessor",
     "included.worldpreview.accessor.EntityTrackerAccessor",
@@ -84,5 +83,5 @@
     "server.synchronization.get_server.MinecraftServerMixin",
     "server.synchronization.structure.StrongholdPiecesMixin"
   ],
-  "plugin": "me.contaria.seedqueue.SeedQueueMixinConfigPlugin"
+  "plugin": "me.contaria.speedrunapi.mixin_plugin.SpeedrunMixinConfigPlugin"
 }

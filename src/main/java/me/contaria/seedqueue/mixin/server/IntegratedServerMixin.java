@@ -36,19 +36,4 @@ public abstract class IntegratedServerMixin extends MinecraftServerMixin {
         }
         return viewDistance;
     }
-
-    // TODO
-//    @ModifyExpressionValue(
-//            method = "setupWorld()V",
-//            at = @At(
-//                    value = "FIELD",
-//                    target = "Lnet/minecraft/client/MinecraftClient;world:Lnet/minecraft/client/world/ClientWorld;"
-//            )
-//    )
-//    private ClientWorld doNotChangeDifficultyInQueue(ClientWorld world) {
-//        if (this.seedQueue$inQueue()) {
-//            return null;
-//        }
-//        return world;
-//    }
 }
