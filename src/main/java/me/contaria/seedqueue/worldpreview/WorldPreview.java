@@ -36,6 +36,7 @@ public class WorldPreview {
     public static WorldPreviewProperties properties;
 
     public static boolean renderingPreview;
+    public static boolean buildingPreview;
 
     public static WorldPreviewProperties configure(ServerWorld serverWorld, int perspective) {
         WPFakeServerPlayerEntity fakePlayer = new WPFakeServerPlayerEntity(

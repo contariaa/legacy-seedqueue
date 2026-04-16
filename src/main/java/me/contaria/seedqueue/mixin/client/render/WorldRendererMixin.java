@@ -1,24 +1,15 @@
 package me.contaria.seedqueue.mixin.client.render;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.contaria.seedqueue.SeedQueue;
+import me.contaria.seedqueue.worldpreview.WorldPreview;
 import net.minecraft.client.render.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
-
-//    @WrapOperation(
-//            method = "setupTerrain",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/client/render/WorldRenderer;isInChunk(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/world/BuiltChunk;)Z"
-//            )
-//    )
-//    private boolean alwaysDeferChunkUpdates(WorldRenderer worldRenderer, BlockPos pos, BuiltChunk chunk, Operation<Boolean> original) {
-//        return !SeedQueue.isOnWall() && original.call(worldRenderer, pos, chunk);
-//    }
 
     @ModifyExpressionValue(
             method = {
@@ -35,5 +26,16 @@ public abstract class WorldRendererMixin {
             return SeedQueue.config.previewChunkDistance;
         }
         return viewDistance;
+    }
+
+    @WrapWithCondition(
+            method = "method_1368",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;method_1366(ID)V"
+            )
+    )
+    private boolean doNotRenderChunksWhileBuildingOnWall(WorldRenderer worldRenderer, int d, double v) {
+        return !WorldPreview.buildingPreview;
     }
 }

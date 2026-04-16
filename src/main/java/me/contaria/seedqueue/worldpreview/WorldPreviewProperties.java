@@ -226,13 +226,18 @@ public class WorldPreviewProperties extends DrawableHelper {
 
         GL11.glShadeModel(7425);
 
-        profiler.swap("updatechunks");
-        client.worldRenderer.method_1373(cameraView, 1.0f);
-        client.worldRenderer.method_1375(entity, false);
+        WorldPreview.buildingPreview = true;
+        try {
+            profiler.swap("updatechunks");
+            client.worldRenderer.method_1373(cameraView, 1.0f);
+            client.worldRenderer.method_1375(entity, false);
 
-        profiler.swap("terrain");
-        client.worldRenderer.method_1374(entity, 0, 1.0f);
-        client.worldRenderer.method_1374(entity, 1, 1.0f);
+            profiler.swap("terrain");
+            client.worldRenderer.method_1374(entity, 0, 1.0f);
+            client.worldRenderer.method_1374(entity, 1, 1.0f);
+        } finally {
+            WorldPreview.buildingPreview = false;
+        }
 
         profiler.pop();
 
