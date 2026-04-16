@@ -1,6 +1,7 @@
 package me.contaria.seedqueue.worldpreview;
 
 import me.contaria.seedqueue.SeedQueue;
+import me.contaria.seedqueue.mixin.included.worldpreview.accessor.ClientWorldAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.EntityAccessor;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -33,12 +34,12 @@ public class WorldPreviewProperties extends DrawableHelper {
     public final Queue<Packet> packetQueue;
     private final int perspective;
 
-    public WorldPreviewProperties(ClientWorld world, ControllablePlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet> packetQueue) {
+    public WorldPreviewProperties(ClientWorld world, ControllablePlayerEntity player, ClientPlayerInteractionManager interactionManager, Queue<Packet> packetQueue, int perspective) {
         this.world = world;
         this.player = player;
         this.interactionManager = interactionManager;
         this.packetQueue = packetQueue;
-        this.perspective = /* (int) SpeedrunConfigAPI.getConfigValueOptionally("standardsettings", "perspective").orElse(0) */ 0;
+        this.perspective = perspective;
     }
 
     /**
@@ -80,6 +81,7 @@ public class WorldPreviewProperties extends DrawableHelper {
     public void render(int mouseX, int mouseY, List<ButtonWidget> buttons, int width, int height) {
         this.tickPackets();
         this.tickEntities();
+        this.tickWorld();
         this.renderWorld();
         this.renderHud();
         this.renderMenu(mouseX, mouseY, buttons, width, height);
@@ -99,6 +101,16 @@ public class WorldPreviewProperties extends DrawableHelper {
         }
     }
 
+    public void tickWorld() {
+        Profiler profiler = MinecraftClient.getInstance().profiler;
+        ClientWorldAccessor world = (ClientWorldAccessor) this.world;
+
+        profiler.swap("chunkCache");
+        world.worldpreview$getClientChunkCache().tickChunks();
+        profiler.swap("blocks");
+        world.worldpreview$tickBlocks();
+    }
+
     protected boolean shouldApplyPacket(Packet packet, int dataLimit, int applied) {
         return packet != null && (dataLimit >= 100 || dataLimit > applied || !this.canStopAtPacket(packet));
     }
@@ -114,6 +126,10 @@ public class WorldPreviewProperties extends DrawableHelper {
     public void tickEntities() {
         Profiler profiler = MinecraftClient.getInstance().profiler;
 
+        profiler.swap("spawn_player");
+        if (!this.world.loadedEntities.contains(this.player)) {
+            this.world.spawnEntity(this.player);
+        }
         profiler.swap("tick_new_entities");
         for (Object object : this.world.entities) {
             Entity entity = (Entity) object;
@@ -262,9 +278,5 @@ public class WorldPreviewProperties extends DrawableHelper {
 
     public int getPerspective() {
         return this.perspective;
-    }
-
-    public boolean isInverseView() {
-        return this.perspective == 2;
     }
 }

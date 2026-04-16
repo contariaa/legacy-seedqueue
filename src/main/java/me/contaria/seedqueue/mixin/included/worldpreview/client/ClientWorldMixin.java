@@ -15,20 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldMixin {
 
-    @WrapOperation(
-            method = "getEntityById",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/ControllablePlayerEntity;getEntityId()I"
-            )
-    )
-    private int doNotAccessPlayerDuringPreviewConfiguration(ControllablePlayerEntity player, Operation<Integer> original, int id) {
-        if (!MinecraftClient.getInstance().method_6640()) {
-            return id + 1;
-        }
-        return original.call(player);
-    }
-
     @WrapWithCondition(
             method = "spawnEntity",
             at = @At(

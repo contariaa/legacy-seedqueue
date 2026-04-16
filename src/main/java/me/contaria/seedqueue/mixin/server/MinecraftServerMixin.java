@@ -67,7 +67,7 @@ public abstract class MinecraftServerMixin implements SQMinecraftServer {
             )
     )
     private boolean suppressProgressLogInQueue(Logger logger, String string) {
-        return this.seedQueueEntry != null && !this.seedQueueEntry.isLoaded();
+        return this.seedQueueEntry == null || this.seedQueueEntry.isLoaded();
     }
 
     @WrapWithCondition(

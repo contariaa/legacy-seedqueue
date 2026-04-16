@@ -52,41 +52,10 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
 
         chunkPackets.add(new ChunkDataS2CPacket(chunk, true, 65535));
         //chunkPackets.add(new LightUpdateS2CPacket(chunk.getPos(), chunk.getLightingProvider()));
-        chunkPackets.addAll(this.processNeighborChunks(pos));
 
         this.sentChunks.add(ChunkPos.getIdFromCoords(pos.x, pos.z));
 
         return chunkPackets;
-    }
-
-    @Unique
-    private List<Packet> processNeighborChunks(ChunkPos pos) {
-        // TODO: fix neighbors not getting light updates
-        /*
-        List<Packet<?>> packets = new ArrayList<>();
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                if (x == 0 && z == 0) {
-                    continue;
-                }
-                long neighbor = ChunkPos.getIdFromCoords(pos.x + x, pos.z + z);
-                Chunk neighborChunk = this.chunkStorage.get(neighbor);
-                if (neighborChunk == null) {
-                    continue;
-                }
-
-                if (this.sentChunks.contains(neighbor)) {
-                    int[] lightUpdates = ((WPChunkHolder) neighborHolder).worldpreview$flushUpdates();
-                    if (lightUpdates[0] != 0 || lightUpdates[1] != 0) {
-                        packets.add(new LightUpdateS2CPacket(new ChunkPos(neighbor), neighborChunk.getLightingProvider(), lightUpdates[0], lightUpdates[1]));
-                    }
-                }
-            }
-        }
-        return packets;
-
-         */
-        return Collections.emptyList();
     }
 
     @Unique
@@ -175,8 +144,7 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
             }
         }
 
-        // TODO
-//        entityPackets.add(new EntityS2CPacket.Rotate(id, (byte) MathHelper.floor(entity.yaw * 256.0f / 360.0f), (byte) MathHelper.floor(entity.pitch * 256.0f / 360.0f), entity.onGround));
+        entityPackets.add(new class_2030(id, (byte) MathHelper.floor(entity.yaw * 256.0f / 360.0f), (byte) MathHelper.floor(entity.pitch * 256.0f / 360.0f)));
         entityPackets.add(new EntitySetHeadYawS2CPacket(entity, (byte) MathHelper.floor(entity.getHeadRotation() * 256.0f / 360.0f)));
 
         this.sentEntities.add(id);

@@ -1,6 +1,7 @@
 package me.contaria.seedqueue.debug;
 
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.platform.GLX;
 import com.sun.management.OperatingSystemMXBean;
 import me.contaria.seedqueue.SeedQueue;
 import org.lwjgl.opengl.GL11;
@@ -25,11 +26,7 @@ public class SeedQueueSystemInfo {
     }
 
     private static String getCpuInfo() {
-        // TODO
-//        // see GLX#_init
-//        oshi.hardware.Processor[] processors = new oshi.SystemInfo().getHardware().getProcessors();
-//        return String.format("%dx %s", processors.length, processors[0]).replaceAll("\\s+", " ");
-        return "TODO";
+        return "<Could not get CPU Info>";
     }
 
     private static String getGpuInfo() {

@@ -8,16 +8,19 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.ControllablePlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +37,7 @@ public class WorldPreview {
 
     public static boolean renderingPreview;
 
-    public static WorldPreviewProperties configure(ServerWorld serverWorld) {
+    public static WorldPreviewProperties configure(ServerWorld serverWorld, int perspective) {
         WPFakeServerPlayerEntity fakePlayer = new WPFakeServerPlayerEntity(
                 serverWorld.getServer(),
                 serverWorld,
@@ -74,25 +77,23 @@ public class WorldPreview {
         // reset the randomness introduced to the yaw in LivingEntity#<init>
         player.headYaw = player.yaw = 0.0F;
 
-        // TODO
-//        LevelInfo.GameMode gameMode = LevelInfo.GameMode.NOT_SET;
-//
-//        // This part is not actually relevant for previewing new worlds,
-//        // I just personally like the idea of worldpreview principally being able to work on old worlds as well
-//        // same with sending world info and scoreboard data
-//        NbtCompound playerData = serverWorld.getServer().getPlayerManager().getUserData();
-//        if (playerData != null) {
-//            player.fromNbt(playerData);
-//            // see ServerPlayerEntity#readCustomDataFromNbt
-//            if (!MinecraftServer.getServer().shouldForceGameMode() && playerData.contains("playerGameType", 99)) {
-//                gameMode = LevelInfo.GameMode.byId(playerData.getInt("playerGameType"));
-//            }
-//        }
+        GameMode gameMode = GameMode.NOT_SET;
+
+        // This part is not actually relevant for previewing new worlds,
+        // I just personally like the idea of worldpreview principally being able to work on old worlds as well
+        // same with sending world info and scoreboard data
+        NbtCompound playerData = serverWorld.getServer().getPlayerManager().getUserData();
+        if (playerData != null) {
+            player.fromNbt(playerData);
+            // see ServerPlayerEntity#readCustomDataFromNbt
+            if (!MinecraftServer.getServer().shouldForceGameMode() && playerData.contains("playerGameType", 99)) {
+                gameMode = GameMode.setGameModeWithId(playerData.getInt("playerGameType"));
+            }
+        }
 
         Queue<Packet> packetQueue = new LinkedBlockingQueue<>();
         packetQueue.add(new PlayerListS2CPacket(player.getTranslationKey(), true, 1000));
-        // TODO
-//        packetQueue.add(new GameStateChangeS2CPacket(3, (gameMode != LevelInfo.GameMode.NOT_SET ? gameMode : serverWorld.getServer().getDefaultGameMode()).getId()));
+        packetQueue.add(new GameStateChangeS2CPacket(3, (gameMode != GameMode.NOT_SET ? gameMode : serverWorld.getServer().method_3026()).getGameModeId()));
 
         // see PlayerManager#sendWorldInfo
         packetQueue.add(new WorldTimeUpdateS2CPacket(serverWorld.getLastUpdateTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
@@ -126,9 +127,6 @@ public class WorldPreview {
         player.capeY = player.prevCapeY = player.y;
         player.capeZ = player.prevCapeZ = player.z;
 
-        // TODO: add player to world, crashes because MinecraftClient#player is being accessed
-        world.addEntity(player.getEntityId(), player);
-
         // set player chunk coordinates,
         // usually these get set when adding the entity to a chunk,
         // however the chunk the player is in is not actually loaded yet
@@ -138,6 +136,6 @@ public class WorldPreview {
 
         ((ClientPlayNetworkHandlerAccessor) player.field_1667).worldpreview$setWorld(world);
 
-        return new WorldPreviewProperties(world, player, interactionManager, packetQueue);
+        return new WorldPreviewProperties(world, player, interactionManager, packetQueue, perspective);
     }
 }

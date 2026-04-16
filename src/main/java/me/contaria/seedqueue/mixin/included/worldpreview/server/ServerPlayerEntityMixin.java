@@ -9,6 +9,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.stat.ServerStatHandler;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,13 +32,11 @@ public abstract class ServerPlayerEntityMixin {
     )
     private void setPreviewSpawnPos(ServerPlayerEntity player, double x, double y, double z, float yaw, float pitch, Operation<Void> original) {
         WPMinecraftServer server = (WPMinecraftServer) this.server;
+        Vec3d spawnPos = server.worldpreview$getPreviewSpawnPos();
         if (this.isWorldPreviewFakePlayer()) {
-            server.worldpreview$setPreviewSpawnPos(Vec3d.of(x, y, z));
-            original.call(player, x, y, z, yaw, pitch);
+            original.call(player, spawnPos.x, spawnPos.y, spawnPos.z, yaw, pitch);
             return;
         }
-
-        Vec3d spawnPos = server.worldpreview$getPreviewSpawnPos();
         if (spawnPos != null) {
             server.worldpreview$clearPreviewSpawnPos();
             original.call(player, spawnPos.x, spawnPos.y, spawnPos.z, yaw, pitch);

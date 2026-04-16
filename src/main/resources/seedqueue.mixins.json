@@ -29,6 +29,7 @@
     "included.fastreset.MinecraftServerMixin",
     "included.glacier.BiomeCacheEntryMixin",
     "included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor",
+    "included.worldpreview.accessor.ClientWorldAccessor",
     "included.worldpreview.accessor.EntityAccessor",
     "included.worldpreview.accessor.EntityTrackerAccessor",
     "included.worldpreview.accessor.GameRendererAccessor",

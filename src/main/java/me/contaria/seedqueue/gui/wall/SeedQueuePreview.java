@@ -106,7 +106,7 @@ public class SeedQueuePreview extends DrawableHelper {
     private void renderPreview() {
         SeedQueuePreviewFrameBuffer frameBuffer = this.seedQueueEntry.getFrameBuffer();
         if (this.previewProperties != null) {
-            if (this.shouldRedrawPreview() && frameBuffer.updateRenderData(this.worldRenderer)) {
+            if (this.shouldRedrawPreview()) {
                 this.redrawPreview(frameBuffer);
             } else {
                 this.buildChunks();
@@ -171,6 +171,7 @@ public class SeedQueuePreview extends DrawableHelper {
         this.run(properties -> {
             properties.tickPackets();
             properties.tickEntities();
+            properties.tickWorld();
             properties.buildChunks();
         });
     }
