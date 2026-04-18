@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import me.contaria.seedqueue.compat.ModCompat;
+import me.contaria.seedqueue.gui.config.SeedQueueKeybindingsScreen;
+import me.contaria.seedqueue.gui.config.SeedQueueWindowSizeWidget;
 import me.contaria.seedqueue.keybindings.SeedQueueKeyBindings;
 import me.contaria.seedqueue.keybindings.SeedQueueMultiKeyBinding;
 import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
@@ -197,8 +199,7 @@ public class SeedQueueConfig implements SpeedrunConfig  {
                     .setter((option, config_, configStorage, optionField, value) -> {
                         throw new UnsupportedOperationException();
                     })
-                    // TODO
-//                    .createWidget((option, config_, configStorage, optionField) -> new SeedQueueWindowSizeWidget(option.get()))
+                    .createWidget((option, config_, configStorage, optionField) -> new SeedQueueWindowSizeWidget(option.get()))
                     .build();
         }
         if (SeedQueueMultiKeyBinding[].class.equals(field.getType())) {
@@ -218,7 +219,7 @@ public class SeedQueueConfig implements SpeedrunConfig  {
                     .setter((option, config_, configStorage, optionField, value) -> {
                         throw new UnsupportedOperationException();
                     })
-//                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate("seedqueue.menu.keys.configure"), button -> MinecraftClient.getInstance().setScreen(new SeedQueueKeybindingsScreen(MinecraftClient.getInstance().currentScreen, this.keyBindings))))
+                    .createWidget((option, config_, configStorage, optionField) -> new CallbackButtonWidget(I18n.translate("seedqueue.menu.keys.configure"), button -> MinecraftClient.getInstance().setScreen(new SeedQueueKeybindingsScreen(MinecraftClient.getInstance().currentScreen, this.keyBindings))))
                     .build();
         }
         return SpeedrunConfig.super.parseField(field, config, idPrefix);

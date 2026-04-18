@@ -25,6 +25,7 @@ seedqueue.menu.keys.blocking=§7§oBlocking Keys
 seedqueue.menu.keys.blocking.tooltip=When the primary key is pressed, the game will check that all blocking keys are §lnot§r pressed before the hotkey is activated.
 seedqueue.menu.keys.secondary_list=§7§oSecondary:
 seedqueue.menu.keys.blocking_list=§7§oBlocking:
+seedqueue.menu.keys.none=None
 
 seedqueue.key.categories.builtin=Built-in Keybindings
 seedqueue.key.categories.custom=Custom Keybindings

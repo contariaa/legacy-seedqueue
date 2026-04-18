@@ -12,6 +12,7 @@
   "client": [
     "accessor.MinecraftClientAccessor",
     "accessor.MinecraftServerAccessor",
+    "accessor.TextFieldWidgetAccessor",
     "accessor.WorldRendererAccessor",
     "client.MinecraftClientMixin",
     "client.levellist.AnvilLevelStorageMixin",
