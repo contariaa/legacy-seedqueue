@@ -1,7 +1,6 @@
 package me.contaria.seedqueue.mixin.client.render;
 
 import com.llamalad7.mixinextras.sugar.Cancellable;
-import com.llamalad7.mixinextras.sugar.Local;
 import me.contaria.seedqueue.interfaces.SQChunkBuilder;
 import me.contaria.seedqueue.interfaces.SQChunkRenderThread;
 import net.minecraft.client.render.chunk.ChunkBuilder;
@@ -9,7 +8,6 @@ import net.minecraft.client.world.ChunkRenderThread;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 

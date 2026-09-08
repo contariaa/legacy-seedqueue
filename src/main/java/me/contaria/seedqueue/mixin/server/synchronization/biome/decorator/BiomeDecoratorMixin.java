@@ -170,7 +170,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;dirtFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;dirtFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createDirtFeature(BiomeDecorator decorator) {
@@ -181,7 +182,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;gravelFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;gravelFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createGravelFeature(BiomeDecorator decorator) {
@@ -192,7 +194,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;dioriteFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;dioriteFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createDioriteFeature(BiomeDecorator decorator) {
@@ -203,7 +206,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;graniteFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;graniteFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createGraniteFeature(BiomeDecorator decorator) {
@@ -214,7 +218,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;andesiteFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;andesiteFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createAndesiteFeature(BiomeDecorator decorator) {
@@ -225,7 +230,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;coalOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;coalOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createCoalFeature(BiomeDecorator decorator) {
@@ -236,7 +242,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;ironOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;ironOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createIronFeature(BiomeDecorator decorator) {
@@ -247,7 +254,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;goldOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;goldOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createGoldFeature(BiomeDecorator decorator) {
@@ -258,7 +266,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;redstoneOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;redstoneOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createRedstoneFeature(BiomeDecorator decorator) {
@@ -269,7 +278,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;diamondOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;diamondOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createDiamondFeature(BiomeDecorator decorator) {
@@ -280,7 +290,8 @@ public abstract class BiomeDecoratorMixin {
             method = "generateOres",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/biome/BiomeDecorator;lapisOreFeature:Lnet/minecraft/world/gen/feature/Feature;"
+                    target = "Lnet/minecraft/world/biome/BiomeDecorator;lapisOreFeature:Lnet/minecraft/world/gen/feature/Feature;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private Feature createLapisFeature(BiomeDecorator decorator) {

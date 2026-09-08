@@ -3,6 +3,7 @@ package me.contaria.seedqueue.mixin.included.antiresourcereload;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.UserCache;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -13,7 +14,8 @@ public abstract class UserCacheMixin {
             method = "findByName",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/util/UserCache;server:Lnet/minecraft/server/MinecraftServer;"
+                    target = "Lnet/minecraft/util/UserCache;server:Lnet/minecraft/server/MinecraftServer;",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private MinecraftServer useCurrentServer(MinecraftServer server) {

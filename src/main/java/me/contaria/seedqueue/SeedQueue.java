@@ -5,7 +5,6 @@ import me.contaria.seedqueue.compat.SeedQueuePreviewFrameBuffer;
 import me.contaria.seedqueue.debug.SeedQueueSystemInfo;
 import me.contaria.seedqueue.debug.SeedQueueWatchdog;
 import me.contaria.seedqueue.gui.wall.SeedQueueWallScreen;
-import me.contaria.seedqueue.mixin.accessor.MinecraftClientAccessor;
 import me.contaria.seedqueue.mixin.accessor.MinecraftServerAccessor;
 import me.voidxwalker.autoreset.AttemptTracker;
 import net.fabricmc.api.ClientModInitializer;

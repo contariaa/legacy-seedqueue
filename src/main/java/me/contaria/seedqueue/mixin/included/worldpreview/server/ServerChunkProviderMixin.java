@@ -136,19 +136,19 @@ public abstract class ServerChunkProviderMixin implements WPServerChunkProvider 
         if (entity.vehicle != null) {
             entityPackets.add(new EntityAttachS2CPacket(0, entity, entity.vehicle));
         }
-        if (entity instanceof MobEntity && ((MobEntity)entity).getLeashOwner() != null) {
-            entityPackets.add(new EntityAttachS2CPacket(1, entity, ((MobEntity)entity).getLeashOwner()));
+        if (entity instanceof MobEntity && ((MobEntity) entity).getLeashOwner() != null) {
+            entityPackets.add(new EntityAttachS2CPacket(1, entity, ((MobEntity) entity).getLeashOwner()));
         }
         if (entity instanceof LivingEntity) {
             for (int i = 0; i < 5; i++) {
-                ItemStack itemStack = ((LivingEntity)entity).getMainSlot(i);
+                ItemStack itemStack = ((LivingEntity) entity).getMainSlot(i);
                 if (itemStack != null) {
                     entityPackets.add(new EntityEquipmentUpdateS2CPacket(id, i, itemStack));
                 }
             }
         }
         if (entity instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity)entity;
+            PlayerEntity playerEntity = (PlayerEntity) entity;
             if (playerEntity.isSleeping()) {
                 entityPackets.add(new BedSleepS2CPacket(playerEntity, new BlockPos(entity)));
             }
