@@ -1,7 +1,6 @@
 package me.contaria.seedqueue.debug;
 
 import com.google.gson.GsonBuilder;
-import com.mojang.blaze3d.platform.GLX;
 import com.sun.management.OperatingSystemMXBean;
 import me.contaria.seedqueue.SeedQueue;
 import org.lwjgl.opengl.GL11;

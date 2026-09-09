@@ -2,8 +2,6 @@ package me.contaria.seedqueue.mixin.included.worldpreview.server;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.interfaces.SQMinecraftServer;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
@@ -14,9 +12,7 @@ import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

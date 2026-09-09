@@ -855,11 +855,6 @@ public class SeedQueueWallScreen extends Screen {
         this.benchmarkStart = System.nanoTime() / 1000000L;
         this.benchmarkedSeeds = 0;
         SeedQueue.LOGGER.info("BENCHMARK | Starting benchmark with a goal of {} resets.", this.benchmarkGoal);
-        /*
-        this.client.getToastManager().clear();
-        this.client.getToastManager().add(new SeedQueueBenchmarkToast(this));
-
-         */
         this.playSound(SeedQueueSounds.START_BENCHMARK);
     }
 
@@ -913,14 +908,6 @@ public class SeedQueueWallScreen extends Screen {
 
     public boolean isBenchmarking() {
         return this.benchmarkedSeeds < this.benchmarkGoal;
-    }
-
-    @Override
-    public void removed() {
-        /*
-        this.client.getToastManager().clear();
-
-         */
     }
 
     public static WorldRenderer getOrCreateWorldRenderer(ClientWorld world) {

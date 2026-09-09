@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.contaria.seedqueue.SeedQueue;
 import me.contaria.seedqueue.worldpreview.WorldPreview;
 import net.minecraft.client.render.WorldRenderer;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -18,7 +19,8 @@ public abstract class WorldRendererMixin {
             },
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/client/option/GameOptions;viewDistance:I"
+                    target = "Lnet/minecraft/client/option/GameOptions;viewDistance:I",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private int modifyViewDistance(int viewDistance) {

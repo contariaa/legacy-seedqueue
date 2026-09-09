@@ -1,6 +1,5 @@
 package me.contaria.seedqueue.worldpreview;
 
-import com.google.common.collect.Sets;
 import me.contaria.seedqueue.mixin.included.worldpreview.accessor.ClientPlayNetworkHandlerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -108,7 +107,7 @@ public class WorldPreview {
 
         // see PlayerManager#sendScoreboard
         ServerScoreboard scoreboard = (ServerScoreboard) serverWorld.getScoreboard();
-        HashSet<ScoreboardObjective> set = Sets.newHashSet();
+        HashSet<ScoreboardObjective> set = new HashSet<>();
         for (Object team : scoreboard.getTeams()) {
             packetQueue.add(new TeamS2CPacket((Team) team, 0));
         }

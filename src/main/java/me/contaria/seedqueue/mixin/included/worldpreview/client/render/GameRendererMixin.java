@@ -20,11 +20,13 @@ public abstract class GameRendererMixin {
             at = {
                     @At(
                             value = "FIELD",
-                            target = "Lnet/minecraft/client/render/GameRenderer;lastMovementFovMultiplier:F"
+                            target = "Lnet/minecraft/client/render/GameRenderer;lastMovementFovMultiplier:F",
+                            opcode = Opcodes.GETFIELD
                     ),
                     @At(
                             value = "FIELD",
-                            target = "Lnet/minecraft/client/render/GameRenderer;movementFovMultiplier:F"
+                            target = "Lnet/minecraft/client/render/GameRenderer;movementFovMultiplier:F",
+                            opcode = Opcodes.GETFIELD
                     )
             },
             require = 2

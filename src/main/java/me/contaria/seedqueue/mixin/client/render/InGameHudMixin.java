@@ -44,7 +44,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
             method = "method_5587",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/entity/player/ControllablePlayerEntity;timeUntilRegen:I"
+                    target = "Lnet/minecraft/entity/player/ControllablePlayerEntity;timeUntilRegen:I",
+                    opcode = Opcodes.GETFIELD
             )
     )
     private int doNotRenderBlinkingHeartsOnWall(int timeUntilRegen) {

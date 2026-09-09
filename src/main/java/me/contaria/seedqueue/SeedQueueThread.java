@@ -43,7 +43,7 @@ public class SeedQueueThread extends Thread {
                         if (this.pinged.get()) {
                             continue;
                         }
-//                        this.lock.wait();
+                        this.lock.wait();
                     }
                     continue;
                 }
@@ -103,10 +103,10 @@ public class SeedQueueThread extends Thread {
     }
 
     public void ping() {
-//        synchronized (this.lock) {
-//            this.pinged.set(true);
-//            this.lock.notify();
-//        }
+        synchronized (this.lock) {
+            this.pinged.set(true);
+            this.lock.notify();
+        }
     }
 
     /**

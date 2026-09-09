@@ -16,10 +16,7 @@ public abstract class MinecraftServerMixin {
     private static UserCache cachedUserCache;
 
     @WrapOperation(
-            method = {
-                    "<init>(Ljava/net/Proxy;Ljava/io/File;)V",
-                    "<init>(Ljava/io/File;Ljava/net/Proxy;Ljava/io/File;)V"
-            },
+            method = "<init>",
             at = @At(
                     value = "NEW",
                     target = "(Lnet/minecraft/server/MinecraftServer;Ljava/io/File;)Lnet/minecraft/util/UserCache;"

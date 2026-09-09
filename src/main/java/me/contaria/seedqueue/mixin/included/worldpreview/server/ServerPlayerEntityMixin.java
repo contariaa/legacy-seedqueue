@@ -9,7 +9,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.stat.ServerStatHandler;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
